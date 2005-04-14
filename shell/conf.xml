@@ -1,0 +1,23 @@
+<cloxx>
+
+  <config>
+    <autohelp/>
+  </config>
+                                                                                
+  <options>
+    <option id="interactive" type="flag">
+      <name>interactive</name>
+      <name>i</name>
+      <comment>start interactive envirment</comment>
+    </option>
+  </options>
+
+  <options>
+    <option id="dumpstack" type="flag">
+      <name>dumpstack</name>
+      <name>d</name>
+      <comment>dump the stack after each step</comment>
+    </option>
+  </options>
+
+</cloxx>
