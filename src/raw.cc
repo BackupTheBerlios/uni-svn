@@ -218,7 +218,7 @@ namespace NAMESPACE
   Raw::deoutfix (Context* c)
   {
     iterator        iter;
-    unsigned int    fix;
+    unsigned int    fix = 0;
     stack<iterator> s;
 
     for (iter = begin(); end() != iter; ++iter) {
