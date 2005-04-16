@@ -1,6 +1,8 @@
 #ifndef _SHELL_DEBUGGER_HH_
 #define _SHELL_DEBUGGER_HH_
 
+#include <handler.hh>
+
 #include <string>
 #include <iostream>
 

@@ -19,7 +19,7 @@ public:
   Scanner* load_scanner (const string& name);
   Scanner* load_scanner_for (const string& filename);
 
-  MyImportHandler (const string& scanner_path, const string& lib_path);
+  MyImportHandler (const string& lib_path);
   ~MyImportHandler();
 
 private:
@@ -27,7 +27,6 @@ private:
   map <string, Scanner*> _scanners;
   map <string, string>   _ext;
   string _default_ext;
-  string _scanner_path;
   string _library_path;
 };
 

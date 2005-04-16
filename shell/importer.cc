@@ -36,11 +36,10 @@ MyImportHandler::load_scanner (const string& name)
   if (_scanners.end() != iter)
     return iter->second;
 
-  string libfile  ("/libvs-" + name + ".so");
-  string fullname (_scanner_path + libfile);
+  string libfile  ("libuni-" + name + ".so");
 
   dlerror();
-  if (void* handle = dlopen (fullname.c_str(), RTLD_LAZY)) {
+  if (void* handle = dlopen (libfile.c_str(), RTLD_LAZY)) {
     if (const char *e = dlerror())
       throw e;
     ctor_t ctor = (ctor_t) dlsym (handle, "create");
@@ -67,9 +66,8 @@ MyImportHandler::load_scanner_for (const string& filename)
   }
 }
 
-MyImportHandler::MyImportHandler (const string& scanner_path, const string& lib_path)
-  : _scanner_path (scanner_path),
-    _library_path (lib_path)
+MyImportHandler::MyImportHandler (const string& lib_path)
+  : _library_path (lib_path)
 {
   _default_ext = "curly-ascii";
   _ext ["vs"] = "curly-ascii";
