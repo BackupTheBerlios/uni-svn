@@ -70,7 +70,7 @@ MyImportHandler::MyImportHandler (const string& lib_path)
   : _library_path (lib_path)
 {
   _default_ext = "curly-ascii";
-  _ext ["vs"] = "curly-ascii";
+  _ext ["uni"] = "curly-ascii";
   _ext ["en"] = "en-ascii";
 }
 

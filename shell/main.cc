@@ -151,16 +151,9 @@ main (int argc, char** argv)
   cols [C_TERM]  = B_MAGENTA;
 
   try {
-//     const char* scanner_path = getenv ("UNI_SCANNER_PATH");
-
-//     if (0 == scanner_path) {
-//       cout << "error: environment variable UNI_SCANNER_PATH is not set." << endl;
-//       return 1;
-//     }
-
-    const char* lib_path = getenv ("UNI_LIB_PATH");
+    const char* lib_path = getenv ("UNI_LIBRARY_PATH");
     if (0 == lib_path)
-      throw "error: environment variable UNI_LIB_PATH is not set.";
+      throw "error: environment variable UNI_LIBRARY_PATH is not set.";
 
     MyImportHandler importer (lib_path);
     MyViewHandler   viewer (cout, cols);
