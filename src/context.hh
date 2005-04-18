@@ -43,7 +43,14 @@ namespace NAMESPACE
 
     void set_attr (const string& id, int val);
 
+    /**
+     * Push an application root on to the evaluation stack.
+     * This is equivalent to append an argument to a function.
+     *
+     * \param  app  the application root to be pushed on to the stack.
+     */
     void push (AppPtr app);
+
     void pop (unsigned int n);
     TermPtr pop ();
 
@@ -70,7 +77,7 @@ namespace NAMESPACE
 
     /**
      * Reduce a term in the context.
-     * This function does not try to catch any exceptions,
+     * This function DOES NOT try to catch any exceptions,
      * thus all the exception raised will be thrown outward,
      * and will not be catched by handlers already defined.
      * For reduction with exceptions being properly handled,
