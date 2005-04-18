@@ -3,6 +3,7 @@
 #include <importer.hh>
 #include <scope.hh>
 #include <string.hh>
+#include <raw.hh>
 
 #include <dlfcn.h>
 #include <fstream>
@@ -10,21 +11,33 @@
 bool
 MyImportHandler::import (Context* context, const string& name)
 {
-  if (context->scopes()->get_mod (name))
-    return true;
-
-  map<string,string>::iterator i;
-  for (i = _ext.begin(); i != _ext.end(); ++i) {
-    string filename (_library_path + "/" + name + "." + i->first);
-    ifstream file (filename.c_str());
-    if (file.good()) {
-      context->scopes()->set_mod (name, NIL);
-      context->eval (load_scanner (i->second), file, ALL);
-      return true;
+  if (! context->scopes()->get_mod (name)) {
+    // \todo iterate through library path list as well
+    // \todo directly use + operator on string might be very slow.
+    map<string,string>::iterator i;
+    for (i = _ext.begin(); i != _ext.end(); ++i) {
+      string filename (_library_path + "/" + name + "." + i->first);
+      ifstream file (filename.c_str());
+      if (file.good()) {
+	Scanner *scanner = load_scanner(i->second);
+	context->scopes()->set_mod (name, NIL);
+	run (context, scanner, file, ALL);
+	return true;
+      }
     }
-  }
 
-  throw E (E_NO_LIB, MStr::create (name));
+    throw E (E_NO_LIB, MStr::create (name));
+  }
+  else
+    return true;
+}
+
+TermPtr
+MyImportHandler::run (Context* context, Scanner* scanner, std::istream& input, int flags)
+{
+  RawPtr raw = Raw::create();
+  scanner->scan (context, raw, input, std::cerr);
+  return context->eval (raw, ALL);
 }
 
 Scanner*
@@ -36,6 +49,7 @@ MyImportHandler::load_scanner (const string& name)
   if (_scanners.end() != iter)
     return iter->second;
 
+  // \todo   operator + on string might be slow, use sstream instead
   string libfile  ("libuni-" + name + ".so");
 
   dlerror();

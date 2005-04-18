@@ -31,6 +31,7 @@ namespace NAMESPACE
 
     void append (TermPtr term) { push_back(TOK (term, MAKE_STYLE (PREFIX, PREC_NOR))); }
     void append (const_iterator i, const_iterator j) { insert (end(), i, j); }
+    bool empty () const { return list<TOK>::empty(); }
 
     RawPtr  deoutfix (Context* c);
     TermPtr construct (Context* context, int flags);

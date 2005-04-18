@@ -304,10 +304,10 @@ namespace NAMESPACE
   }
 
   TermPtr
-  Context::eval (Scanner* scanner, std::istream& input, int flags)
+  Context::eval (RawPtr raw, int flags)
   {
-    RawPtr raw = Raw::create();
-    scanner->scan (this, raw, input, std::cerr);
+    if (raw->empty())
+      return VOID;
 
     for (RawPtr next; next = raw->deoutfix (this); raw = next) {
       raw->construct (this, CONS);

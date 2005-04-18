@@ -16,8 +16,10 @@ public:
 
   virtual bool import (Context* context, const string& name);
 
-  Scanner* load_scanner (const string& name);
+  Scanner* load_scanner (const string& extname);
   Scanner* load_scanner_for (const string& filename);
+
+  TermPtr run (Context* context, Scanner* scanner, std::istream& input, int flags);
 
   MyImportHandler (const string& lib_path);
   ~MyImportHandler();

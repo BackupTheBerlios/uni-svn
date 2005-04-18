@@ -11,6 +11,7 @@
 #include <handler.hh>
 #include <int.hh>
 #include <proj.hh>
+#include <raw.hh>
 #include <reflection.hh>
 #include <scope.hh>
 #include <seq.hh>
@@ -44,7 +45,7 @@ exec_files (Context* context,
     for (vector<string>::const_iterator f = files.begin(); f != files.end(); ++f ) {
       ifstream infile (f->c_str());
       if (infile.good())
-	context->eval (importer.load_scanner_for(*f), infile, ALL);
+	importer.run (context, importer.load_scanner_for(*f), infile, ALL);
       else
 	cout << "cannot open file " << *f << endl;
     }
@@ -66,7 +67,11 @@ exec_files (Context* context,
 }
 
 void
-shell (Context* context, Scanner* scanner, const string& prompt, MyViewHandler& viewer)
+shell (Context* context,
+       Scanner* scanner,
+       const string& prompt,
+       MyViewHandler& viewer,
+       MyImportHandler& importer)
 {
   while (char* cs = readline (prompt.c_str())) {
     if (*cs) {
@@ -76,7 +81,7 @@ shell (Context* context, Scanner* scanner, const string& prompt, MyViewHandler& 
       free (cs);
 
       try {
-	TermPtr result = context->eval (scanner, input, ALL);
+	TermPtr result = importer.run (context, scanner, input, ALL);
 	TermPtr type   = type_of (context, result);
 
 	assert (result);
@@ -176,7 +181,7 @@ main (int argc, char** argv)
     if (! clo_parser.get_non_options().empty())
       exec_files (&context, clo_parser.get_non_options(), viewer, importer);
     if (clo_parser.get_options().interactive || clo_parser.get_non_options().empty())
-      shell (&context, importer.load_scanner ("curly-ascii"), string(RED) + "] " + COL_NORMAL, viewer);
+      shell (&context, importer.load_scanner ("curly-ascii"), string(RED) + "] " + COL_NORMAL, viewer, importer);
     return 0;
   }
   catch (clo::autoexcept &e) {
