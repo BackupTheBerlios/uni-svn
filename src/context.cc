@@ -5,7 +5,6 @@
 #include <frame.hh>
 #include <handler.hh>
 #include <raw.hh>
-#include <scanner.hh>
 #include <scope.hh>
 #include <style.hh>
 #include <sym.hh>

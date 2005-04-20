@@ -13,7 +13,6 @@
 namespace NAMESPACE
 {
   class Frame;
-  class Scanner;
   class ScopeStack;
   class Shield;
 

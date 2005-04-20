@@ -1,5 +1,9 @@
 import "base";
 
+#### rename some built-in types ####
+defmap "string" STR
+defmap "integer" INT
+
 #### dummy tokens #####
 defsty "the" DUMMY PREC_SEP;
 defsty "a"   DUMMY PREC_SEP;

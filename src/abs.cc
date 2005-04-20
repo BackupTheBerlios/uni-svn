@@ -1,9 +1,5 @@
 #include <abs.hh>
 #include <context.hh>
-#include <exception.hh>
-#include <sym.hh>
-#include <proj.hh>
-#include <reflection.hh>
 
 namespace NAMESPACE
 {
