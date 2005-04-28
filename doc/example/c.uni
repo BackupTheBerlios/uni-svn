@@ -1,0 +1,16 @@
+import "stdc";
+
+#defmap "f" (fopen "ooo" "w");
+#fputs "Tianran Chen" f;
+#defmap "buf" (cmem ANY 21);
+
+#for (i = 0) (i < 5) (++i) (
+#	fgets buf 20 f;
+#	raw_out (caststr buf);
+#);
+
+#fclose f;
+
+#stdout;
+fputs "fdsafs\n" stdout;
+

@@ -1,0 +1,7 @@
+import "stdc";
+#name_set "str_ctor" "cstr";
+debug;
+"Tianran";
+
+#fputs (name_get "str_ctor") stdout;
+

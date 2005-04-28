@@ -1,0 +1,8 @@
+* now, scanner scan the whole file all at once,
+  before anything can be executed. as a result,
+  code that change the behavior of the scanner
+  will HAVE NO EFFECT when execute a file. this
+  makes "str_ctor" USELESS. (2005-4-20)
+
+* [2005-4-20] instead of inserting symbols, the
+  [scanner] can insert application on [name_get]

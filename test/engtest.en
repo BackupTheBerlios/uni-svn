@@ -1,0 +1,45 @@
+import "english";
+
+let Student be the type "Student".
+let Alan be a new Student.
+let Alan's name  be "Alan Turing".
+let Alan's major be "Mathematics".
+let Alan's minor be "Computer Science".
+
+print Alan's name.
+print Alan's major.
+print Alan's minor.
+
+let StudentList be a list of Student.
+append Alan to StudentList.
+
+let ROSTER be a list of string.
+append "Hello," to ROSTER.
+append "World!" to ROSTER.
+append "   --- from Uni..." to ROSTER.
+
+print everything in ROSTER.
+
+if false then
+	print "true"
+	print "this is so cool"
+otherwise
+	print "false"
+	print "stop it"
+.
+
+# let email be a procedure that
+# given from, to, subject, body
+# it will:
+#	let Pipe be a new pipe
+let (email `be` (procedure (
+	given [from, to, subject, body] will (
+		do ...
+		do ...
+		fail.
+		do ...
+		done.
+	)
+)
+	
+		 

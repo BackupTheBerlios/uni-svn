@@ -1,0 +1,1 @@
+define "print" (proj ANY VOID) (\x(raw_out (str x); raw_out (cstr "\n")));
