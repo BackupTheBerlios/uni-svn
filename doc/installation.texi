@@ -1,0 +1,36 @@
+@node Installation
+@chapter Installation
+
+@venus usually ship as a source gzipped tarball.
+After extract the content of the tarball,
+the source should be configured to be prepared for compilation.
+In most UNIX-like platform,
+such configuration is performed automatically
+by the @code{configure} shell script.
+To run it, merely type:
+
+@example
+./configure
+@end example
+
+There are many options can be set and tuned for the configuration.
+To get the detail information about these options, type:
+
+@example
+./configure --help
+@end example
+
+Next, to compile the source, simply type:
+
+@example
+make
+@end example
+
+After the source is successfully compiled,
+the final step is the install it into the system.
+To do it, type:
+
+@example
+make install
+@end example
+

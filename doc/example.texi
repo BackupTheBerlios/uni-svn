@@ -1,0 +1,436 @@
+@node    Sample Natural English Dialect
+@chapter Sample Natural English Dialect
+In this section, we will define a tiny set of syntax
+that resemble natural english to some degree.
+
+@menu
+* End of statement::            
+* Definition and assignment::   
+* Type Creation::               
+* Dictionary Creation::         
+* Dictionary Access::           
+* List creation::               
+* Adding Elements To Lists::    
+* Sequencial List Access::      
+* The If-Then-Otherwise Structure::  
+@end menu
+
+@c =============================================================================
+@node    End of statement
+@section End of statement
+So far, we have used the semicolon to mark the end of each statement.
+While it is one of the most popular notation in programming languages,
+it is not how we write English.
+In English, each proper sentence is end with a period.
+So the first thing we will do to will be
+allowing period to be the end of statement marker.
+To do so, we merely have to define the style of the period:
+
+@example
+defsty "." EOS PREC_SEP;
+@end example
+
+After this definition,
+we will be able to end each statement with a period,
+just as if we are writting in English.@
+
+@c =============================================================================
+@node    Definition and assignment
+@section Definition and assignment
+First, let us define the syntax for variable definition and assignment,
+and we would like to use the @code{let ... be ...} type of syntax.
+To do so, we need to define two functions,
+the @code{let} function and the @code{be} function.
+The @code{be} function will be infix operator
+that has slightly higher precedence than normal application.
+Its job is to organize the name and the value:
+
+@example
+defaty "BE_BLOCK";
+
+defsty "be" LINFIX (add PREC_NOR 1);
+define "be" (RAW->ANY->BE_BLOCK)
+  (\x(\y@{
+    defmap "r" (dict_new BE);
+    dict_set r "name" (rstr x);
+    dict_set r "value" y;
+    return r;
+  @}));
+@end example
+
+The @code{let} function will simply get the values from
+the dictionary returned by the @code{be} function,
+and define the name:
+
+@example
+define "let" (BE_BLOCK->VOID)
+(\x(defmap (dict_get x "name") (dict_get x "value")));
+@end example
+
+After this, the user of the dialect will be able to define variables
+simply by using the natural @code{let ... be ...} clause.
+For instance:
+
+@example
+let greeting be "Hello World!".
+@end example
+
+Will define a name @code{greeting} which mapped to the string
+``Hello World!''.
+
+@c =============================================================================
+@node    Type Creation
+@section Type Creation
+Instead of thinking creating type,
+we would think as if types exist out there
+just as numbers exist out there,
+we only have to identify them.
+And this time we would like to use the @code{be the type ...} notation.
+To do that, we need to define the verb function @code{type},
+and the article function @code{the}.
+Since the @code{type} function is already defined as a built-in function,
+the only thing we have to do is to define its style and precedence:
+
+@example
+defsty "type" PREFIX (add PREC_NOR 3);
+@end example
+
+Then we have to define the dummy article function,
+their only use is to make the syntax proper English:
+
+@example
+defsty "the" PREFIX (add PREC_NOR 2);
+define "the" (ANY->DEP) (\x x);
+@end example
+
+With this functions defined,
+we can define types with code like:
+
+@example
+let Student be the type "Student".
+@end example
+
+@c =============================================================================
+@node    Dictionary Creation
+@section Dictionary Creation
+To create new dictionary,
+we would like to use @code{new ...} notation.
+To do that:
+
+@example
+defsty "new" PREFIX (add PREC_NOR 3);
+define "new" (TYPE->DEP) (\x(dict_new x));
+@end example
+
+Again, proper English need articles @strong{a} or @strong{an}
+to be infront of the @strong{new...}.
+To do that, we have to define the functions for the two articles:
+
+@example
+defsty "a" PREFIX (add PREC_NOR 2);
+define "a" (ANY->DEP) (\x x);
+
+defsty "an" PREFIX (add PREC_NOR 2);
+define "an" (ANY->DEP) (\x x);
+@end example
+
+Then we can create new dictionaries with this more friendly notation.
+For example:
+
+@example
+let joe be a new Student.
+@end example
+
+@c =============================================================================
+@node    Dictionary Access
+@section Dictionary Access
+Dictionary is a very frequently used facility,
+as it is equivilent to structure and classe in other languages.
+The way that we had showed above is obviously not so friendly.
+To make it easier for people speak english,
+we can use employ the @strong{'} or @strong{'s} notation
+which is familiar to all English speaker:
+
+@example
+defsty "'" LINFIX (add PREC_NOR 4);
+define "'" (ANY->RAW->DEP) (\x(\y(dict_get x (str y))));
+
+defsty "s" PREFIX (add PREC_NOR 20);
+define "s" (RAW->DEP) (\x x);
+@end example
+
+This will allow users to read dictionaries using the @strong{'} notation.
+To allow assignment to the dictionary using the same notation,
+we need to overload the function:
+
+@example
+defaty "REF";
+define "'" (ANY->RAW->REF)
+  (\x(\y@{
+    defmap "r" (dict_new REF);
+    dict_set r "obj" x;
+    dict_set r "key" (str y);
+    return r;
+  @}));
+@end example
+
+And we have also overload the @code{be} function:
+
+@example
+defaty "BE_REF";
+define "be" (REF->ANY->BE_REF)
+  (\x(\y@{
+      defmap "r" (dict_new BE_REF);
+      dict_set r "value" y;
+      dict_set r "obj" (dict_get x "obj");
+      dict_set r "key" (dict_get x "key");
+      return r
+  @}));
+@end example
+
+And the @code{let} function:
+
+@example
+define "let" (BE_REF->VOID)
+  (\x(dict_set (dict_get x "obj")
+               (dict_get x "key")
+               (dict_get x "value")));
+@end example
+
+After these definitions,
+the user will be able to access dictionaries with
+the ``let ... be ...'' notation as well.
+For example:
+
+@example
+let Alan be a new Student.
+let Alan's name  be "Alan Turing".
+let Alan's major be "Mathematics".
+let Alan's minor be "Computer Science".
+
+print Alan's name.
+print Alan's major.
+print Alan's minor.
+@end example
+
+The code above should be self explainary.
+It will create a new dictonary,
+assign it to the variable @code{alan},
+and the its name, major, and minor.
+Then all the information will be printed.
+
+@c =============================================================================
+@node    List creation
+@section List creation
+Like dictionaries, lists are also used almost everywhere,
+so we would like to provide users friendly notations,
+just like we did for dictionaries.
+However, instead of using the @code{a new ...} notation,
+we would adopt the @code{a list of ...} notation.
+So we have to define the @code{list} function:
+
+@example
+defsty "list" PREFIX (add PREC_NOR 3);
+define "list" (TYPE->DEP) (\x(list_new x));
+@end example
+
+And the dummy @code{of} function:
+
+@example
+defsty "of" PREFIX (add PREC_NOR 4);
+define "of" (ANY->DEP) (\x x);
+@end example
+
+So if we had already defined a type,
+let's say the @code{Student},
+then we can define a list of @code{Student} by saying:
+
+@example
+let StudentList be a list of Student;
+@end example
+
+@c =============================================================================
+@c @node    Plural List Type
+@c @section Plural List Type
+@c In the last example of the previous section,
+@c we use the sentence @code{...be a list of Student}.
+@c While this is much more friendlier to non-programmers
+@c than most of the conventional programming languages,
+@c it is simply wrong English.
+@c In English, plural form should be used when used with ``a list of''.
+@c So we should have used ``Students'' instead.
+@c In another word, both ``student'' and ``students''
+@c should refer to the same type.
+@c Is it doable in @venus{}?
+@c The answer is yes.
+@c One way to do that,
+@c is to rewrite the @code{let} function,
+@c so that when defining a type,
+@c it will define name in both singular and plural form:
+
+@c @example
+@c @end example
+
+@c =============================================================================
+@node    Adding Elements To Lists
+@section Adding Elements To Lists
+For adding elements to lists,
+we would like to use sentences like @code{append ... to ...}.
+The @code{append} function is very straightforward:
+
+@example
+define "append" (ANY->ANY->VOID) (\x(\y(list_add y x)));
+@end example
+
+And again, we need the dummy function @code{to}:
+
+@example
+defsty "to" PREFIX (add PREC_NOR 1);
+define "to" (ANY->DEP) (\x x);
+@end example
+
+So if we already define a list called, let's say, @code{StudentList},
+then we can append a new elements, like @code{Alan}, the statement:
+
+@example
+append Alan to StudentList.
+@end example
+
+@c remove everyone who is older than 19 from StudentList 
+@c remove {every...} {who|whom|whose|which} PRED from LIST.
+
+@c =============================================================================
+@node    Sequencial List Access
+@section Sequencial List Access
+After defining syntax for appending elements to lists,
+we would also need syntax for access each element in the list sequencially.
+For this, we would like to use the @code{... everything in ...} notation.
+So we need to define the infix operator @code{everything}:
+
+@example
+defsty "everything" LINFIX (sub PREC_NOR 1);
+define "everything" (ANY->ANY->VOID) (\f(\x(list_vis x f)));
+@end example
+
+And the dummy function @code{in}:
+
+@example
+defsty "in" PREFIX (add PREC_NOR 1);
+define "in" (ANY->DEP) (\x x);
+@end example
+
+If we have a list of strings called @code{StringList},
+then we can print all the elements in the list by:
+
+@example
+print everything in the StringList.
+@end example
+
+@c =============================================================================
+@node    The If-Then-Otherwise Structure
+@section The If-Then-Otherwise Structure
+The if-then-otherwise structure is one of the basic builting blocks
+in many programming languages,
+as well as in most natual languages.
+To allow users to use such notation,
+there are at least two way of doing it.
+First, both @code{then} and @code{otherwise}
+can be defined as prefix operators with higher precedence,
+and @code{if} will be an overload prefix operator,
+with one instance take one argument for the if-then case,
+and the other instance take two arguments for the if-then-otherwise case.
+The other way to do, which is the way we are going to show here,
+is to define @code{otherwise} as an infix operator with high precedence,
+and define @code{then} as a prefix operator dealing with both the
+if-then and the if-then-otherwise.
+The @code{if} operator on the other hand,
+will be defined as a prefix operator with very low precedence.
+To do so, we shall first define the @code{THEN_BLOCK} type:
+
+@example
+defaty "THEN_BLOCK";
+@end example
+
+Then, we shall define the @code{if} function which
+evaluate the ``then'' expression or the ``otherwise'' expression,
+depending on the value of the condition variable:
+
+@example
+defsty "if" PREFIX (sub PREC_NOR 4);
+define "if" (BOOL->THEN_BLOCK->VOID)
+  (\x(\y(
+    ifeq true x (dict_get y "true") (dict_get y "false")
+  )));
+@end example
+
+Finally, the @code{then} and @code{otherwise} function
+will defined to handle both if-then and if-then-otherwise case:
+
+@example
+defsty "then" PREFIX (sub PREC_NOR 3);
+define "then" (THEN_BLOCK->THEN_BLOCK) (\x x);
+define "then" (RAW->THEN_BLOCK)
+  (\x@{
+    let r be a new THEN_BLOCK.
+    dict_setr r "true"  x.
+    dict_setr r "false" void.
+    return r.
+  @});
+
+defsty "otherwise" LINFIX (sub PREC_NOR 2);
+define "otherwise" (RAW->RAW->THEN_BLOCK)
+  (\x(\y@{
+    let r be a new THEN_BLOCK.
+    dict_setr r "true"  x.
+    dict_setr r "false" y.
+    return r.
+  @}));
+@end example
+
+After these definition,
+users will be able to use the familiar if-then structure
+by writting:
+
+@example
+if X then Y.
+if X then Y otherwise Z.
+@end example
+
+Notice that all three operators have lower precedence
+than normal function applications.
+The users can therefore write things like:
+
+@example
+if x > y then print x otherwise print y.
+@end example
+
+
+@c to send x y is to email x y MySignature.
+
+@c for each message in the List: send it to me.
+@c number of messages (in (the list))
+@c send everything in the list (to me).
+@c VERB everything LIST ADVERB
+@c => foreach x in LIST: VERB x 
+@c send message to everyone in the group, who 
+@c print each message in GroupList
+@c send all messages in the MsgList to the DevGroup.
+@c print everything in MessageList.
+@c VERB each SYMBOL in LIST.
+@c = foreach x in LIST: VERB x;
+
+@c print (({the} name) {of}) each (students {in} ({the} list))
+@c print everyone's name (in ([the] list))
+@c VERB {each|every|all|those|these} SYMBOL in LIST {with|by|to} HOW.
+@c = foreach x in LIST: VERB x HOW
+
+@c foreach address in the Maillist: send Greeting to it, send Document to it.
+@c ([foreach] student (who [is] male) ([in] ([the] StudentList))) [:]
+@c   (send PlayBoy (to it)).
+
+@c : (foreach student (is who male) (in the StudentList)) (send PlayBoy to it)
+
+@c let email be a procedure which
+@c takes {address, subject, body}
+@c and does
+@c     open 
