@@ -1,10 +1,35 @@
 @node Installation
 @chapter Installation
 
-@venus usually ship as a source gzipped tarball.
+@menu
+* Get source via Subversion or CVS
+* Compilation and installation
+@end menu
+
+@c ============================================================================
+@node Get source via Subversion or CVS
+@section Get source via Subversion or CVS
+
+The sources obtained via Subversion or CVS are "clean" source
+in the sense that all files that can be generated automatically are removed.
+So one need use Autotools to generate necessary files
+before the source can be configured and compiled.
+Thus one need to have @code{autoconf} and @code{automake}
+installed in the system.
+To generate those files, simply type:
+
+@example
+autoreconf -if
+@end example
+
+@c ============================================================================
+@node Compilation and installation
+@section Compilation and installation
+
+@uni usually ship as a source gzipped tarball.
 After extract the content of the tarball,
 the source should be configured to be prepared for compilation.
-In most UNIX-like platform,
+In most UNIX-like platform and POSIX compatiable environment like Cygwin,
 such configuration is performed automatically
 by the @code{configure} shell script.
 To run it, merely type:

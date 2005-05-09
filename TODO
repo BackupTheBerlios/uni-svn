@@ -1,8 +1,20 @@
-* now, scanner scan the whole file all at once,
+* (2005-04-20) now, scanner scan the whole file all at once,
   before anything can be executed. as a result,
   code that change the behavior of the scanner
   will HAVE NO EFFECT when execute a file. this
-  makes "str_ctor" USELESS. (2005-4-20)
+  makes "str_ctor" USELESS.
 
-* [2005-4-20] instead of inserting symbols, the
+* (2005-04-20) instead of inserting symbols, the
   [scanner] can insert application on [name_get]
+
+* (2005-05-06) instead of classifying operators as
+  prefix, postfix, and infix, operators should be
+  considered as "absorbers", and each can "absorbe"
+  a certain number of lexicons on either or both side.
+  for example, operator [+] will be an absorber of (1,1)
+  [!] will be an absorber of (1,0).
+
+* (2005-05-06) scanners should be in cascade structure.
+  one scanner can pass stuff to another scanner.
+  this would allow things like markup language easier
+  to implement.

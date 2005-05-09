@@ -9,6 +9,10 @@
 Uni
 @end macro
 
+@macro uni
+Uni
+@end macro
+
 @ifinfo
 Copyright @copyright{} 2004 Tianran Chen
 @end ifinfo
@@ -29,7 +33,7 @@ Copyright @copyright{} 2004 Tianran Chen
 @top
 
 @menu
-* Installation::                Install @venus to system
+* Installation::                Install @uni to system
 * Getting Start::               A quick walk through of the language
 * Basic Concepts::
 * Manipulate Names::            
