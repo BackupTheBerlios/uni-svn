@@ -1,0 +1,255 @@
+@node    Basic Concepts
+@chapter Basic Concepts
+
+@menu
+* The Language::                
+* The Environment::             
+@end menu
+
+@c =============================================================================
+@node    The Language
+@section The Language
+
+@menu
+* Style and precedence::        
+* Lambda expression::           
+* Curry and partial application::  
+* Binding and late binding::    
+* Strictness::                  
+* Laziness::                    
+* Types::                       
+* Multifunction::               
+* Polymorphism::                
+* Scope::                       
+* Namespace::                   
+* Special names::               
+* Exception Handling::          
+@end menu
+
+@c -----------------------------------------------------------------------------
+@node       Style and precedence
+@subsection Style and precedence
+
+@table @strong
+@item Prefix operators
+A prefix operator is operator written infront of its operands.
+@item Postfix operators
+A postfix operator is and unary operators written after its operands.
+@item Infix operators
+An infix operator is a binary operator written in between its two operands.
+Infix operator also comes with two type of associativity:
+left associative and right associative.
+They defines the order of application when multiple
+consective identical operators appeared without parentis.
+@item Outfix operators
+An outfix operator is a unary operator written around its oprand.
+Parentesis, braces, and brackets are most frequently seen outfix operators.
+@end table
+
+Precedence defines the order of operation.
+
+Most programming languages have a fixed set of tokens can be used as operators,
+also they almost always define the styles and precedence of their operators.
+@venus{} on the other hand, allows programmers to define the style and precedence.
+of their own operators freely.
+......
+All symbols can be used as operators with any style,
+and each operator can have multiple styles defined.
+
+@c -----------------------------------------------------------------------------
+@node       Lambda expression
+@subsection Lambda expression
+
+@c -----------------------------------------------------------------------------
+@node       Curry and partial application
+@subsection Curry and partial application
+Currying is the transformation of a function that takes multiple arguments
+into a equivalent sequence of functions each taking a single argument,
+and return the next function, which in turn take the next argument, and so on.
+Invented by @emph{Moses Schonfinkle} and @emph{Gottlob Frege},
+and named after @emph{Haskell Curry},
+currying is an important technique in theoretical computer science,
+as it allow modeling of programming language with simple mathematical
+constructions like lambda-calculus where all functions take single argument.
+In the functional programming language community,
+currying is also widely supported and used for partial applications.
+
+Partial application are function applications that are incomplete.
+In anoter word,
+they are function calls that the number of arguments being suppiled
+is less then the number of arguments required to evaluate the function.
+
+By default, all the functions in @venus{} are curried functions,
+since they are defined in term of lambda-expressions
+which itself is fully curried.
+
+Therefore all function can be used in partial application.
+
+@c -----------------------------------------------------------------------------
+@node       Binding and late binding
+@subsection Binding and late binding
+
+@c -----------------------------------------------------------------------------
+@node       Strictness
+@subsection Strictness
+The strictness defines the time at which the
+arguments to function application is reduced.
+Being strict meaning that arguments are always fully reduced
+before the function body is reduced.
+On the other hand, being non-strict means that arguments
+do not have to be reduced until it is actually used.
+Most imperative programming languages are strict.
+for instance, in C or C++,
+arguments are always reduced before the function body,
+as a result,
+if the evaluation of an argument will raise exception,
+or will take infinite amount of time,
+then the function will never be actually called.
+However, in Haskell --- a typical non-strict lazy functional language
+arguments are not reduced until it absolutely necessary to do so.
+So if some arguments are not used, then they will never be reduced.
+
+Venus is a non-strict language in the sense that arguments do not
+have to be reduced before the function application is reduced.
+However, slightly differ from Haskell, each function can define
+its strictness on each individual parameters.
+By default all function are perfectly non-strict,
+so arguments are only reduced when it is needed.
+But one can also define the function to be strict on some or all
+of the arguments whether they are being used or not.
+
+@c -----------------------------------------------------------------------------
+@node       Laziness
+@subsection Laziness
+Laziness is another important feature of programming language.
+A programming language is said to be lazy
+if expressions are only reduced when they are
+absolutely needed to be reduced.
+In contrast, in non-lazy programming languages,
+expressions are usually reduced regardless their usage.
+The laziness is tightly related to but more general than
+the strictness descibed in the previous section.
+Strict languages are almost never lazy,
+but non-strict languages sometimes are not indeed very lazy.
+Lazy languages provide some very interesting features,
+such as dealing with infinitely long lists, infinitely deep trees,
+some of them have proved to be quite useful.
+On the cons side, it is usually much harder to write compilers for
+lazy programming languages as the reduction of each expression
+has to be determined individually.
+Also, side-effects of functions have to be treated specially
+since expressions can be reduced in unpredictable orders.
+
+@venus{} support lazy evaluation to some degree.
+For function arguments, the strictness can be set by programmers,
+and this had already been explained in detail in the previous section.
+For data structure,
+@venus{} support lazy data structures which can hold
+raw or partially reduced expressions.
+With each functional clause,
+expressions are only reduced when they are needed to be.
+However, since @venus{} support imperative clause as well,
+the laziness cannot go across function clauses.
+
+@c -----------------------------------------------------------------------------
+@node       Types
+@subsection Types
+
+@c -----------------------------------------------------------------------------
+@node       Multifunction
+@subsection Multifunction
+A multifunction is a set of functions that share the same name.
+Depend on the context, they are sometimes also referred to as @emph{multimethod}.
+Name is the most frequently used mean of identify functions within a program.
+It is often desirable to give the same name to more than one functions,
+usually because they perform essentially the same conceptual task,
+and also rarely due to the ambiguity of our human language.
+Each member of a multifunction (may) have different type.
+The compiler of the interpreter is responsible to resolve the function
+according to the types of the supplied arguments or the current scope, or both.
+
+Multifunction can be implement in both static or dynamic style.
+With static multifunction, resolution is done before the code is executed.
+Dynamic multifunctions on the other hand,
+will only be resolved on runtime.
+Most object-oriented programming languages support some kind of multifunction.
+C++ for instance, provide both static and dynamic multifunction.
+Static multifunction can be defined by overloading existing functions,
+and its resolution is done purely in compile time,
+using the types of the arguments being supplied.
+Virtual functions, however, is the C++ version of dynamic multifunction.
+Its resolution is (usually) done in runtime.
+
+There are also a few different ways of multifunction selection.
+Among them, most widely supported are
+@emph{single dispatch} and @emph{multi-dispatch},
+and there is also much rarely supported @emph{projection dispatch}.
+A implementation of multifunction is said to be single dispatch
+if the multifunction selection is based on the type of a single special argument.
+And it is said to be multi-dispatch if the selection is based on multiple arguments.
+Project dispatch is slightly different, instead of the types of the arguements,
+it is based on the desired return value.
+
+@venus{} support both static and dynamic multifunction.
+In selection method, @venus{} also support single dispatch,
+multi-dispatch, as well as projection dispatch.
+
+@c -----------------------------------------------------------------------------
+@node       Polymorphism
+@subsection Polymorphism
+Polymorphism is the idea that allowing the same
+impelementation to be used with different types.
+Polymorphism is the core of @emph{generic programming},
+and also an important foundation of object-oriented programming.
+In some static typed functional programming languages like Haskell,
+polymorphism is indeed so widely used that most programmer take it for granted.
+Polymorphism applies to both types and functions:
+A polymorphic type is a compound data type which
+contain elements of unspecified types as parameters.
+On the other hand a function is said to be polymorphic
+if it can operate on many different data types.
+
+Due to the late binding nature,
+@venus{} almost naturally support polymorphic functions to some degree.
+Multifunctions are always late binded,
+which means given each operand,
+the multifunction is always resolved based on the exact
+type of the operand.
+So by calling multifunctions,
+one can easily write polymorphic functions
+in exactly the same way of writing regular functions.
+
+However, simply using multifunction is of little interest.
+Most useful polymorphic function need the use of template.
+A template type is an imcomplete type in which
+contain unspecified parameters.
+Similarly, a template function is a function,
+whose type is a template type.
+......
+
+@c -----------------------------------------------------------------------------
+@node       Scope
+@subsection Scope
+
+@c -----------------------------------------------------------------------------
+@node       Namespace
+@subsection Namespace
+A namespace is an abstract space populated by names,
+and is a context for identifiers.
+
+@c -----------------------------------------------------------------------------
+@node       Special names
+@subsection Special names
+
+@c -----------------------------------------------------------------------------
+@node       Exception Handling
+@subsection Exception Handling
+
+@c =============================================================================
+@node    The Environment
+@section The Environment
+
+@subsection Scanner
+@subsection Import Handler
+@subsection Stringify Handler
+@subsection Exception Filter

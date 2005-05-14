@@ -1,0 +1,163 @@
+@node    Getting Start
+@chapter Getting Start
+
+@menu
+* What is @venus{}::            
+* Running @venus{}::            
+* Basic Primitives::            
+* Defining Dialects::           
+@end menu
+
+@c =============================================================================
+@node    What is @venus{}
+@section What is @venus{}
+@venus{} is a nonstrict lazy programming language designed
+to be a platform for building domain specific languages.
+Distinct from those popular programming languages used today,
+which provide well defined sets of primitives and syntax,
+@venus{} provides no built-in syntax nor control structures,
+and is indent to be a open platform on which programmers
+(or meta programmers) to define their own @emph{dialects} of @venus{},
+that are suitable for a specific domain of problems
+or a group of audience.
+@venus{} is indented to be small and minimal,
+rather than full featured.
+
+@c =============================================================================
+@node    Running @venus{}
+@section Running @venus{}
+In any UNIX-like shell environment,
+To run the @venus{} interpreter in interactive mode:
+
+@example
+venus
+@end example
+
+To run a program with the interpreter:
+
+@example
+venus @i{filename.vs}
+@end example
+
+To run a program with the interpreter,
+and let the interpreter enter the interactive mode
+after interpreting the file:
+
+@example
+venus -i @i{filename.vs}
+@end example
+
+Alternatively, one can put the following line
+to the very beginning of the source file,
+so that the system will let the interpreter to
+interpret the source file automatically.
+
+@example
+#!@i{path_of_venus}
+@end example
+
+Of course, one need to make sure that the file is executable.
+
+@c =============================================================================
+@node    Basic Primitives
+@section Basic Primitives
+
+@c -----------------------------------------------------------------------------
+@subsection Lambda expressions
+In @venus{}, lambda expressions can be created by the @code{\} function.
+For example the identity function can written as:
+
+@example
+(\x x)
+@end example
+
+To define a reverse application function:
+
+@example
+(\x(\y(y x)))
+@end example
+
+To define the flip application function:
+
+@example
+(\f(\x(\y(f y x))))
+@end example
+
+@c -----------------------------------------------------------------------------
+@subsection Names
+The first let us define a variable @code{x}:
+
+@example
+defmap "x" "Hello World!";
+@end example
+
+Now the value of the variable @code{x} will be
+the string @code{Hello World!}.
+And Then, we can ``redefine'' the variable,
+and let it point to a new object:
+
+@example
+redef "x" 7;
+@end example
+
+Finally, when a name is no longer needed,
+we can ``undefine'' the name by:
+
+@example
+undef "x";
+@end example
+
+@c -----------------------------------------------------------------------------
+@subsection Using dictionary
+Like a hash table (and usually implemented by a hash table)
+a dictionary is an associative container that maps strings
+to objects.
+To create a dictionary, use the @code{dict_new} function.
+The @code{dict_new} function take one argument
+as the type of the newly created dictionary.
+
+@example
+defmap "x" (dict_new ANY);
+@end example
+
+Now we can put new values into the dictionary,
+for example, we can set three keys,
+``name'', ``version'', and ``release'':
+
+@example
+dict_set x "name"    "Venus";
+dict_set x "version" 2;
+dict_set x "release" 1;
+@end example
+
+And we can read these values back
+by using the @code{dict_get} function
+
+@example
+defmap "pkg_name"    (dict_get x "name");
+defmap "pkg_version" (dict_get x "version");
+defmap "pkg_release" (dict_get x "release");
+@end example
+
+@c =============================================================================
+@node    Defining Dialects
+@section Defining Dialects
+In previous section,
+we have showed some frequently used primitives.
+Probably, few people will be interested in @venus{}
+if they are forced to use that kind of syntax ---
+it is so poor in readability and writability.
+However, bear in mind that the syntax of @venus{} is dynamic.
+There are no built-in syntax nor control structures,
+everything can be and have to be defined by programmers.
+Almost everything, even the scanner
+(where the source is processed before they are passed to the parser)
+can be customized or even substitute by programmers.
+Instead of being a complete programming language,
+@venus{} is indend to be a platform on top of which
+programmers can define their own ``dialects''
+focused on a small set of problems or audience.
+To have an idea of how such dialects can be defined,
+goto the sample dialect chapters,
+where we had defined a few tiny dialect ones.
+

@@ -1,0 +1,54 @@
+\input texinfo   @c -*-texinfo-*-
+@c %**start of header
+@setfilename uni.info
+@settitle Programming In Uni
+@setchapternewpage odd
+@c %**end of header
+
+@macro venus
+Uni
+@end macro
+
+@macro uni
+Uni
+@end macro
+
+@ifinfo
+Copyright @copyright{} 2004 Tianran Chen
+@end ifinfo
+
+@titlepage
+@author Tianran Chen
+@sp 10
+@comment The title is printed in a large font.
+@@center @titlefont{}
+
+@c The following two commands start the copyright page.
+@page
+@vskip 0pt plus 1filll
+Copyright @copyright{} 2004 Tianran Chen
+@end titlepage
+
+@node Top
+@top
+
+@menu
+* Installation::                Install @uni to system
+* Getting Start::               A quick walk through of the language
+* Philosophy Of Uni::
+* Metaprogramming In Uni::
+* Manipulate Names::            
+* Using Slots::                 
+* Sample Natural English Dialect::
+@end menu
+
+@node Installation, , , Top
+@chapter Installation
+@include installation.texi
+
+@include start.texi
+@include concept.texi
+@include primitive.texi
+@include example.texi
+
+@bye

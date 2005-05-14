@@ -1,0 +1,15 @@
+import "base";
+
+defaty "FILE";
+deflib "libc"   "libc.so.6";
+
+defext "stdin"  (FILE)                 0 "stdin"  libc EXT_PTR;
+defext "stdout" (FILE)                 0 "stdout" libc EXT_PTR;
+defext "stderr" (FILE)                 0 "stderr" libc EXT_PTR;
+
+defext "fopen"  (STR->STR->FILE)       2 "fopen"  libc EXT_PTR;
+defext "fclose" (FILE->VOID)           1 "fclose" libc EXT_VOID;
+defext "fseek"  (FILE->INT->INT->VOID) 3 "fseek"  libc EXT_VOID;
+defext "fputs"  (STR->FILE->VOID)      2 "fputs"  libc EXT_VOID;
+defext "fgets"  (ANY->INT->FILE->VOID) 3 "fgets"  libc EXT_VOID;
+

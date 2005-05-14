@@ -1,0 +1,381 @@
+@node Manipulate Names
+@chapter Manipulate Names
+
+@menu
+* Define Mappings::             
+* Define Functions::            
+* Undefine Names::              
+* Redefine Names::              
+* Define Style and Precedence::  
+@end menu
+
+@c =============================================================================
+@node Define Mappings
+@section Define Mappings
+To define a simple mapping between a name and an object,
+one can use the @code{defmap} function.
+The @code{defmap} function take two parameters,
+the first one is a string represent the name to be defined,
+the second one is the object the name will be mapped to.
+For example,
+
+@example
+defmap "message" "Hello World!";
+@end example
+
+will define a name @code{message},
+which will map to the the string @code{Hellow World!}.
+
+One important feature about the @code{defmap} is that
+it is strict on both argument.
+In another word, the object will be reduced before the
+mapping is created (different from @code{define} function).
+For instance, in the code,
+
+@example
+defmap "handle" (fopen "hello.txt");
+@end example
+
+The file will be opened,
+before the name is defined,
+thus the name will be mapped to the handle of the opened file.
+
+The nonstrict counter part of the @code{defmap} function is
+the @code{defvar} function, which does not reduce the object.
+Thus the statement,
+
+@example
+defvar "handle" (fopen "hello.txt");
+@end example
+
+Will not open the file,
+instead, the file will be opened every time the name @code{handle}
+is used and fully reduced.
+
+@c =============================================================================
+@node Define Functions
+@section Define Functions
+To define a function, one shall use the @code{define} function.
+This function take three arguments,
+the name of the function,
+the type of the function,
+and the body of the function.
+For example,
+
+@example
+define "foo" (INT->INT->INT) (\x(\y(add x y)));
+@end example
+
+Will define the @code{foo} function
+with type @code{INT->INT->INT} (take two integers and returns an integer).
+And the body of the function is simply addtion,
+expressed using lambda expression.
+
+@c =============================================================================
+@node Undefine Names
+@section Undefine Names
+Names can be defined when they are needed,
+and they can also be undefined when are no longer used.
+To undefine a name, one can use the @code{undef} function.
+The @code{undef} function is indeed an overloaded function.
+One of it take the name as the argument,
+and removes the name in the current namespace.
+The other take two arguments: the namespace and the name,
+and it removes the name in the specified namespace.
+For example, to undefine the name @code{if}, one can:
+
+@example
+undef "if";
+@end example
+
+More often, it may be used for rename defined mappings.
+So to rename the name @code{if} to @code{whenever},
+one can:
+
+@example
+defmap "whenever" if;
+undef "if";
+@end example
+
+@c =============================================================================
+@node Redefine Names
+@section Redefine Names
+As in many other programming languages,
+mappings between objects and names in @venus{} are not static.
+As the program execute, the mappings can be altered.
+One way to do that in @venus{},
+is to use the @code{redef} function.
+The type and the behavior of the @code{redef} function
+is similar to that of the @code{defvar} function.
+However, when the name already exist,
+it will remap the name to the new object.
+
+For example,
+the following code will map the name @code{x} to an integer first,
+and then remap it to a string.
+
+@example
+defmap "x" 7;
+redef  "x" "Hello World!";
+@end example
+
+@c =============================================================================
+@node Define Style and Precedence
+@section Define Style and Precedence
+
+Style and precedence are important elements for defining desired syntax.
+To define them, one shall use the @code{defsty} function.
+It takes three arguments,
+the name of the operator to be defined, the style, and the precedence.
+The style can be a bit combination of the following styles:
+
+@table @code
+@item PREFIX
+Prefix operators that written before its operand(s)
+@item POSTFIX
+Postfix operators that written after its operand
+@item AINFIX
+Associative infix operator
+@item LINFIX
+Left associative infix operator
+@item RINFIX
+right associative infix operator
+@item EOS
+End-of-statement operator
+@item GROUP
+Group infix operator
+@end table
+
+The precedence is an integer.
+The range of this integer is to be determined by specific implementations.
+However, a few constants are provided to help programmers to set precedence:
+
+@table @code
+@item PREC_NOR
+The ``normal'' precedence which is the precedence value
+for all the function application without special style definition.
+@item PREC_MAX
+The maximum precedence one can specify.
+@item PREC_MIN
+The minmum precedence one can specify.
+@item PREC_SEP
+The precedence used for end-of-statement separator
+and outfix operators.
+@end table
+
+@menu
+* Prefix operators::            
+* Post operators::              
+* Infix operators::             
+* End-Of-Statement operators::  
+* Outfix operators::            
+* Group outfix operators::      
+* Multiple styles::             
+@end menu
+
+@c ---------------------------------------------------------
+@node Prefix operators
+@subsection Prefix operators
+
+@c ---------------------------------------------------------
+@node Post operators
+@subsection Prefix operators
+
+@c ---------------------------------------------------------
+@node Infix operators
+@subsection Infix operators
+
+Infix operators are binary operators written in between its two operands.
+Infix operators came in three flavors:
+associative, left associative and right associative.
+
+For example, the following statement,
+defines the regular addition operator:
+
+@example
+defsty "+" AINFIX (add PREC_NOR 2);
+@end example
+
+Since it is a associative infix operator,
+with precedence slightly higher than regular function application.
+So that @code{a + b + c} means @code{(a + b) + c} or @code{a + (b + c)},
+and @code{f a + b} means @code{f (a + b)}.
+
+Similarly, we can define the multiplication (star) operator by:
+
+@example
+defsty "*" AINFIX (add PREC_NOR 3);
+@end example
+
+Since the multiplication should has higher precedence than addition does.
+
+As another example, the exponential operator,
+which is not associative can be defined with:
+
+@example
+defsty "^" RINFIX (add PREC_NOR 4);
+@end example
+
+Which gives the exponential operator right associativity
+and a even higher precedence.
+
+@c ---------------------------------------------------------
+@node End-Of-Statement operators
+@subsection End-Of-Statement operators
+An end-of-statement operator (or EOS for short)
+is an operator that mark the end of a statement.
+A @venus{} program consists of many functional statements.
+each marked by a EOS operator.
+To define a EOS operator,
+one still use the @code{defsty} function,
+but with the @code{EOS} flag for the style.
+For example, to let semicolon to be the EOS operator
+(like C/C++ and their derivatives) one can:
+
+@example
+defsty ";" EOS PREC_SEP;
+@end example
+
+Notice that the precedence must be @code{PREC_SEP}.
+
+@c ---------------------------------------------------------
+@node Outfix operators
+@subsection Outfix operators
+Outfix operators are also desired in many languages.
+An outfix operator is a pair of matched operators
+written around its operand.
+Frequently used outfix operators includes
+parenthesis, braces, brackets, and etc.
+
+Instead of using @code{defsty},
+one has to use @code{defout} function
+to define an outfix operator pair.
+The @code{defout} function takes two arguments,
+the left side operator, and the right side operator.
+For example, the following code defines the angle-brackets:
+
+@example
+defout "<" ">";
+@end example
+
+Notice there is no need to specify precedence,
+Since nest outfix operators already told
+the parser the order they should be parsed.
+
+To define the function for the outfix operator,
+one should define the function under the name
+of left side operator concatenate with right side operator
+with a space in between.
+Use the same angle-brackets example,
+if we want to let the angle-bracket to the spuare function,
+that is to let @code{<x> = x^2}
+(it is a very unlikely usage, we use it just for the sake of example),
+then we can use the following code:
+
+@example
+defout "<" ">";
+define "< >" (INT->INT->INT) (\x(x*x));
+@end example
+
+Notice that although it is possible to define
+the left and right operator to be the same,
+it is generally not a good idea to do so,
+as it may confuse the parser.
+
+@c ---------------------------------------------------------
+@node Group outfix operators
+@subsection Group outfix operators
+As shown above,
+the outfix operator defined are actually functions.
+However, sometimes, outfix operators are used for grouping only,
+and there are no need to define their function bodies.
+For instance, in most languages,
+the parenthesis is simply used to group operands and overide precedence only,
+and it will not perform any thing other than that.
+Although one can define it in @venus{} with:
+
+@example
+defout "(" ")";
+define "( )" (INT->INT->INT) (\x x);
+@end example
+
+It is much better to tell the parser explicitly that
+the they are for grouping only and no function body is needed.
+To do this, one can simply set the @code{GROUP} style:
+
+@example
+defout "(" ")";
+defsty "( )" GROUP PREC_SEP;
+@end example
+
+Notice that here the precedence is insignificant,
+but it is always a good convention to set it as @code{PREC_SEP}.
+
+@c ---------------------------------------------------------
+@node Multiple styles
+@subsection Multiple styles
+In most languages,
+operators are intend to have different styles in different context.
+For instance,
+the minus sign ``-'' should be
+the infix substraction operator
+when it is in between two operands,
+and be the prefix negation operator
+when there are no operands before it.
+@venus{} supports such feature by allowing
+multiple styles to be defined for each operator.
+To do this, simply use bit combination of styles
+when calling the @code{defsty} function.
+For example, to define the minus sign,
+one can use the following code:
+
+@example
+defsty "-" (AINFIX+PREFIX) (PREC_NOR + 2);
+define "-" (INT->INT->INT) (\x(\y(sub x y)));
+define "-" (INT->INT) (\x(neg x));
+@end example
+
+@c ################################################################################
+@c ################################################################################
+@c ################################################################################
+@node Using Slots
+@chapter Using Slots
+
+Most of the programming languages that we use today are context sensitive,
+in the sense that some information is stored in the context,
+and can affect the interpretion of the source code.
+Therefore, when building a dialect on top of the @venus{} language,
+the ability to store context information is usually desired.
+To support this, @venus{} provide the so called ``slot'' facility.
+
+Just like names in namespace,
+slots are mappings between names and objects.
+The difference here, however,
+is that names are used to bind symbols,
+while slots are not,
+so thus suitable for storing context information.
+Also like namespaces,
+slots are segmented by scopes.
+Each scope has its own portion of the slots,
+and depending on the transparency of the scope,
+one can access some portion of the slots.
+
+A pair of functions are provided to access the slots.
+@code{slot_set} is used to set a slot.
+It takes two arguments,
+the name of the slot, and the object to be mapped to.
+@code{slot_get} is used to get the object of a slot.
+It takes just one arguments, the name of the slot.
+
+For example, to set the slot @code{current_line_number}, merely:
+
+@example
+slot_set "current_line_number" 7;
+@end example
+
+Then, to read the value of the slot (and define a variable with it),
+one can merely:
+
+@example
+defmap "x" (slot_get "current_line_number");
+@end example

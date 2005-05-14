@@ -1,0 +1,58 @@
+@menu
+* Get source via Subversion or CVS
+* Compilation and installation
+@end menu
+
+@c ============================================================================
+@node Get source via Subversion or CVS
+@section Get source via Subversion or CVS
+
+The sources obtained via Subversion or CVS are "clean" source
+in the sense that all files that can be generated automatically are removed.
+So one need use Autotools to generate necessary files
+before the source can be configured and compiled.
+Thus one need to have @code{autoconf} and @code{automake}
+installed in the system.
+To generate those files, simply type:
+
+@example
+autoreconf -if
+@end example
+
+@c ============================================================================
+@node Compilation and installation
+@section Compilation and installation
+
+@uni usually ship as a source gzipped tarball.
+After extract the content of the tarball,
+the source should be configured to be prepared for compilation.
+In most UNIX-like platform and POSIX compatiable environment like Cygwin,
+such configuration is performed automatically
+by the @code{configure} shell script.
+To run it, merely type:
+
+@example
+./configure
+@end example
+
+There are many options can be set and tuned for the configuration.
+To get the detail information about these options, type:
+
+@example
+./configure --help
+@end example
+
+Next, to compile the source, simply type:
+
+@example
+make
+@end example
+
+After the source is successfully compiled,
+the final step is the install it into the system.
+To do it, type:
+
+@example
+make install
+@end example
+

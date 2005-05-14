@@ -1,0 +1,53 @@
+import "struct";
+import "visitor";
+
+defaty "MEMFUN"; # member function
+defaty "FUNDEF"; # member function definition
+
+define "mk_fundef" (STR->ANY->RAW->FUNDEF)
+(\n(\t(\a{
+  x := dict_new FUNDEF;
+  x.name = n;
+  x.type = t;
+  x.vars = list_new ANY;
+  list_ins x.vars a;
+  return x;
+})));
+
+define " " (FUNDEF->RAW->FUNDEF)
+(\x(\y{
+  list_ins x.vars y;
+  return x;
+}));
+
+defsty ":" LINFIX (sub PREC_NOR 1);
+define ":" (SYM->ANY->VOID)
+(\n(\t(define (str n) (RAW->FUNDEF) (mk_fundef (str n) t))));
+
+defsty "<-" LINFIX (sub PREC_NOR 5);
+define "<-" (FUNDEF->RAW->VOID)
+(\f(\d{
+    s := slot_get "curr_struct";
+    r = d;
+    foreach x in f.vars (r = \\\ (rstr x) r);
+    member := dict_new MEMFUN;
+    member.type = f.type;
+    member.body = r;
+    dict_set s f.name member;
+    return member;
+}));
+
+define "class" (SYM->RAW->VOID) (\n(\d(struct n d)));
+
+class jieun (
+    int    age  $= 23;
+    string xing $= "kim";
+
+    kiss : INT->INT->INT;
+    kiss a b <- add a b;
+);
+
+jieun j;
+
+#print j.age;
+

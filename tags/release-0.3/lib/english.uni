@@ -1,0 +1,108 @@
+import "base";
+
+#### dummy tokens #####
+defsty "the" DUMMY PREC_SEP;
+defsty "a"   DUMMY PREC_SEP;
+defsty "an"  DUMMY PREC_SEP;
+defsty "of"  DUMMY PREC_SEP;
+defsty "to"  DUMMY PREC_SEP;
+defsty "in"  DUMMY PREC_SEP;
+
+#### structural types ##########################################################
+defaty "REF";         # attribute reference (returned by ['s] expression
+defaty "BE_BLOCK";
+defaty "BE_TYPE";
+defaty "BE_REF";
+defaty "THEN_BLOCK";
+
+#### the [let...be] expression #################################################
+define "let" (BE_BLOCK->VOID)
+  (\x(defmap (dict_get x "name") (dict_get x "value")));
+
+define "let" (BE_REF->VOID)
+  (\x(dict_set (dict_get x "obj") (dict_get x "key") (dict_get x "value")));
+
+defsty "be" LINFIX (add PREC_NOR 1);
+
+define "be" (RAW->ANY->BE_BLOCK)
+  (\x(\y{
+    defmap "r" (dict_new BE_BLOCK);
+    dict_set r "name" (rstr x);
+    dict_set r "value" y;
+    return r;
+  }));
+
+define "be" (REF->ANY->BE_REF)
+  (\x(\y{
+    defmap "r" (dict_new BE_REF);
+    dict_set r "value" y;
+    dict_set r "obj" (dict_get x "obj");
+    dict_set r "key" (dict_get x "key");
+    return r
+  }));
+
+#### the ['s] expression #######################################################
+defsty "s" PREFIX (add PREC_NOR 20);
+define "s" (RAW->DEP) (\x x);
+
+defsty "'" LINFIX (add PREC_NOR 4);
+define "'" (ANY->RAW->DEP) (\x(\y(dict_get x (str y))));
+define "'" (ANY->RAW->REF)
+  (\x(\y{
+    defmap "r" (dict_new REF);
+    dict_set r "obj" x;
+    dict_set r "key" (str y);
+    return r;
+  }));
+
+defsty "new" PREFIX (add PREC_NOR 3);
+define "new" (TYPE->DEP) (\x(dict_new x));
+
+defsty "type" PREFIX (add PREC_NOR 3);
+
+define "print" (ANY->VOID) (\x(raw_out (str x); raw_out (cstr "\n")));
+
+#### list construction and manipulation ########################################
+defsty "list" PREFIX (add PREC_NOR 3);
+define "list" (TYPE->DEP) (\x(list_new x));
+
+define "append" (ANY->ANY->VOID) (\x(\y(list_add y x)));
+
+defsty "everything" LINFIX (sub PREC_NOR 1);
+define "everything" (ANY->ANY->VOID) (\f(\x(list_vis x f)));
+
+#### the [if-then-otherwise] structure #########################################
+defsty "if" PREFIX (sub PREC_NOR 4);
+define "if" (BOOL->THEN_BLOCK->VOID)
+  (\x(\y(
+    ifeq true x (dict_get y "true") (dict_get y "false")
+  )));
+
+defsty "then" PREFIX (sub PREC_NOR 3);
+define "then" (THEN_BLOCK->THEN_BLOCK) (\x x);
+define "then" (RAW->THEN_BLOCK)
+  (\x{
+    let r be a new THEN_BLOCK.
+    dict_setr r "true"  x.
+    dict_setr r "false" void.
+    return r.
+  });
+
+defsty "otherwise" LINFIX (sub PREC_NOR 2);
+define "otherwise" (RAW->RAW->THEN_BLOCK)
+  (\x(\y{
+    let r be a new THEN_BLOCK.
+    dict_setr r "true"  x.
+    dict_setr r "false" y.
+    return r.
+  }));
+
+#### rename some built-in types ####
+defmap "string" STR;
+defmap "integer" INT;
+
+#### rename some primitives ####
+defmap "use" import;
+
+defsty "." EOS PREC_SEP;
+

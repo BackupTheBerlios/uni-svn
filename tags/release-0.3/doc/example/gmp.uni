@@ -1,0 +1,26 @@
+import "base";
+import "stdc";
+
+defaty "BIGINT";
+
+deflib "libgmp" "libgmp.so";
+
+define "bigint" (SYM->VOID) (\x(defmap (caststr x) (cmem BIGINT 12)));
+
+defext "mpz_init"         (BIGINT->BIGINT)         1 "__gmpz_init" libgmp EXT_INT;
+defext "mpz_init_set_str" (BIGINT->STR->INT->VOID) 3 "__gmpz_init_set_str" libgmp EXT_INT;
+defext "mpz_init_set_si"  (BIGINT->INT->VOID)      2 "__gmpz_init_set_si"  libgmp EXT_INT;
+defext "mpz_out_str"      (ANY->INT->BIGINT->VOID) 3 "__gmpz_out_str"      libgmp EXT_INT;
+
+bigint i;
+
+mpz_init_set_str i "19821013" 10;
+
+defmap "tmpbuf" (fopen "ttt" "w");
+#defmap "tmpbuf" (cmem ANY 128);
+#defmap "tmp"    (open_buf tmpbuf);
+mpz_out_str tmpbuf 10 i;
+#flush_buf tmp;
+#raw_out (buf_str tmpbuf);
+#close_buf tmp;
+fclose tmpbuf;
