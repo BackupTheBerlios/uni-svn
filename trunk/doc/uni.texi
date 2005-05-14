@@ -35,13 +35,17 @@ Copyright @copyright{} 2004 Tianran Chen
 @menu
 * Installation::                Install @uni to system
 * Getting Start::               A quick walk through of the language
-* Basic Concepts::
+* Philosophy Of Uni::
+* Metaprogramming In Uni::
 * Manipulate Names::            
 * Using Slots::                 
 * Sample Natural English Dialect::
 @end menu
 
+@node Installation, , , Top
+@chapter Installation
 @include installation.texi
+
 @include start.texi
 @include concept.texi
 @include primitive.texi
