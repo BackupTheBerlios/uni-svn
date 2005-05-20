@@ -10,13 +10,17 @@ using std::make_pair;
 
 namespace NAMESPACE
 {
-  void
-  Scanner::scan (Context* context, RawPtr raw, std::istream& input, std::ostream& error)
+  RawPtr
+  Scanner::scan (Context* context, std::istream& input, std::ostream& error)
   {
+    RawPtr raw = Raw::create();
+
     _context = context;
     _raws.clear();
     _raws.push_back (make_pair (raw, 0));
     xscan (input, error);
+
+    return raw;
   }
 
   void

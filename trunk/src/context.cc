@@ -214,9 +214,9 @@ namespace NAMESPACE
   TermPtr
   Context::reduce (TermPtr term, int flags, TermPtr expect, bool collect)
   {
-    bool reduced = false;
-
     assert (term);
+
+    bool reduced = false;
 
     _new_frame (flags);
 
@@ -265,10 +265,10 @@ namespace NAMESPACE
 	    _debugger->step_break (this, term);
 	}
 	else
-	  term.reset();
+	  term.reset();                                   // this term is now of no use, release it
       }
-      else
-	throw;
+      else                                                // if it is a "real" exception...
+	throw;                                            // throw it outward
     }
 
     _del_frame ();
@@ -281,24 +281,24 @@ namespace NAMESPACE
   {
     assert (term);
 
-    _new_shield (exit);
+    _new_shield (exit);                          // create and push a new shield
 
     try {
-      TermPtr result = reduce (term, flags);
-      _del_shield (flags);
+      TermPtr result = reduce (term, flags);     // reduce the term
+      _del_shield (flags);                       // pop and destroy the shield just created
       return result;
     }
     catch (Term& e) {
       TermPtr hdl = special_sym ("exc_handler"); // get handler symbol
-      if (! hdl) {                                // if the symbol doesn't exist...
-	_del_shield (flags);                      // we are done with this exception shield, delete it
-	throw;                                    // forward the exception outward
+      if (! hdl) {                               // if the symbol doesn't exist...
+	_del_shield (flags);                     // we are done with this exception shield, delete it
+	throw;                                   // forward the exception outward
       }
-      TermPtr exc (e.clone());                    // clone it, since it has to be an TermPtr
-      TermPtr app = App::create (hdl, exc);       // create application
-      reduce (app, flags);                        // execute the handler
-      _del_shield (flags);                        // handling is done, delete this exception shield
-      return VOID;                                // return value is void
+      TermPtr exc (e.clone());                   // clone it, since it has to be an TermPtr
+      TermPtr app = App::create (hdl, exc);      // create application
+      reduce (app, flags);                       // execute the handler
+      _del_shield (flags);                       // handling is done, delete this exception shield
+      return VOID;                               // return value is void
     }
   }
 

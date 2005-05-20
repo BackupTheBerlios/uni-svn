@@ -35,8 +35,7 @@ MyImportHandler::import (Context* context, const string& name)
 TermPtr
 MyImportHandler::run (Context* context, Scanner* scanner, std::istream& input, int flags)
 {
-  RawPtr raw = Raw::create();
-  scanner->scan (context, raw, input, std::cerr);
+  RawPtr raw = scanner->scan (context, input, std::cerr);
   return context->eval (raw, ALL);
 }
 

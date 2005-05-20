@@ -33,6 +33,8 @@ libuni_la_SOURCES = app.hh \
 		int.cc \
 		list.hh \
 		list.cc \
+		my_view_handler.hh \
+		my_view_handler.cc \
 		opt.hh \
 		opt.cc \
 		proj.hh \

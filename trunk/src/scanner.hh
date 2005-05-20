@@ -19,7 +19,7 @@ namespace NAMESPACE
   public:
 
     virtual ~Scanner () { }
-    void scan (Context* context, RawPtr raw, std::istream& input, std::ostream& error);
+    RawPtr scan (Context* context, std::istream& input, std::ostream& error);
 
   protected:
 

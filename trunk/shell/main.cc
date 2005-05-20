@@ -195,7 +195,7 @@ main (int argc, char** argv)
     }
   }
   catch (const char* e) {
-    std::cout << e << std::endl;
+    cout << e << endl;
     return 1;
   }
   catch (...) {

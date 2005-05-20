@@ -25,7 +25,7 @@ namespace NAMESPACE
    */
   class Context : private vector<Shield*>
   {
-    VAL_PROPERTY_RO (ScopeStack*,     scopes);
+    VAL_PROPERTY_RO (ScopeStack*, scopes);
 
     VAL_PROPERTY (bool, step_break);
 
@@ -44,7 +44,7 @@ namespace NAMESPACE
 
     /**
      * Push an application root on to the evaluation stack.
-     * This is equivalent to append an argument to a function.
+     * Conceptually, this is equivalent to append an argument to a function.
      *
      * \param  app  the application root to be pushed on to the stack.
      */
@@ -53,10 +53,17 @@ namespace NAMESPACE
     void pop (unsigned int n);
     TermPtr pop ();
 
+    /**
+     * This function returns the ith argument on the stack
+     * without any process. It will not reduce nor update anything.
+     *
+     * \param   i   the index of the argument to be returned
+     * \return  the argument requested
+     */
     TermPtr arg (unsigned int i);
-    AppPtr  arg_root (unsigned int i);
     TermPtr arg_reduce (unsigned int i, int flags, TermPtr expected = TermPtr(), bool collect = true);
     TermPtr arg_type (unsigned int i);
+    AppPtr  arg_root (unsigned int i);
     bool arg_compat (unsigned int i, int flags, TermPtr type);
     unsigned int arg_count () const;
 
@@ -111,8 +118,8 @@ namespace NAMESPACE
 		    bool collect = true);
 
     /**
-     * Return a term inside a exception shield.
-     * This function internally call reduce perform the reduction,
+     * Reduce a term inside a exception shield.
+     * This function internally call [reduce] perform the reduction,
      * however, this function will catch all the exception thrown
      * during the reduction, and try to pass them to handlers
      * defined in the scopes, and only throw out exceptions
