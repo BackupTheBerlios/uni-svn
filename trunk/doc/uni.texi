@@ -29,26 +29,36 @@ Copyright @copyright{} 2004 Tianran Chen
 Copyright @copyright{} 2004 Tianran Chen
 @end titlepage
 
-@node Top
+@node Top, Installation, (dir), (dir)
 @top
 
 @menu
 * Installation::                Install @uni to system
 * Getting Start::               A quick walk through of the language
 * Philosophy Of Uni::
+* Basic Concepts::
 * Metaprogramming In Uni::
 * Manipulate Names::            
-* Using Slots::                 
+* Using Slots::
 * Sample Natural English Dialect::
 @end menu
 
-@node Installation, , , Top
-@chapter Installation
-@include installation.texi
+@node Installation,  , Top, Top
+@node Getting Start,  , Top, Top
+@node Philosophy Of Uni,  , Top, Top
+@node Basic Concepts,  , Top, Top
+@node Metaprogramming In Uni,  , Top, Top
+@node Manipulate Names,  , Top, Top
+@node Using Slots,  , Top, Top
+@node Sample Natural English Dialect,  , Top, Top
 
-@include start.texi
-@include concept.texi
-@include primitive.texi
-@include example.texi
+@c @include installation.texi
+@c @include start.texi
+@c @include concept.texi
+@c @include primitive.texi
+@c @include example.texi
+
+@chapter Philosophy Of Uni
+@chapter Metaprogramming In Uni
 
 @bye

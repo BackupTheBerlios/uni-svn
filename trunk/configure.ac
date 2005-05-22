@@ -28,6 +28,7 @@ AC_CONFIG_FILES([
 Makefile
 src/Makefile
 shell/Makefile
+filter/Makefile
 scanners/Makefile
 doc/Makefile
 ])

@@ -1,10 +1,12 @@
+@chapter Installation
+
 @menu
-* Get source via Subversion or CVS
-* Compilation and installation
+* Get source via Subversion or CVS::
+* Compilation and installation::
 @end menu
 
 @c ============================================================================
-@node Get source via Subversion or CVS
+@node Get source via Subversion or CVS, Compilation and installation
 @section Get source via Subversion or CVS
 
 The sources obtained via Subversion or CVS are "clean" source
@@ -20,7 +22,7 @@ autoreconf -if
 @end example
 
 @c ============================================================================
-@node Compilation and installation
+@node Compilation and installation,  , Get source via Subversion or CVS
 @section Compilation and installation
 
 @uni usually ship as a source gzipped tarball.

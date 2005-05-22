@@ -1,4 +1,3 @@
-@node    Basic Concepts
 @chapter Basic Concepts
 
 @menu

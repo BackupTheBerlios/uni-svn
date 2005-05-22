@@ -1,4 +1,3 @@
-@node Manipulate Names
 @chapter Manipulate Names
 
 @menu
@@ -338,7 +337,6 @@ define "-" (INT->INT) (\x(neg x));
 @c ################################################################################
 @c ################################################################################
 @c ################################################################################
-@node Using Slots
 @chapter Using Slots
 
 Most of the programming languages that we use today are context sensitive,

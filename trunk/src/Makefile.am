@@ -1,6 +1,7 @@
 AM_YFLAGS = -d
 AM_LFLAGS = -olex.yy.c
-AM_CXXFLAGS = -g -Wall -Werror -Wno-unused-label -Wno-unused-function -DDEBUG
+AM_CXXFLAGS = -g -O0 -Wall -Werror -Wno-unused-label -Wno-unused-function -DDEBUG
+CXXFLAGS = 
 
 lib_LTLIBRARIES = libuni.la
 

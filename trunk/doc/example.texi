@@ -1,5 +1,5 @@
-@node    Sample Natural English Dialect
 @chapter Sample Natural English Dialect
+
 In this section, we will define a tiny set of syntax
 that resemble natural english to some degree.
 

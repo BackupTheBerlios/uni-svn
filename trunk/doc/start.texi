@@ -1,33 +1,32 @@
-@node    Getting Start
 @chapter Getting Start
 
 @menu
-* What is @venus{}::            
-* Running @venus{}::            
+* What is Uni::            
+* Running Uni::            
 * Basic Primitives::            
 * Defining Dialects::           
 @end menu
 
 @c =============================================================================
-@node    What is @venus{}
-@section What is @venus{}
-@venus{} is a nonstrict lazy programming language designed
+@node    What is Uni
+@section What is Uni
+Uni is a nonstrict lazy programming language designed
 to be a platform for building domain specific languages.
 Distinct from those popular programming languages used today,
 which provide well defined sets of primitives and syntax,
-@venus{} provides no built-in syntax nor control structures,
+Uni provides no built-in syntax nor control structures,
 and is indent to be a open platform on which programmers
-(or meta programmers) to define their own @emph{dialects} of @venus{},
+(or meta programmers) to define their own @emph{dialects} of Uni,
 that are suitable for a specific domain of problems
 or a group of audience.
-@venus{} is indented to be small and minimal,
+Uni is indented to be small and minimal,
 rather than full featured.
 
 @c =============================================================================
-@node    Running @venus{}
-@section Running @venus{}
+@node    Running Uni
+@section Running Uni
 In any UNIX-like shell environment,
-To run the @venus{} interpreter in interactive mode:
+To run the Uni interpreter in interactive mode:
 
 @example
 venus
@@ -64,7 +63,7 @@ Of course, one need to make sure that the file is executable.
 
 @c -----------------------------------------------------------------------------
 @subsection Lambda expressions
-In @venus{}, lambda expressions can be created by the @code{\} function.
+In Uni, lambda expressions can be created by the @code{\} function.
 For example the identity function can written as:
 
 @example
@@ -125,9 +124,9 @@ for example, we can set three keys,
 ``name'', ``version'', and ``release'':
 
 @example
-dict_set x "name"    "Venus";
-dict_set x "version" 2;
-dict_set x "release" 1;
+dict_set x "name"    "Uni";
+dict_set x "version" 0;
+dict_set x "release" 3;
 @end example
 
 And we can read these values back
@@ -144,17 +143,17 @@ defmap "pkg_release" (dict_get x "release");
 @section Defining Dialects
 In previous section,
 we have showed some frequently used primitives.
-Probably, few people will be interested in @venus{}
+Probably, few people will be interested in Uni
 if they are forced to use that kind of syntax ---
 it is so poor in readability and writability.
-However, bear in mind that the syntax of @venus{} is dynamic.
+However, bear in mind that the syntax of Uni is dynamic.
 There are no built-in syntax nor control structures,
 everything can be and have to be defined by programmers.
 Almost everything, even the scanner
 (where the source is processed before they are passed to the parser)
 can be customized or even substitute by programmers.
 Instead of being a complete programming language,
-@venus{} is indend to be a platform on top of which
+Uni is indend to be a platform on top of which
 programmers can define their own ``dialects''
 focused on a small set of problems or audience.
 To have an idea of how such dialects can be defined,

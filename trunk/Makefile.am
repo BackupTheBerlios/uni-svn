@@ -1,2 +1,2 @@
-SUBDIRS = src shell scanners doc
+SUBDIRS = src shell filter scanners doc
 
