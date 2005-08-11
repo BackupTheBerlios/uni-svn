@@ -3,8 +3,11 @@
   code that change the behavior of the scanner
   will HAVE NO EFFECT when execute a file. this
   makes "str_ctor" USELESS.
+  
+  maybe add a new class [Special] to hold special names
+  that can be only resolved later.
 
-* (2005-04-20) instead of inserting symbols, the
+  or instead of inserting symbols, the
   [scanner] can insert application on [name_get]
 
 * (2005-05-06) instead of classifying operators as
@@ -18,3 +21,16 @@
   one scanner can pass stuff to another scanner.
   this would allow things like markup language easier
   to implement.
+
+* (2005-06-17) a context object should have a set of
+  "well known" resources, like stdout, stdin, stderr,
+  and etc. so that functions like [raw_out] can behave
+  correctly.
+
+* (2005-06-17) some arguments should be passed to scanners
+  so that scanners can be more flexible. e.g. change the
+  comment splitters, and quotation marks.
+
+* (2005-08-09) what is now [context] should become [machine]
+  which take care of the stack machine. what is now [ScopeStack]
+  should become [context] which is only the "context".
