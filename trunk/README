@@ -1,0 +1,33 @@
+Uni is a lazy programming language with dynamic structure,
+grammar and syntax.  Uni is a free software, free as in
+freedom. It does not depend on any proprietary libraries
+or file formats.
+
+Unlike mainstream programming languages whose grammar
+and syntax are fixed and designed by the creator of the
+language, Uni gives its users the freedom to modify or
+invent the grammar, the syntax, and even the bahavior
+of the scanner (a.k.a. the lexer).  For instance, a C++
+programmer may prefer the "for each" expression other
+languages take for granted, or a mathematician may need a
+easier way to write matrix or equation in code, or even
+a non-English speaking programmer may want a program
+language in his or her mother tongue.  These are very
+hard, if not impossible, to have in mainstream programming
+languages in use today.  But the Uni programming, with
+its extra dimension of freedom for users, allow users to
+trim, redefine, or even invent the structure, grammar,
+and syntax of the language to fit their own purpose.
+Therefore, in a sense, Uni is a meta-language, since
+programmers are allowed not only to work on the language
+level, but also the level above it.
+
+Uni is designed as a small, minimal library that depends on
+virtually nothing but the C++ runtime library and provide
+nothing but the absolute basic.  Such a design allows Uni
+to be embedded with ease.
+
+The use of Uni can be wide: configuration script for
+applications, dynamic contend for websites, programming
+for special users (e.g. mathematicians, scientists),
+and many more to think about.
