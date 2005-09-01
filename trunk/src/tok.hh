@@ -19,7 +19,11 @@ namespace NAMESPACE
 
     virtual bool xequ (TermPtr rhs) const;
 
-    Tok (const char* name) : MStr (name) { }
+    Tok (const char* name, bool special = false) : MStr (name), _spec (special) { }
+
+  private:
+
+    bool _spec;
   };
 };
 

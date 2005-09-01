@@ -25,9 +25,8 @@ namespace NAMESPACE
 
     virtual void xscan (std::istream& input, std::ostream& error) = 0;
 
-    void int_ctor (const char* str, int lineno = -1, int colno = -1);
-    void str_ctor (const char* str, int lineno = -1, int colno = -1);
-    void sym_ctor (const char* str, int lineno = -1, int colno = -1);
+    void new_ctor (const char* str, const char* ctor, int lineno = -1, int colno = -1);
+    void new_tok (const char* str, int lineno = -1, int colno = -1);
 
     void group_begin (int level);
     void group_end (int level);

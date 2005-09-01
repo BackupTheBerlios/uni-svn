@@ -1,6 +1,5 @@
 #include <app.hh>
 #include <context.hh>
-#include <int.hh>
 #include <scanner.hh>
 #include <scope.hh>
 #include <string.hh>
@@ -24,36 +23,16 @@ namespace NAMESPACE
   }
 
   void
-  Scanner::int_ctor (const char* str, int lineno, int colno)
+  Scanner::new_ctor (const char* str, const char* ctor, int lineno, int colno)
   {
-    TermPtr term;
-    if (TermPtr f = _context->special_sym ("int_ctor"))
-      term = App::create (f, MStr::create (str));
-    else
-      term = Int::create (str);
-
+    TermPtr term = Tok::create (ctor, true);
+    term = App::create (term, MStr::create(str));
     term->src (_mk_src (lineno, colno));
     _raws.back().first->append (term);
   }
 
   void
-  Scanner::str_ctor (const char* str, int lineno, int colno)
-  {
-    TermPtr term = MStr::create (str);
-    SrcPtr  src  = _mk_src (lineno, colno);
-
-    term->src (src);
-
-    if (TermPtr f = _context->special_sym ("str_ctor")) {
-      term = App::create (f, term);
-      term->src (src);
-    }
-
-    _raws.back().first->append (term);
-  }
-
-  void
-  Scanner::sym_ctor (const char* str, int lineno, int colno)
+  Scanner::new_tok (const char* str, int lineno, int colno)
   {
     TermPtr term = Tok::create (str);
     term->src (_mk_src (lineno, colno));

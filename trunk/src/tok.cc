@@ -1,6 +1,4 @@
-#include <app.hh>
 #include <context.hh>
-#include <int.hh>
 #include <scope.hh>
 #include <style.hh>
 #include <sym.hh>
@@ -14,16 +12,35 @@ namespace NAMESPACE
    *         can implement the 'using' functions.
    *         However, on the other hand, resolve too early
    *         will let lambda function get into troubles.
+   *
+   *         What the hell are you saying then? Is it a problem
+   *         or not? Huh!?
+   *
+   *         Special token is always reduced immediately,
+   *         regardless what the current flags are. And this
+   *         is very important. If the special symbol does
+   *         not exist, an exception will be thrown.
    */
   TermPtr
   Tok::reduce (Context* c, int flags, TermPtr expected)
   {
-    if (TermPtr r = c->scopes()->get_symbol(str()))
-      return r;
-    else if (BIND & flags)
-      return Sym::create (str());
-    else
-      return TermPtr();
+    if (_spec) {
+	if (TermPtr r = c->special_sym(str()))
+	  return r;
+	else {
+	  // \todo return a application to [name_get] or [special_get]
+	  // \todo special symbol should always exist. if not: exception!
+	  return TermPtr();
+	}
+    }
+    else {
+      if (TermPtr r = c->scopes()->get_symbol(str()))
+	return r;
+      else if (BIND & flags)
+	return Sym::create (str());
+      else
+	return TermPtr();
+    }
   }
 
   bool
