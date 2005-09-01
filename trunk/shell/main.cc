@@ -35,6 +35,34 @@
 using namespace NAMESPACE;
 using namespace std;
 
+static TermPtr _num_ctor (Context*, TermPtr arg);
+static TermPtr _str_ctor (Context*, TermPtr arg);
+
+TermPtr num_ctor_f = Envf::create ("num_ctor", 1, CONS, 0, (void*)_num_ctor, Proj::create(Str::T,Int::T));
+TermPtr str_ctor_f = Envf::create ("str_ctor", 1, CONS, 0, (void*)_str_ctor, Proj::create(Str::T,Str::T));
+
+TermPtr
+_num_ctor (Context* c, TermPtr arg)
+{
+  if (StrPtr s = CAST<Str> (arg))
+    return Int::create (s->str());
+  else {
+    // \todo something is wrong, throw an exception.
+    return TermPtr();
+  }
+}
+
+TermPtr
+_str_ctor (Context* c, TermPtr arg)
+{
+  if (CAST<Str> (arg))
+    return arg;
+  else {
+    // \todo something is wrong, throw an exception.
+    return TermPtr();
+  }
+}
+
 void
 exec_files (Context* context,
 	    const vector<string>& files,
@@ -172,6 +200,12 @@ main (int argc, char** argv)
     context.ansi_attrs (&cols);
 
     builtin.init (&context);
+
+    context.scopes()->set_special ("num_ctor", "num_ctor");
+    context.scopes()->set_special ("str_ctor", "str_ctor");
+
+    context.scopes()->add_symbol (num_ctor_f, "num_ctor");
+    context.scopes()->add_symbol (str_ctor_f, "str_ctor");
 
     clo::parser clo_parser;
     clo_parser.parse (argc, argv);
