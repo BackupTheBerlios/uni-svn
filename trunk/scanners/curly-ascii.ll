@@ -20,14 +20,14 @@ SOP    [\(\)\[\]\{\}\`\'\;]
 
 \#.*
 
-{DIG}+            { int_ctor (YYText(), lineno()); }
-{OP}+             { sym_ctor (YYText(), lineno()); }
-{SOP}             { sym_ctor (YYText(), lineno()); }
-{ID}              { sym_ctor (YYText(), lineno()); }
+{DIG}+            { new_ctor (YYText(), "num_ctor", lineno()); }
+{OP}+             { new_tok  (YYText(), lineno()); }
+{SOP}             { new_tok  (YYText(), lineno()); }
+{ID}              { new_tok  (YYText(), lineno()); }
 
 \"                BEGIN(S);
-<S>([^\"]|(\\.))* { str_ctor (YYText(), lineno()); BEGIN(EOS); }
-<S>\"             { str_ctor ("",       lineno()); BEGIN(INITIAL); }
+<S>([^\"]|(\\.))* { new_ctor (YYText(), "str_ctor", lineno()); BEGIN(EOS); }
+<S>\"             { new_ctor ("",       "str_ctor", lineno()); BEGIN(INITIAL); }
 <EOS>\"           BEGIN(INITIAL);
 
 .|\t|\n
