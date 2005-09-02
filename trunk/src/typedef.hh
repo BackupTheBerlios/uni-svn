@@ -65,7 +65,7 @@ namespace NAMESPACE
   typedef list<TermPtr>         TermList;
   typedef pair<TermPtr,TermPtr> TermPair;
 
-  class Context;
+  class Machine;
 };
 
 #endif

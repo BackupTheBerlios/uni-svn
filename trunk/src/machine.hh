@@ -1,5 +1,5 @@
-#ifndef _UNI_CONTEXT_HH_
-#define _UNI_CONTEXT_HH_
+#ifndef _UNI_MACHINE_HH_
+#define _UNI_MACHINE_HH_
 
 #include <basicdef.hh>
 #include <style.hh>
@@ -20,10 +20,10 @@ namespace NAMESPACE
   class DebugHandler;
 
   /**
-   * The class of context object.
-   * A context is a framework of the environment in which programs can run.
+   * The class of machine object.
+   * A machine is a framework of the environment in which programs can run.
    */
-  class Context : private vector<Shield*>
+  class Machine : private vector<Shield*>
   {
     VAL_PROPERTY_RO (ScopeStack*, scopes);
 
@@ -35,8 +35,8 @@ namespace NAMESPACE
 
   public:
 
-    Context ();
-    ~Context ();
+    Machine ();
+    ~Machine ();
 
     TermPtr special_sym (const string& id) const;
 
@@ -82,7 +82,7 @@ namespace NAMESPACE
     unsigned int shield_depth () const { return vector<Shield*>::size(); }
 
     /**
-     * Reduce a term in the context.
+     * Reduce a term in the machine.
      * This function DOES NOT try to catch any exceptions,
      * thus all the exception raised will be thrown outward,
      * and will not be catched by handlers already defined.

@@ -10,14 +10,14 @@
 
 namespace NAMESPACE
 {
-  class Context;
+  class Machine;
 
   class ImportHandler
   {
   public:
 
     virtual ~ImportHandler () { }
-    virtual bool import (Context* context, const std::string& name) = 0;
+    virtual bool import (Machine* machine, const std::string& name) = 0;
   };
 
   class DebugHandler
@@ -25,7 +25,7 @@ namespace NAMESPACE
   public:
 
     virtual ~DebugHandler () { }
-    virtual void step_break (Context* context, TermPtr term) = 0;
+    virtual void step_break (Machine* machine, TermPtr term) = 0;
   };
 
   class ViewHandler : public Visitor

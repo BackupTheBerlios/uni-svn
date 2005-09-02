@@ -3,7 +3,7 @@
 #include <bool.hh>
 #include <builtin.hh>
 #include <cons.hh>
-#include <context.hh>
+#include <machine.hh>
 #include <exception.hh>
 #include <family.hh>
 #include <func.hh>
@@ -35,14 +35,14 @@
 using namespace NAMESPACE;
 using namespace std;
 
-static TermPtr _num_ctor (Context*, TermPtr arg);
-static TermPtr _str_ctor (Context*, TermPtr arg);
+static TermPtr _num_ctor (Machine*, TermPtr arg);
+static TermPtr _str_ctor (Machine*, TermPtr arg);
 
 TermPtr num_ctor_f = Envf::create ("num_ctor", 1, CONS, 0, (void*)_num_ctor, Proj::create(Str::T,Int::T));
 TermPtr str_ctor_f = Envf::create ("str_ctor", 1, CONS, 0, (void*)_str_ctor, Proj::create(Str::T,Str::T));
 
 TermPtr
-_num_ctor (Context* c, TermPtr arg)
+_num_ctor (Machine* c, TermPtr arg)
 {
   if (StrPtr s = CAST<Str> (arg))
     return Int::create (s->str());
@@ -53,7 +53,7 @@ _num_ctor (Context* c, TermPtr arg)
 }
 
 TermPtr
-_str_ctor (Context* c, TermPtr arg)
+_str_ctor (Machine* c, TermPtr arg)
 {
   if (CAST<Str> (arg))
     return arg;
@@ -64,7 +64,7 @@ _str_ctor (Context* c, TermPtr arg)
 }
 
 void
-exec_files (Context* context,
+exec_files (Machine* machine,
 	    const vector<string>& files,
 	    MyViewHandler& viewer,
 	    MyImportHandler& importer)
@@ -73,7 +73,7 @@ exec_files (Context* context,
     for (vector<string>::const_iterator f = files.begin(); f != files.end(); ++f ) {
       ifstream infile (f->c_str());
       if (infile.good())
-	importer.run (context, importer.load_scanner_for(*f), infile, ALL);
+	importer.run (machine, importer.load_scanner_for(*f), infile, ALL);
       else
 	cout << "cannot open file " << *f << endl;
     }
@@ -95,7 +95,7 @@ exec_files (Context* context,
 }
 
 void
-shell (Context* context,
+shell (Machine* machine,
        Scanner* scanner,
        const string& prompt,
        MyViewHandler& viewer,
@@ -109,15 +109,15 @@ shell (Context* context,
       free (cs);
 
       try {
-	TermPtr result = importer.run (context, scanner, input, ALL);
-	TermPtr type   = type_of (context, result);
+	TermPtr result = importer.run (machine, scanner, input, ALL);
+	TermPtr type   = type_of (machine, result);
 
 	assert (result);
 	assert (type);
 
 	if (result != VOID) {
- 	  bool dump = context->step_break();
- 	  context->step_break (false);
+ 	  bool dump = machine->step_break();
+ 	  machine->step_break (false);
 
 	  TermPtr str = Tok::create ("str_ansi");
 	  TermPtr app_result = App::create (str,result);
@@ -127,8 +127,8 @@ shell (Context* context,
 	  assert (app_result);
 	  assert (app_type);
 
-	  result = context->reduce_in_shield (app_result);
-	  type   = context->reduce_in_shield (app_type);
+	  result = machine->reduce_in_shield (app_result);
+	  type   = machine->reduce_in_shield (app_type);
 
 	  assert (result);
 	  assert (type);
@@ -137,7 +137,7 @@ shell (Context* context,
 	  StrPtr str_type   = CAST<Str> (type);
 
 	  cout << str_result->str() << " :: " << str_type->str() << endl;
- 	  context->step_break (dump);
+ 	  machine->step_break (dump);
 	}
       }
       catch (TermPtr e) {
@@ -193,29 +193,29 @@ main (int argc, char** argv)
     MyDebugHandler  debugger (viewer);
 
     Builtin         builtin;
-    Context         context;
+    Machine         machine;
 
-    context.importer (&importer);
-    context.debugger (&debugger);
-    context.ansi_attrs (&cols);
+    machine.importer (&importer);
+    machine.debugger (&debugger);
+    machine.ansi_attrs (&cols);
 
-    builtin.init (&context);
+    builtin.init (&machine);
 
-    context.scopes()->set_special ("num_ctor", "num_ctor");
-    context.scopes()->set_special ("str_ctor", "str_ctor");
+    machine.scopes()->set_special ("num_ctor", "num_ctor");
+    machine.scopes()->set_special ("str_ctor", "str_ctor");
 
-    context.scopes()->add_symbol (num_ctor_f, "num_ctor");
-    context.scopes()->add_symbol (str_ctor_f, "str_ctor");
+    machine.scopes()->add_symbol (num_ctor_f, "num_ctor");
+    machine.scopes()->add_symbol (str_ctor_f, "str_ctor");
 
     clo::parser clo_parser;
     clo_parser.parse (argc, argv);
 
-    context.step_break (clo_parser.get_options().dumpstack);
+    machine.step_break (clo_parser.get_options().dumpstack);
 
     if (! clo_parser.get_non_options().empty())
-      exec_files (&context, clo_parser.get_non_options(), viewer, importer);
+      exec_files (&machine, clo_parser.get_non_options(), viewer, importer);
     if (clo_parser.get_options().interactive || clo_parser.get_non_options().empty())
-      shell (&context, importer.load_scanner ("curly-ascii"), string(RED) + "] " + COL_NORMAL, viewer, importer);
+      shell (&machine, importer.load_scanner ("curly-ascii"), string(RED) + "] " + COL_NORMAL, viewer, importer);
     return 0;
   }
   catch (clo::autoexcept &e) {

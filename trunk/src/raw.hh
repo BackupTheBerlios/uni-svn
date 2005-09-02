@@ -19,7 +19,7 @@ namespace NAMESPACE
 
   public:
 
-    virtual TermPtr reduce (Context* context, int flags, TermPtr expected);
+    virtual TermPtr reduce (Machine* machine, int flags, TermPtr expected);
     virtual void visit_children (Visitor& visitor);
 
   protected:
@@ -33,14 +33,14 @@ namespace NAMESPACE
     void append (const_iterator i, const_iterator j) { insert (end(), i, j); }
     bool empty () const { return list<TOK>::empty(); }
 
-    RawPtr  deoutfix (Context* c);
-    TermPtr construct (Context* context, int flags);
+    RawPtr  deoutfix (Machine* c);
+    TermPtr construct (Machine* machine, int flags);
 
   private:
 
-    void _update_style (Context* context);
+    void _update_style (Machine* machine);
     bool _rinfix (iterator& max, iterator& prev, iterator& next);
-    int  _detach (Context* c, iterator li, iterator ri);
+    int  _detach (Machine* c, iterator li, iterator ri);
   };
 };
 

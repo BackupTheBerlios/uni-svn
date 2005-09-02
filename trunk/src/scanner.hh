@@ -19,7 +19,7 @@ namespace NAMESPACE
   public:
 
     virtual ~Scanner () { }
-    RawPtr scan (Context* context, std::istream& input, std::ostream& error);
+    RawPtr scan (Machine* machine, std::istream& input, std::ostream& error);
 
   protected:
 
@@ -33,7 +33,7 @@ namespace NAMESPACE
 
   private:
 
-    Context* _context;
+    Machine* _machine;
     vector < pair<RawPtr, int> > _raws;
 
   private:

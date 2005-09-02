@@ -1,6 +1,6 @@
 #include <app.hh>
 #include <cons.hh>
-#include <context.hh>
+#include <machine.hh>
 #include <exception.hh>
 #include <proj.hh>
 #include <temp.hh>
@@ -30,7 +30,7 @@ namespace NAMESPACE
   }
 
   TermPtr
-  Temp::reduce (Context* c, int flags, TermPtr expected)
+  Temp::reduce (Machine* c, int flags, TermPtr expected)
   {
     if (0 == c->arg_count())
       return TermPtr();
@@ -77,7 +77,7 @@ namespace NAMESPACE
 
   //////////////////////////////////////////////////////////////////////////////
   TermPtr
-  Instance::reduce (Context* c, int flags, TermPtr expected)
+  Instance::reduce (Machine* c, int flags, TermPtr expected)
   {
     if ((flags & BIND) && (flags != int(BIND)))
       return body();

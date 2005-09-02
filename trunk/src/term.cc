@@ -14,7 +14,7 @@ namespace NAMESPACE
   Term::~Term () { --term_count; }
 
   TermPtr
-  Term::reduce (Context* context, int flags, TermPtr expected)
+  Term::reduce (Machine* machine, int flags, TermPtr expected)
   {
     return TermPtr();
   }

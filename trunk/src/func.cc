@@ -1,4 +1,4 @@
-#include <context.hh>
+#include <machine.hh>
 #include <cval.hh>
 #include <exception.hh>
 #include <func.hh>
@@ -22,11 +22,11 @@ namespace NAMESPACE
   }
 
   TermPtr
-  Intf::reduce (Context* c, int flags, TermPtr expected)
+  Intf::reduce (Machine* m, int flags, TermPtr expected)
   {
     if (! (flags & PURE))
       throw E_MODE;
-    else if ((0 == c->arg_count()) && _proj)
+    else if ((0 == m->arg_count()) && _proj)
       throw E_ARG;
     else
       return _body->clone (type());
@@ -49,11 +49,11 @@ namespace NAMESPACE
   }
 
   TermPtr
-  Envf::reduce (Context* c, int flags, TermPtr expected)
+  Envf::reduce (Machine* m, int flags, TermPtr expected)
   {
     if ((flags & _style) != _style) // if some style is not desired...
       throw E_MODE;                 // then it cannot be reduced
-    if (c->arg_count() < _arity)    // if no enough arguments...
+    if (m->arg_count() < _arity)    // if no enough arguments...
       return TermPtr();             // then it cannot be reduced neither
 
     TermPtr a[MAX_C_ARGS], curr = type(), next;
@@ -70,21 +70,21 @@ namespace NAMESPACE
       }
 
       if (Z == s)
-	a[i] = c->arg(i);
+	a[i] = m->arg(i);
       else
-	a[i] = c->arg_reduce (i, fs[s] & flags, curr);
+	a[i] = m->arg_reduce (i, fs[s] & flags, curr);
 
       assert (a[i]);
     }
 
     // extend to multi-arg case.
 
-    TermPtr result = _entry (c,
+    TermPtr result = _entry (m,
 			     a[0], a[1], a[2], a[3],
 			     a[4], a[5], a[6], a[7]);
 
     if (_arity)
-      c->pop (_arity);
+      m->pop (_arity);
 
     assert (result);
     return result;
@@ -127,11 +127,11 @@ namespace NAMESPACE
   }
 
   TermPtr
-  Extf::reduce (Context* context, int flags, TermPtr expected)
+  Extf::reduce (Machine* machine, int flags, TermPtr expected)
   {
     if (ALL != flags)
       throw E_MODE;
-    if (context->arg_count() < (unsigned int)_arity)
+    if (machine->arg_count() < (unsigned int)_arity)
       return TermPtr();
 
     if (_arity) {
@@ -146,7 +146,7 @@ namespace NAMESPACE
 	  next = p->to();
 	}
 
-	TermPtr arg = context->arg_reduce (i, ALL, curr);
+	TermPtr arg = machine->arg_reduce (i, ALL, curr);
 	P(CVal) v = TCAST<CVal> (arg);
 	for (int j = 0; j < v->csize(); ++j) {
 	  assert (p <= MAX_C_ARGS);
@@ -158,7 +158,7 @@ namespace NAMESPACE
 
       int result = ((entry_t) _fun) (a[0], a[1], a[2], a[3], 
 				     a[4], a[5], a[6], a[7]);
-      context->pop (_arity);
+      machine->pop (_arity);
 
       if (INT == _retstyle)
 	return Int::create (result);

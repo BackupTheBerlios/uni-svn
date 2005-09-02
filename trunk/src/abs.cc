@@ -1,5 +1,5 @@
 #include <abs.hh>
-#include <context.hh>
+#include <machine.hh>
 
 namespace NAMESPACE
 {
@@ -14,10 +14,10 @@ namespace NAMESPACE
   }
 
   TermPtr
-  Abs::reduce (Context* c, int flags, TermPtr expected)
+  Abs::reduce (Machine* m, int flags, TermPtr expected)
   {
-    if (c->arg_count())
-      return body()->sub (bv(), c->pop());
+    if (m->arg_count())
+      return body()->sub (bv(), m->pop());
     else
       return TermPtr();
   }

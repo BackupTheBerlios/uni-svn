@@ -15,8 +15,6 @@ libuni_la_SOURCES = app.hh \
 		builtin.cc \
 		cons.hh \
 		cons.cc \
-		context.hh \
-		context.cc \
 		cval.hh \
 		cval.cc \
 		dict.hh \
@@ -33,6 +31,8 @@ libuni_la_SOURCES = app.hh \
 		int.cc \
 		list.hh \
 		list.cc \
+		machine.hh \
+		machine.cc \
 		my_view_handler.hh \
 		my_view_handler.cc \
 		opt.hh \

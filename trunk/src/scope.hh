@@ -126,7 +126,7 @@ namespace NAMESPACE
     TermPtr get_symbol (const string& sym, SpacePtr nspace = SpacePtr()) const;
 
     /**
-     * Add a mapping between a symbol and its style to the context.
+     * Add a mapping between a symbol and its style to the machine.
      * if the mapping between the symbol and the style already exit,
      * then new style will override the old one.
      *

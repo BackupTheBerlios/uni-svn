@@ -5,103 +5,103 @@
 
 namespace NAMESPACE
 {
-  TermPtr retval (Context* context, TermPtr term);
-  TermPtr retpop (Context* context, TermPtr term);
+  TermPtr retval (Machine* machine, TermPtr term);
+  TermPtr retpop (Machine* machine, TermPtr term);
 
-  TermPtr as (Context* context, TermPtr type, TermPtr term);
-  TermPtr sa (Context* context, TermPtr term);
+  TermPtr as (Machine* machine, TermPtr type, TermPtr term);
+  TermPtr sa (Machine* machine, TermPtr term);
 
-  TermPtr cons (Context* context, TermPtr left, TermPtr right);
-  TermPtr consh (Context* context, TermPtr left, TermPtr right);
+  TermPtr cons (Machine* machine, TermPtr left, TermPtr right);
+  TermPtr consh (Machine* machine, TermPtr left, TermPtr right);
 
-  TermPtr head (Context* context, TermPtr cons);
-  TermPtr tail (Context* context, TermPtr cons);
+  TermPtr head (Machine* machine, TermPtr cons);
+  TermPtr tail (Machine* machine, TermPtr cons);
 
-  TermPtr headh (Context* context, TermPtr consh);
-  TermPtr tailh (Context* context, TermPtr consh);
+  TermPtr headh (Machine* machine, TermPtr consh);
+  TermPtr tailh (Machine* machine, TermPtr consh);
 
-  TermPtr proj (Context* context, TermPtr left, TermPtr right);
-  TermPtr lambda (Context* context, TermPtr var, TermPtr body);
-  TermPtr lambdax (Context* context, TermPtr var, TermPtr body);
-  TermPtr lambdas (Context* context, TermPtr var, TermPtr body);
+  TermPtr proj (Machine* machine, TermPtr left, TermPtr right);
+  TermPtr lambda (Machine* machine, TermPtr var, TermPtr body);
+  TermPtr lambdax (Machine* machine, TermPtr var, TermPtr body);
+  TermPtr lambdas (Machine* machine, TermPtr var, TermPtr body);
 
-  TermPtr defsty (Context* context, TermPtr name, TermPtr style, TermPtr prec);
-  TermPtr defout (Context* context, TermPtr left, TermPtr right);
-  TermPtr defmap (Context* context, TermPtr name, TermPtr term);
-  TermPtr define (Context* context, TermPtr name, TermPtr type, TermPtr body);
-  TermPtr defaty (Context* context, TermPtr name);
-  TermPtr deftmp (Context* context, TermPtr name, TermPtr var, TermPtr type, TermPtr body);
-  TermPtr deflib (Context* context, TermPtr name, TermPtr path);
-  TermPtr defext (Context* context, TermPtr name, TermPtr type,
+  TermPtr defsty (Machine* machine, TermPtr name, TermPtr style, TermPtr prec);
+  TermPtr defout (Machine* machine, TermPtr left, TermPtr right);
+  TermPtr defmap (Machine* machine, TermPtr name, TermPtr term);
+  TermPtr define (Machine* machine, TermPtr name, TermPtr type, TermPtr body);
+  TermPtr defaty (Machine* machine, TermPtr name);
+  TermPtr deftmp (Machine* machine, TermPtr name, TermPtr var, TermPtr type, TermPtr body);
+  TermPtr deflib (Machine* machine, TermPtr name, TermPtr path);
+  TermPtr defext (Machine* machine, TermPtr name, TermPtr type,
 		  TermPtr arity, TermPtr cname, TermPtr lib, TermPtr ret);
 
-  TermPtr undef (Context* context, TermPtr name);
-  TermPtr undefx (Context* context, TermPtr t_nspace, TermPtr t_name);
+  TermPtr undef (Machine* machine, TermPtr name);
+  TermPtr undefx (Machine* machine, TermPtr t_nspace, TermPtr t_name);
 
-  TermPtr redef (Context* context, TermPtr t_name, TermPtr term);
+  TermPtr redef (Machine* machine, TermPtr t_name, TermPtr term);
 
-  TermPtr new_ns (Context* context);
-  TermPtr get_ns (Context* context, TermPtr t_ns, TermPtr t_name);
-  TermPtr set_ns (Context* context, TermPtr t_ns);
+  TermPtr new_ns (Machine* machine);
+  TermPtr get_ns (Machine* machine, TermPtr t_ns, TermPtr t_name);
+  TermPtr set_ns (Machine* machine, TermPtr t_ns);
 
-  TermPtr crec (Context* context, TermPtr size);
-  TermPtr cmem (Context* context, TermPtr type, TermPtr size);
+  TermPtr crec (Machine* machine, TermPtr size);
+  TermPtr cmem (Machine* machine, TermPtr type, TermPtr size);
 
-  TermPtr subs (Context* context, TermPtr from, TermPtr to, TermPtr term);
+  TermPtr subs (Machine* machine, TermPtr from, TermPtr to, TermPtr term);
 
-  TermPtr solve (Context* context, TermPtr var, TermPtr lhs, TermPtr rhs);
+  TermPtr solve (Machine* machine, TermPtr var, TermPtr lhs, TermPtr rhs);
 
-  TermPtr bind (Context* context, TermPtr term);
-  TermPtr redsh  (Context* context, TermPtr term);
-  TermPtr redshx (Context* context, TermPtr term, TermPtr exit);
-  TermPtr red (Context* context, TermPtr term, TermPtr t_flags);
+  TermPtr bind (Machine* machine, TermPtr term);
+  TermPtr redsh  (Machine* machine, TermPtr term);
+  TermPtr redshx (Machine* machine, TermPtr term, TermPtr exit);
+  TermPtr red (Machine* machine, TermPtr term, TermPtr t_flags);
 
-  TermPtr is_sub (Context* context, TermPtr sub, TermPtr super);
-  TermPtr type_of (Context* context, TermPtr term);
-  TermPtr proj (Context* context, TermPtr from, TermPtr to);
+  TermPtr is_sub (Machine* machine, TermPtr sub, TermPtr super);
+  TermPtr type_of (Machine* machine, TermPtr term);
+  TermPtr proj (Machine* machine, TermPtr from, TermPtr to);
 
-  TermPtr type (Context* context, TermPtr name);
-  TermPtr typetmp (Context* context, TermPtr body, TermPtr param);
+  TermPtr type (Machine* machine, TermPtr name);
+  TermPtr typetmp (Machine* machine, TermPtr body, TermPtr param);
 
-  TermPtr get_special (Context* context, TermPtr name);
-  TermPtr set_special (Context* context, TermPtr name, TermPtr value);
-  TermPtr set_attr (Context* context, TermPtr name, TermPtr value);
+  TermPtr get_special (Machine* machine, TermPtr name);
+  TermPtr set_special (Machine* machine, TermPtr name, TermPtr value);
+  TermPtr set_attr (Machine* machine, TermPtr name, TermPtr value);
 
-  TermPtr get_slot (Context* context, TermPtr id);
-  TermPtr set_slot (Context* context, TermPtr id, TermPtr val);
+  TermPtr get_slot (Machine* machine, TermPtr id);
+  TermPtr set_slot (Machine* machine, TermPtr id, TermPtr val);
 
-  TermPtr scope_pushx (Context* context, TermPtr t_scope);
-  TermPtr scope_push (Context* context);
-  TermPtr scope_popx (Context* context);
-  TermPtr scope_pop (Context* context);
-  TermPtr scope_set (Context* c, TermPtr t_flags);
+  TermPtr scope_pushx (Machine* machine, TermPtr t_scope);
+  TermPtr scope_push (Machine* machine);
+  TermPtr scope_popx (Machine* machine);
+  TermPtr scope_pop (Machine* machine);
+  TermPtr scope_set (Machine* c, TermPtr t_flags);
 
-  TermPtr import (Context* c, TermPtr name);
+  TermPtr import (Machine* c, TermPtr name);
 
-  TermPtr set_int (Context* c, TermPtr v, TermPtr val);
-  TermPtr set_str (Context* c, TermPtr v, TermPtr val);
+  TermPtr set_int (Machine* c, TermPtr v, TermPtr val);
+  TermPtr set_str (Machine* c, TermPtr v, TermPtr val);
 
-  TermPtr ifeq (Context* context, TermPtr lhs, TermPtr rhs, TermPtr t, TermPtr f);
+  TermPtr ifeq (Machine* machine, TermPtr lhs, TermPtr rhs, TermPtr t, TermPtr f);
 
-  TermPtr cons_t2 (Context* context, TermPtr term);
+  TermPtr cons_t2 (Machine* machine, TermPtr term);
 
-  TermPtr dict_new (Context* context, TermPtr type);
-  TermPtr dict_has (Context* context, TermPtr t_dict, TermPtr t_name);
-  TermPtr dict_get (Context* context, TermPtr t_dict, TermPtr t_name);
-  TermPtr dict_set (Context* context, TermPtr t_dict, TermPtr t_name, TermPtr term);
-  TermPtr dict_vis (Context* context, TermPtr t_dict, TermPtr t_visitor);
+  TermPtr dict_new (Machine* machine, TermPtr type);
+  TermPtr dict_has (Machine* machine, TermPtr t_dict, TermPtr t_name);
+  TermPtr dict_get (Machine* machine, TermPtr t_dict, TermPtr t_name);
+  TermPtr dict_set (Machine* machine, TermPtr t_dict, TermPtr t_name, TermPtr term);
+  TermPtr dict_vis (Machine* machine, TermPtr t_dict, TermPtr t_visitor);
 
-  TermPtr list_new (Context* context, TermPtr type);
-  TermPtr list_ins (Context* context, TermPtr t_list, TermPtr term);
-  TermPtr list_add (Context* context, TermPtr t_list, TermPtr term);
-  TermPtr list_vis (Context* context, TermPtr t_list, TermPtr t_visitor);
+  TermPtr list_new (Machine* machine, TermPtr type);
+  TermPtr list_ins (Machine* machine, TermPtr t_list, TermPtr term);
+  TermPtr list_add (Machine* machine, TermPtr t_list, TermPtr term);
+  TermPtr list_vis (Machine* machine, TermPtr t_list, TermPtr t_visitor);
 
-  TermPtr set (Context* context, TermPtr t_ref, TermPtr term);
+  TermPtr set (Machine* machine, TermPtr t_ref, TermPtr term);
 
-  TermPtr tok_str (Context* context, TermPtr t_name);
-  TermPtr tok_sym (Context* context, TermPtr t_name);
+  TermPtr tok_str (Machine* machine, TermPtr t_name);
+  TermPtr tok_sym (Machine* machine, TermPtr t_name);
 
-  TermPtr raise (Context* context, TermPtr t_id, TermPtr term1, TermPtr term2, TermPtr term3);
+  TermPtr raise (Machine* machine, TermPtr t_id, TermPtr term1, TermPtr term2, TermPtr term3);
 };
 
 #endif

@@ -1,5 +1,5 @@
 #include <app.hh>
-#include <context.hh>
+#include <machine.hh>
 #include <raw.hh>
 #include <scope.hh>
 #include <seq.hh>
@@ -60,7 +60,7 @@ namespace NAMESPACE
   }
 
   TermPtr
-  Raw::reduce (Context* c, int flags, TermPtr expected)
+  Raw::reduce (Machine* c, int flags, TermPtr expected)
   {
     if (empty())
       return VOID;
@@ -83,7 +83,7 @@ namespace NAMESPACE
   }
 
   void
-  Raw::_update_style (Context* c)
+  Raw::_update_style (Machine* c)
   {
     for (iterator iter = begin(); iter != end(); ++iter) {
       if (TokPtr tok = CAST<Tok> (iter->first)) {
@@ -124,7 +124,7 @@ namespace NAMESPACE
   }
 
   TermPtr
-  Raw::construct (Context* c, int flags)
+  Raw::construct (Machine* c, int flags)
   {
     _update_style (c);
 
@@ -187,7 +187,7 @@ namespace NAMESPACE
   }
 
   int
-  Raw::_detach (Context* c, iterator li, iterator ri)
+  Raw::_detach (Machine* c, iterator li, iterator ri)
   {
     TokPtr ltok = CAST<Tok>(li->first);
     TokPtr rtok = CAST<Tok>(ri->first);
@@ -215,7 +215,7 @@ namespace NAMESPACE
   }
 
   RawPtr
-  Raw::deoutfix (Context* c)
+  Raw::deoutfix (Machine* c)
   {
     iterator        iter;
     unsigned int    fix = 0;

@@ -10,7 +10,7 @@
 
 namespace NAMESPACE
 {
-  class Context;
+  class Machine;
 
   /**
    * Abstract base class for all terms.
@@ -59,7 +59,7 @@ namespace NAMESPACE
     /**
      * Reduce the term into a simpler form.
      *
-     * \param   context  the the context in which
+     * \param   machine  the the machine in which
      *                   the term is to be reduced.
      *
      * \param   flags    flags for reduction, can be a bit
@@ -74,7 +74,7 @@ namespace NAMESPACE
      *          if the term is not reducible,
      *          the result will be empty pointer.
      */
-    virtual TermPtr reduce (Context* context, int flags, TermPtr expected);
+    virtual TermPtr reduce (Machine* machine, int flags, TermPtr expected);
 
     virtual void msolve (const TermVec& unknowns, TermPtr rhs, TermMap& solutions) const;
 

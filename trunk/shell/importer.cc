@@ -1,4 +1,4 @@
-#include <context.hh>
+#include <machine.hh>
 #include <exception.hh>
 #include <importer.hh>
 #include <scope.hh>
@@ -9,9 +9,9 @@
 #include <fstream>
 
 bool
-MyImportHandler::import (Context* context, const string& name)
+MyImportHandler::import (Machine* machine, const string& name)
 {
-  if (! context->scopes()->get_mod (name)) {
+  if (! machine->scopes()->get_mod (name)) {
     // \todo iterate through library path list as well
     // \todo directly use + operator on string might be very slow.
     map<string,string>::iterator i;
@@ -20,8 +20,8 @@ MyImportHandler::import (Context* context, const string& name)
       ifstream file (filename.c_str());
       if (file.good()) {
 	Scanner *scanner = load_scanner(i->second);
-	context->scopes()->set_mod (name, NIL);
-	run (context, scanner, file, ALL);
+	machine->scopes()->set_mod (name, NIL);
+	run (machine, scanner, file, ALL);
 	return true;
       }
     }
@@ -33,10 +33,10 @@ MyImportHandler::import (Context* context, const string& name)
 }
 
 TermPtr
-MyImportHandler::run (Context* context, Scanner* scanner, std::istream& input, int flags)
+MyImportHandler::run (Machine* machine, Scanner* scanner, std::istream& input, int flags)
 {
-  RawPtr raw = scanner->scan (context, input, std::cerr);
-  return context->eval (raw, ALL);
+  RawPtr raw = scanner->scan (machine, input, std::cerr);
+  return machine->eval (raw, ALL);
 }
 
 Scanner*

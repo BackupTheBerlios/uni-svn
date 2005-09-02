@@ -14,12 +14,12 @@ class MyImportHandler : public ImportHandler
 {
 public:
 
-  virtual bool import (Context* context, const string& name);
+  virtual bool import (Machine* machine, const string& name);
 
   Scanner* load_scanner (const string& extname);
   Scanner* load_scanner_for (const string& filename);
 
-  TermPtr run (Context* context, Scanner* scanner, std::istream& input, int flags);
+  TermPtr run (Machine* machine, Scanner* scanner, std::istream& input, int flags);
 
   MyImportHandler (const string& lib_path);
   ~MyImportHandler();

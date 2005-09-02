@@ -1,6 +1,6 @@
 #include <app.hh>
 #include <builtin.hh>
-#include <context.hh>
+#include <machine.hh>
 #include <scanner.hh>
 #include <tok.hh>
 
@@ -45,7 +45,7 @@ bool read_until (istream& input, ostream& output, string sym)
   return false;
 }
 
-void filt (Context* context,
+void filt (Machine* machine,
 	   Scanner* scanner,
 	   istream& input,
 	   ostream& output,
@@ -60,13 +60,13 @@ void filt (Context* context,
       if (input.good()) {
 	if (read_until (input, buf, close)) {
 	  if (buf.good()) {
- 	    RawPtr raw = scanner->scan (context, buf, error);
- 	    TermPtr result = context->eval (raw, ALL);
+ 	    RawPtr raw = scanner->scan (machine, buf, error);
+ 	    TermPtr result = machine->eval (raw, ALL);
 	    
  	    TermPtr str = Tok::create ("str");
  	    TermPtr app_result = App::create (str,result);
 
- 	    result = context->reduce_in_shield (app_result);
+ 	    result = machine->reduce_in_shield (app_result);
 
  	    StrPtr str_result = CAST<Str> (result);
 
@@ -109,7 +109,7 @@ Scanner* load_scanner (const string& name)
 
 int main (int argc, char** argv)
 {
-  Context context;
+  Machine machine;
   Builtin builtin;
 
   const char* open = 0;
@@ -141,8 +141,8 @@ int main (int argc, char** argv)
 
   try {
     Scanner* s = load_scanner(scanner);
-    builtin.init (&context);
-    filt (&context, s, cin, cout, cerr, open, close);
+    builtin.init (&machine);
+    filt (&machine, s, cin, cout, cerr, open, close);
   }
   catch (const char* err) {
     cerr << err << endl;

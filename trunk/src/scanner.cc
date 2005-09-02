@@ -1,5 +1,5 @@
 #include <app.hh>
-#include <context.hh>
+#include <machine.hh>
 #include <scanner.hh>
 #include <scope.hh>
 #include <string.hh>
@@ -10,11 +10,11 @@ using std::make_pair;
 namespace NAMESPACE
 {
   RawPtr
-  Scanner::scan (Context* context, std::istream& input, std::ostream& error)
+  Scanner::scan (Machine* machine, std::istream& input, std::ostream& error)
   {
     RawPtr raw = Raw::create();
 
-    _context = context;
+    _machine = machine;
     _raws.clear();
     _raws.push_back (make_pair (raw, 0));
     xscan (input, error);

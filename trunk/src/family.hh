@@ -16,7 +16,7 @@ namespace NAMESPACE
 
   public:
 
-    virtual TermPtr reduce (Context* context, int flags, TermPtr expected);
+    virtual TermPtr reduce (Machine* machine, int flags, TermPtr expected);
 
     /**
      * Add a new function or a new function template
@@ -41,7 +41,7 @@ namespace NAMESPACE
       void add (TermPtr body, TermPtr type);
       unsigned int size() const { return list<BindState*>::size(); }
 
-      BindState* move (Context* context, int flags, unsigned int argi);
+      BindState* move (Machine* machine, int flags, unsigned int argi);
       TermPtr move (TermPtr type);
 
     private:

@@ -1,4 +1,4 @@
-#include <context.hh>
+#include <machine.hh>
 #include <scope.hh>
 #include <style.hh>
 #include <sym.hh>
@@ -22,7 +22,7 @@ namespace NAMESPACE
    *         not exist, an exception will be thrown.
    */
   TermPtr
-  Tok::reduce (Context* c, int flags, TermPtr expected)
+  Tok::reduce (Machine* c, int flags, TermPtr expected)
   {
     if (_spec) {
 	if (TermPtr r = c->special_sym(str()))

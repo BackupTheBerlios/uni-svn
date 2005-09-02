@@ -2,7 +2,7 @@
 #include <app.hh>
 #include <bool.hh>
 #include <cons.hh>
-#include <context.hh>
+#include <machine.hh>
 #include <dict.hh>
 #include <exception.hh>
 #include <func.hh>
@@ -24,80 +24,80 @@ namespace NAMESPACE
 {
   class RefListVisitor : public ListVisitor
   {
-    Context* _context;
+    Machine* _machine;
     TermPtr  _visitor;
 
   public:
 
-    RefListVisitor (Context *context, TermPtr visitor)
-      : _context (context), _visitor (visitor) { }
+    RefListVisitor (Machine *machine, TermPtr visitor)
+      : _machine (machine), _visitor (visitor) { }
 
     virtual void visit_list_item (TermPtr item)
     {
       AppPtr app = App::create (_visitor, item);
-      _context->reduce (app, ALL);
+      _machine->reduce (app, ALL);
     };
   };
 
   class RefDictVisitor : public DictVisitor
   {
-    Context* _context;
+    Machine* _machine;
     TermPtr  _visitor;
 
   public:
 
-    RefDictVisitor (Context *context, TermPtr visitor)
-      : _context (context), _visitor (visitor) { }
+    RefDictVisitor (Machine *machine, TermPtr visitor)
+      : _machine (machine), _visitor (visitor) { }
 
     virtual void visit_dict_item (const string& key, TermPtr item)
     {
       AppPtr app = App::create (_visitor, MStr::create (key));
       app = App::create (app, item);
-      _context->reduce (app, ALL);
+      _machine->reduce (app, ALL);
     };
   };
 
   TermPtr
-  retval (Context* c, TermPtr term)
+  retval (Machine* c, TermPtr term)
   {
     return Ret::create (term);
   }
 
   TermPtr
-  retpop (Context* c, TermPtr term)
+  retpop (Machine* c, TermPtr term)
   {
     c->scopes()->pop();
     return Ret::create (term);
   }
 
   TermPtr
-  as (Context* c, TermPtr type, TermPtr term)
+  as (Machine* c, TermPtr type, TermPtr term)
   {
     return AsType::create (type, term);
   }
 
   TermPtr
-  sa (Context* c, TermPtr term)
+  sa (Machine* c, TermPtr term)
   {
     shared_ptr<AsType> as = TCAST<AsType> (term);
     return as->body();
   }
 
   TermPtr
-  lambda (Context* c, TermPtr var, TermPtr body)
+  lambda (Machine* c, TermPtr var, TermPtr body)
   {
     return Abs::create (var, body);
   }
 
   TermPtr
-  lambdax (Context* c, TermPtr t_var, TermPtr body)
+  lambdax (Machine* c, TermPtr t_var, TermPtr body)
   {
     const char* var = TCAST<Str>(t_var)->str();
     return Abs::create (Tok::create (var), body);
   }
 
   TermPtr
-  lambdas (Context* c, TermPtr t_var, TermPtr body)
+  lambdas (Machine* c, TermPtr t_var, TermPtr body)
   {
     const char* var = TCAST<Str>(t_var)->str();
     AbsPtr abs = Abs::create (Sym::create (var), body);
@@ -105,14 +105,14 @@ namespace NAMESPACE
   }
 
   TermPtr
-  solve (Context* c, TermPtr var, TermPtr lhs, TermPtr rhs)
+  solve (Machine* c, TermPtr var, TermPtr lhs, TermPtr rhs)
   {
     return lhs->solve (var, rhs);
   }
 
   //// defsty //////////////////////////////////////////////////////////////////
   TermPtr
-  defsty (Context* c, TermPtr n, TermPtr f, TermPtr p)
+  defsty (Machine* c, TermPtr n, TermPtr f, TermPtr p)
   {
     const char* name = TCAST<Str>(n)->str();
     int fix  = TCAST<Int>(f)->val();
@@ -124,7 +124,7 @@ namespace NAMESPACE
 
   //// defout //////////////////////////////////////////////////////////////////
   TermPtr
-  defout (Context* c, TermPtr t_lhs, TermPtr t_rhs)
+  defout (Machine* c, TermPtr t_lhs, TermPtr t_rhs)
   {
     const char *lhs = TCAST<Str>(t_lhs)->str();
     const char *rhs = TCAST<Str>(t_rhs)->str();
@@ -134,7 +134,7 @@ namespace NAMESPACE
 
   //// defmap //////////////////////////////////////////////////////////////////
   TermPtr
-  defmap (Context* c, TermPtr n, TermPtr term)
+  defmap (Machine* c, TermPtr n, TermPtr term)
   {
     string  name = TCAST<Str>(n)->str();
     TermPtr body = term;
@@ -144,7 +144,7 @@ namespace NAMESPACE
 
   //// define //////////////////////////////////////////////////////////////////
   TermPtr
-  define (Context* c, TermPtr n, TermPtr t, TermPtr b)
+  define (Machine* c, TermPtr n, TermPtr t, TermPtr b)
   {
     string  name = TCAST<Str>(n)->str();
     TermPtr func = Intf::create (name, b, t);
@@ -153,26 +153,26 @@ namespace NAMESPACE
   }
 
   TermPtr
-  defaty (Context* context, TermPtr t_name)
+  defaty (Machine* machine, TermPtr t_name)
   {
     const char* name = TCAST<Str>(t_name)->str();
-    context->scopes()->add_symbol (Type::create (name), name);
+    machine->scopes()->add_symbol (Type::create (name), name);
     return VOID;
   }
 
   //// deflib //////////////////////////////////////////////////////////////////
   TermPtr
-  deflib (Context* context, TermPtr t_name, TermPtr t_path)
+  deflib (Machine* machine, TermPtr t_name, TermPtr t_path)
   {
     string name = (TCAST<Str> (t_name))->str();
     string path = (TCAST<Str> (t_path))->str();
-    context->scopes()->add_symbol (Lib::create (path), name);
+    machine->scopes()->add_symbol (Lib::create (path), name);
     return VOID;
   }
 
   //// defext //////////////////////////////////////////////////////////////////
   TermPtr
-  defext (Context* context,
+  defext (Machine* machine,
 	  TermPtr  t_name,
 	  TermPtr  t_type,
 	  TermPtr  t_arity,
@@ -187,13 +187,13 @@ namespace NAMESPACE
     P(Lib)  lib   = TCAST<Lib> (t_lib);
     TermPtr func  = Extf::create (cname, (unsigned int) arity, lib, t_type, ret);
 
-    context->scopes()->add_symbol (func, name);
+    machine->scopes()->add_symbol (func, name);
     return VOID;
   }
 
   //// deftmp //////////////////////////////////////////////////////////////////
   TermPtr
-  deftmp (Context* c, TermPtr n, TermPtr var, TermPtr type, TermPtr body)
+  deftmp (Machine* c, TermPtr n, TermPtr var, TermPtr type, TermPtr body)
   {
     const char* name = TCAST<Str>(n)->str();
     shared_ptr<Temp> ft = Temp::create (name, var, type, body);
@@ -203,14 +203,14 @@ namespace NAMESPACE
 
   //// undefine ////////////////////////////////////////////////////////////////
   TermPtr
-  undef (Context* c, TermPtr name)
+  undef (Machine* c, TermPtr name)
   {
     c->scopes()->del_symbol (TCAST<Str>(name)->str());
     return VOID;
   }
 
   TermPtr
-  undefx (Context* c, TermPtr t_nspace, TermPtr t_name)
+  undefx (Machine* c, TermPtr t_nspace, TermPtr t_name)
   {
     SpacePtr nspace = TCAST<Space> (t_nspace);
     StrPtr   name   = TCAST<Str>   (t_name);
@@ -219,93 +219,93 @@ namespace NAMESPACE
   }
 
   //// redef ///////////////////////////////////////////////////////////////////
-  TermPtr redef (Context* context, TermPtr t_name, TermPtr term)
+  TermPtr redef (Machine* machine, TermPtr t_name, TermPtr term)
   {
     const char* name = TCAST<Str>(t_name)->str();
-    if (! context->scopes()->set_symbol (name, term))
-      context->scopes()->add_symbol (term, name);
+    if (! machine->scopes()->set_symbol (name, term))
+      machine->scopes()->add_symbol (term, name);
     return VOID;
   }
 
   TermPtr
-  new_ns (Context* context)
+  new_ns (Machine* machine)
   {
     return Space::create();
   }
 
   TermPtr
-  get_ns (Context* context, TermPtr t_ns, TermPtr t_name)
+  get_ns (Machine* machine, TermPtr t_ns, TermPtr t_name)
   {
     SpacePtr nspace = TCAST<Space> (t_ns);
     StrPtr   name   = TCAST<Str> (t_name);
 
-    if (TermPtr result = context->scopes()->get_symbol (name->str(), nspace))
+    if (TermPtr result = machine->scopes()->get_symbol (name->str(), nspace))
       return result;
     else
       return NIL;
   }
 
   TermPtr
-  set_ns (Context* context, TermPtr t_ns)
+  set_ns (Machine* machine, TermPtr t_ns)
   {
     if (NIL == t_ns)
-      context->scopes()->current_nspace (SpacePtr());
+      machine->scopes()->current_nspace (SpacePtr());
     else {
       SpacePtr nspace = TCAST<Space> (t_ns);
-      context->scopes()->current_nspace (nspace);
+      machine->scopes()->current_nspace (nspace);
     }
 
     return VOID;
   }
 
   TermPtr
-  crec (Context* context, TermPtr t_size)
+  crec (Machine* machine, TermPtr t_size)
   {
     int size = TCAST<Int>(t_size)->val();
     return CRec::create (size);
   }
 
   TermPtr
-  cmem (Context* context, TermPtr type, TermPtr t_size)
+  cmem (Machine* machine, TermPtr type, TermPtr t_size)
   {
     int size = TCAST<Int>(t_size)->val();
     return CMem::create (type, size);
   }
 
   TermPtr
-  subs (Context* c, TermPtr from, TermPtr to, TermPtr term)
+  subs (Machine* c, TermPtr from, TermPtr to, TermPtr term)
   {
     return term->sub (from, to);
   }
 
   TermPtr
-  bind (Context* c, TermPtr term)
+  bind (Machine* c, TermPtr term)
   {
     return c->reduce (term, BIND);
   }
 
   TermPtr
-  redsh (Context* c, TermPtr term)
+  redsh (Machine* c, TermPtr term)
   {
     TermPtr r = c->reduce_in_shield (term);
     return r;
   }
 
   TermPtr
-  redshx (Context* c, TermPtr term, TermPtr exit)
+  redshx (Machine* c, TermPtr term, TermPtr exit)
   {
     TermPtr r = c->reduce_in_shield (term, ALL, exit);
     return r;
   }
 
   TermPtr
-  is_sub (Context* c, TermPtr sub, TermPtr super)
+  is_sub (Machine* c, TermPtr sub, TermPtr super)
   {
     return sub->compat (super) ? Bool::TRUE : Bool::FALSE;
   }
 
   TermPtr
-  type_of (Context* c, TermPtr term)
+  type_of (Machine* c, TermPtr term)
   {
     // For raw terms, they have to be bound before
     // any meaningful type can be extracted from it.
@@ -336,32 +336,32 @@ namespace NAMESPACE
   }
 
   TermPtr
-  proj (Context* c, TermPtr left, TermPtr right)
+  proj (Machine* c, TermPtr left, TermPtr right)
   {
     return Proj::create (left,right);
   }
 
   TermPtr
-  type (Context* c, TermPtr name)
+  type (Machine* c, TermPtr name)
   {
     return Type::create ((TCAST<Str>(name))->str());
   }
 
   TermPtr
-  typetmp (Context* context, TermPtr body, TermPtr param)
+  typetmp (Machine* machine, TermPtr body, TermPtr param)
   {
     return TypeTemplate::create (body, param);
   }
 
   TermPtr
-  get_special (Context* c, TermPtr n)
+  get_special (Machine* c, TermPtr n)
   {
     const char* name = TCAST<Str>(n)->str();
     return MStr::create (c->scopes()->get_special(name).c_str());
   }
 
   TermPtr
-  set_special (Context* c, TermPtr n, TermPtr v)
+  set_special (Machine* c, TermPtr n, TermPtr v)
   {
     const char* name  = TCAST<Str>(n)->str();
     const char* value = TCAST<Str>(v)->str();
@@ -370,7 +370,7 @@ namespace NAMESPACE
   }
 
   TermPtr
-  set_attr (Context* c, TermPtr n, TermPtr v)
+  set_attr (Machine* c, TermPtr n, TermPtr v)
   {
     const char* name  = TCAST<Str>(n)->str();
     int value = TCAST<Int>(v)->val();
@@ -378,7 +378,7 @@ namespace NAMESPACE
     return VOID;
   }
 
-  TermPtr get_slot (Context* c, TermPtr t_name)
+  TermPtr get_slot (Machine* c, TermPtr t_name)
   {
     const char* name  = TCAST<Str>(t_name)->str();
     if (TermPtr result = c->scopes()->get_slot (name))
@@ -387,40 +387,40 @@ namespace NAMESPACE
       throw E (E_NO_MATCH, t_name, Term::T);
   }
 
-  TermPtr set_slot (Context* c, TermPtr n, TermPtr val)
+  TermPtr set_slot (Machine* c, TermPtr n, TermPtr val)
   {
     const char* name  = TCAST<Str>(n)->str();
     c->scopes()->set_slot (name, val);
     return VOID;
   }
 
-  TermPtr scope_pushx (Context* c, TermPtr t_scope)
+  TermPtr scope_pushx (Machine* c, TermPtr t_scope)
   {
     ScopePtr scope = TCAST <Scope> (t_scope);
     c->scopes()->push (scope);
     return VOID;
   }
 
-  TermPtr scope_push (Context* c)
+  TermPtr scope_push (Machine* c)
   {
     c->scopes()->push();
     return VOID;
   }
 
-  TermPtr scope_pop (Context* c)
+  TermPtr scope_pop (Machine* c)
   {
     c->scopes()->pop();
     return VOID;
   }
 
-  TermPtr scope_popx (Context* c)
+  TermPtr scope_popx (Machine* c)
   {
     ScopePtr result = c->scopes()->top();
     c->scopes()->pop();
     return result;
   }
 
-  TermPtr scope_set (Context* c, TermPtr t_flags)
+  TermPtr scope_set (Machine* c, TermPtr t_flags)
   {
     int flags = TCAST<Int>(t_flags)->val();
     c->scopes()->current_flags (flags);
@@ -428,77 +428,77 @@ namespace NAMESPACE
   }
 
   TermPtr
-  import (Context* c, TermPtr name)
+  import (Machine* c, TermPtr name)
   {
     c->import (TCAST<Str>(name)->str());
     return VOID;
   }
 
   TermPtr
-  set_int (Context* c, TermPtr i, TermPtr val)
+  set_int (Machine* c, TermPtr i, TermPtr val)
   {
     TCAST<Int>(i)->val (TCAST<Int>(val)->val());
     return VOID;
   }
 
   TermPtr
-  set_str (Context* c, TermPtr i, TermPtr val)
+  set_str (Machine* c, TermPtr i, TermPtr val)
   {
 //     TCAST<Str>(i)->str (TCAST<Str>(val)->str());
     return VOID;
   }
 
   TermPtr
-  ifeq (Context* c, TermPtr lhs, TermPtr rhs, TermPtr eq, TermPtr ne)
+  ifeq (Machine* c, TermPtr lhs, TermPtr rhs, TermPtr eq, TermPtr ne)
   {
     return ((lhs == rhs) || (lhs->equ (rhs))) ? eq : ne;
   }
 
   TermPtr
-  cons (Context* context, TermPtr left, TermPtr right)
+  cons (Machine* machine, TermPtr left, TermPtr right)
   {
     return Cons::create (left, right);
   }
 
   TermPtr
-  consh (Context* context, TermPtr left, TermPtr right)
+  consh (Machine* machine, TermPtr left, TermPtr right)
   {
     return Consh::create (left, right);
   }
 
   TermPtr
-  head (Context* context, TermPtr cons)
+  head (Machine* machine, TermPtr cons)
   {
     ConsPtr c = TCAST<Cons> (cons);
     return c->left();
   }
 
   TermPtr
-  tail (Context* context, TermPtr cons)
+  tail (Machine* machine, TermPtr cons)
   {
     ConsPtr c = TCAST<Cons> (cons);
     return c->right();
   }
 
   TermPtr
-  headh (Context* context, TermPtr consh)
+  headh (Machine* machine, TermPtr consh)
   {
     ConshPtr c = TCAST<Consh> (consh);
     return c->left();
   }
 
   TermPtr
-  tailh (Context* context, TermPtr consh)
+  tailh (Machine* machine, TermPtr consh)
   {
     ConshPtr c = TCAST<Consh> (consh);
     return c->right();
   }
 
   TermPtr
-  cons_t2 (Context* context, TermPtr term)
+  cons_t2 (Machine* machine, TermPtr term)
   {
     TermPtr result = NIL;
-    term = context->reduce (term, CONS);
+    term = machine->reduce (term, CONS);
 
     for (P(STree<2>) tree; tree = CAST< STree<2> > (term); term = tree->elem(0))
       result = Cons::create (tree->elem(1), result);
@@ -507,19 +507,19 @@ namespace NAMESPACE
   }
 
 //   TermPtr
-//   let (Context* context, TermPtr var, TermPtr exp, TermPtr body)
+//   let (Machine* machine, TermPtr var, TermPtr exp, TermPtr body)
 //   {
 //     return Let::create (var, exp, body);
 //   }
 
   TermPtr
-  dict_new (Context* context, TermPtr type)
+  dict_new (Machine* machine, TermPtr type)
   {
     return Dict::create (type);
   }
 
   TermPtr
-  dict_has (Context* context, TermPtr t_dict, TermPtr t_name)
+  dict_has (Machine* machine, TermPtr t_dict, TermPtr t_name)
   {
     DictPtr dict = TCAST<Dict> (t_dict);
     StrPtr  name = TCAST<Str>  (t_name);
@@ -528,7 +528,7 @@ namespace NAMESPACE
   }
 
   TermPtr
-  dict_get (Context* context, TermPtr t_dict, TermPtr t_name)
+  dict_get (Machine* machine, TermPtr t_dict, TermPtr t_name)
   {
     DictPtr dict = TCAST<Dict> (t_dict);
     StrPtr  name = TCAST<Str>  (t_name);
@@ -540,7 +540,7 @@ namespace NAMESPACE
   }
 
   TermPtr
-  dict_set (Context* context, TermPtr t_dict, TermPtr t_name, TermPtr term)
+  dict_set (Machine* machine, TermPtr t_dict, TermPtr t_name, TermPtr term)
   {
     DictPtr dict = TCAST<Dict> (t_dict);
     StrPtr  name = TCAST<Str>  (t_name);
@@ -549,43 +549,43 @@ namespace NAMESPACE
     return VOID;
   }
 
-  TermPtr dict_vis (Context* context, TermPtr t_dict, TermPtr t_visitor)
+  TermPtr dict_vis (Machine* machine, TermPtr t_dict, TermPtr t_visitor)
   {
     DictPtr dict = TCAST<Dict> (t_dict);
-    RefDictVisitor visitor (context, t_visitor);
+    RefDictVisitor visitor (machine, t_visitor);
     dict->visit_dict (visitor);
     return VOID;
   }
 
-  TermPtr list_new (Context* context, TermPtr type)
+  TermPtr list_new (Machine* machine, TermPtr type)
   {
     return List::create (type);
   }
 
-  TermPtr list_ins (Context* context, TermPtr t_list, TermPtr term)
+  TermPtr list_ins (Machine* machine, TermPtr t_list, TermPtr term)
   {
     ListPtr list = TCAST<List> (t_list);
     list->insert_front (term);
     return VOID;
   }
 
-  TermPtr list_add (Context* context, TermPtr t_list, TermPtr term)
+  TermPtr list_add (Machine* machine, TermPtr t_list, TermPtr term)
   {
     ListPtr list = TCAST<List> (t_list);
     list->insert_back (term);
     return VOID;
   }
 
-  TermPtr list_vis (Context* context, TermPtr t_list, TermPtr t_visitor)
+  TermPtr list_vis (Machine* machine, TermPtr t_list, TermPtr t_visitor)
   {
     ListPtr list = TCAST<List> (t_list);
-    RefListVisitor visitor (context, t_visitor);
+    RefListVisitor visitor (machine, t_visitor);
     list->visit_list (visitor);
     return VOID;
   }
 
   TermPtr
-  set (Context* context, TermPtr t_ref, TermPtr term)
+  set (Machine* machine, TermPtr t_ref, TermPtr term)
   {
     DictPtr ref = TCAST<Dict> (t_ref);
     TermPtr obj = ref->get ("obj");
@@ -593,12 +593,12 @@ namespace NAMESPACE
 
     if (obj) {
       if (IntPtr x = CAST<Int> (obj))
-	return set_int (context, x, term);
+	return set_int (machine, x, term);
       else if (StrPtr x = CAST<Str> (obj))
-	return set_str (context, x, term);
+	return set_str (machine, x, term);
       else if (DictPtr x = CAST<Dict> (obj)) {
 	if (key)
-	  return dict_set (context, x, key, term);
+	  return dict_set (machine, x, key, term);
 	else
 	  throw E (E_NO_KEY, x, key);
       }
@@ -609,27 +609,27 @@ namespace NAMESPACE
       throw E (E_NO_KEY, ref, MStr::create ("obj"));
   }
 
-  TermPtr tok_str (Context* context, TermPtr t_name)
+  TermPtr tok_str (Machine* machine, TermPtr t_name)
   {
     return Tok::create (TCAST<Str>(t_name)->str());
   }
 
-  TermPtr tok_sym (Context* context, TermPtr t_name)
+  TermPtr tok_sym (Machine* machine, TermPtr t_name)
   {
     return Tok::create (TCAST<Sym>(t_name)->str());
   }
 
-  TermPtr raise (Context* context, TermPtr t_id, TermPtr t1, TermPtr t2, TermPtr t3)
+  TermPtr raise (Machine* machine, TermPtr t_id, TermPtr t1, TermPtr t2, TermPtr t3)
   {
     int id = TCAST<Int>(t_id)->val();
     throw E (id, t1, t2, t3);
   }
 
-  TermPtr red (Context* context, TermPtr term, TermPtr t_flags)
+  TermPtr red (Machine* machine, TermPtr term, TermPtr t_flags)
   {
     int flags = TCAST<Int>(t_flags)->val();
     ListPtr l = List::create();
-    l->insert_back (context->reduce (term, flags));
+    l->insert_back (machine->reduce (term, flags));
     return l;
   }
 };

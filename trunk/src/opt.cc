@@ -1,4 +1,4 @@
-#include <context.hh>
+#include <machine.hh>
 #include <int.hh>
 #include <opt.hh>
 #include <seq.hh>
@@ -7,13 +7,13 @@
 namespace NAMESPACE
 {
   TermPtr
-  IdOpt::reduce (Context* context, int flags, TermPtr expected)
+  IdOpt::reduce (Machine* machine, int flags, TermPtr expected)
   {
     // the dummy 'id' is used only as an update point,
     // so when reduce, it does nothing except reduce the rand.
-    if (context->arg_count() > 0) {
-      TermPtr result = context->arg_reduce(0, flags);
-      context->pop();
+    if (machine->arg_count() > 0) {
+      TermPtr result = machine->arg_reduce(0, flags);
+      machine->pop();
       return result;
     }
     else
@@ -21,7 +21,7 @@ namespace NAMESPACE
   }
 
 //   TermPtr
-//   Let::reduce (Context* context, int flags, TermPtr expected)
+//   Let::reduce (Machine* machine, int flags, TermPtr expected)
 //   {
 //     return body()->sub (_var, exp());
 //   }

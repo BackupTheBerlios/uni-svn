@@ -1,7 +1,7 @@
 #include <bool.hh>
 #include <builtin.hh>
 #include <cons.hh>
-#include <context.hh>
+#include <machine.hh>
 #include <exception.hh>
 #include <func.hh>
 #include <int.hh>
@@ -70,7 +70,7 @@ namespace NAMESPACE
   };
 
   void
-  Builtin::init (Context* context)
+  Builtin::init (Machine* machine)
   {
     TermPtr x = Sym::create ("x");
     TermPtr y = Sym::create ("y");
@@ -137,11 +137,11 @@ namespace NAMESPACE
       {_F ("redshx", redshx,            2, SIDE, 0,  P2 (Raw::T, Raw::T, UPR_T))},
       {_F ("tok",    tok_str,           1, BIND, S0, P1 (Str::T, Raw::T))},
       {_F ("tok",    tok_sym,           1, BIND, S0, P1 (Sym::T, Raw::T))},
-      //// context manipulation functions ////
+      //// machine manipulation functions ////
       {_F ("name_get",  get_special,       1, CTXT, SX, P1 (Str::T, Str::T))},
       {_F ("name_set",          set_special,       2, CTXT, SX, P2 (Str::T, Str::T, VOID_T))},
       {_F ("set_attr",          set_attr,          2, CTXT, SX, P2 (Str::T, Int::T, VOID_T))},
-      //// context manipulation functions ////
+      //// machine manipulation functions ////
       {_F ("slot_get", get_slot, 1, CTXT, SX, P1 (Str::T, Term::T))},
       {_F ("slot_set", set_slot, 2, CTXT, SX, P2 (Str::T, Raw::T, VOID_T))},
       //// scope manipulation functions ////
@@ -238,6 +238,6 @@ namespace NAMESPACE
     };
 
     for (unsigned int i=0; i<sizeof(_builtins)/sizeof(_builtin_t); ++i)
-      context->scopes()->add_symbol (_builtins[i].term, _builtins[i].name);
+      machine->scopes()->add_symbol (_builtins[i].term, _builtins[i].name);
   }
 };

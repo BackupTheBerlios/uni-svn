@@ -1,5 +1,5 @@
 #include <bool.hh>
-#include <context.hh>
+#include <machine.hh>
 #include <exception.hh>
 #include <int.hh>
 #include <string.hh>
@@ -11,55 +11,55 @@
 namespace NAMESPACE
 {
   TermPtr
-  add_i (Context* c, TermPtr left, TermPtr right)
+  add_i (Machine* c, TermPtr left, TermPtr right)
   {
     return Int::create (TCAST<Int>(left)->val() + TCAST<Int>(right)->val());
   }
 
   TermPtr
-  sub_i (Context* c, TermPtr left, TermPtr right)
+  sub_i (Machine* c, TermPtr left, TermPtr right)
   {
     return Int::create (TCAST<Int>(left)->val() - TCAST<Int>(right)->val());
   }
 
   TermPtr
-  mul_i (Context* c, TermPtr left, TermPtr right)
+  mul_i (Machine* c, TermPtr left, TermPtr right)
   {
     return Int::create (TCAST<Int>(left)->val() * TCAST<Int>(right)->val());
   }
 
   TermPtr
-  div_i (Context* c, TermPtr left, TermPtr right)
+  div_i (Machine* c, TermPtr left, TermPtr right)
   {
     return Int::create (TCAST<Int>(left)->val() / TCAST<Int>(right)->val());
   }
 
   TermPtr
-  mod_i (Context* c, TermPtr left, TermPtr right)
+  mod_i (Machine* c, TermPtr left, TermPtr right)
   {
     return Int::create (TCAST<Int>(left)->val() % TCAST<Int>(right)->val());
   }
 
   TermPtr
-  equ_i (Context* context, TermPtr left, TermPtr right)
+  equ_i (Machine* machine, TermPtr left, TermPtr right)
   {
     return TCAST<Int>(left)->val() == TCAST<Int>(right)->val() ? Bool::TRUE : Bool::FALSE;
   }
 
   TermPtr
-  less_i (Context* context, TermPtr left, TermPtr right)
+  less_i (Machine* machine, TermPtr left, TermPtr right)
   {
     return TCAST<Int>(left)->val() < TCAST<Int>(right)->val() ? Bool::TRUE : Bool::FALSE;
   }
 
   TermPtr
-  greater_i (Context* context, TermPtr left, TermPtr right)
+  greater_i (Machine* machine, TermPtr left, TermPtr right)
   {
     return TCAST<Int>(left)->val() > TCAST<Int>(right)->val() ? Bool::TRUE : Bool::FALSE;
   }
 
   TermPtr
-  concat (Context* c, TermPtr left, TermPtr right)
+  concat (Machine* c, TermPtr left, TermPtr right)
   {
     string s (TCAST<Str>(left)->str());
     s += TCAST<Str>(right)->str();
@@ -67,14 +67,14 @@ namespace NAMESPACE
   }
 
   TermPtr
-  raw_print (Context* c, TermPtr str)
+  raw_print (Machine* c, TermPtr str)
   {
     std::cout << TCAST<Str>(str)->str() << std::flush;
     return VOID;
   }
 
   TermPtr
-  str (Context* c, TermPtr term)
+  str (Machine* c, TermPtr term)
   {
     if (CAST<MStr> (term) && (Str::T == term->type()))
       return term;
@@ -87,7 +87,7 @@ namespace NAMESPACE
   }
 
   TermPtr
-  str_ansi (Context* c, TermPtr term)
+  str_ansi (Machine* c, TermPtr term)
   {
     if (c->ansi_attrs()) {
       std::ostringstream os;
@@ -100,7 +100,7 @@ namespace NAMESPACE
   }
 
   TermPtr
-  cstr (Context* c, TermPtr src)
+  cstr (Machine* c, TermPtr src)
   {
     std::ostringstream os;
     bool escape = false;
@@ -135,7 +135,7 @@ namespace NAMESPACE
   }
 
   TermPtr
-  cast_str (Context* context, TermPtr term)
+  cast_str (Machine* machine, TermPtr term)
   {
     if (StrPtr str = CAST<Str> (term))
       return MStr::create (str->str());

@@ -13,7 +13,7 @@ namespace NAMESPACE
   const int BIND = 1 << 0; // bind families to defined expressions.
   const int META = 1 << 1; // perform meta reductions.
   const int PURE = 1 << 2; // perform pure (no side effect) reductions.
-  const int CTXT = 1 << 3; // perform context sensitive reductions.
+  const int CTXT = 1 << 3; // perform machine sensitive reductions.
   const int NICE = 1 << 4; // perform nicely behaved reductions.
   const int SIDE = 1 << 5; // perform side effect (nice or not nice) reductions.
 

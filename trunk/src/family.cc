@@ -1,4 +1,4 @@
-#include <context.hh>
+#include <machine.hh>
 #include <family.hh>
 #include <exception.hh>
 #include <proj.hh>
@@ -54,16 +54,16 @@ namespace NAMESPACE
   }
 
   Family::BindState*
-  Family::BindState::move (Context* c, int flags, unsigned int argi)
+  Family::BindState::move (Machine* m, int flags, unsigned int argi)
   {
-    if (argi >= c->arg_count())
+    if (argi >= m->arg_count())
       return this;
 
     for (iterator i = begin(); i != end(); ++i)
       if (! (**i)._leaf)
-	if (c->arg_compat (argi, ALL_PURE, (**i)._edge))
+	if (m->arg_compat (argi, ALL_PURE, (**i)._edge))
 	  if ((**i).size())
-	    if (BindState* state = (**i).move (c, flags, argi + 1))
+	    if (BindState* state = (**i).move (m, flags, argi + 1))
 	      return state;
 
     return this;
@@ -117,7 +117,7 @@ namespace NAMESPACE
   }
 
   TermPtr
-  Family::reduce (Context* c, int flags, TermPtr expected)
+  Family::reduce (Machine* m, int flags, TermPtr expected)
   {
     if (! (BIND & flags))
       throw E_MODE;
@@ -125,7 +125,7 @@ namespace NAMESPACE
     // First, matching term by going through
     // the family automaton.
 
-    if(BindState* state = _node.move (c, flags, 0))
+    if(BindState* state = _node.move (m, flags, 0))
       if (TermPtr result = state->move (expected ? expected : Term::T))
 	return result;
 
@@ -135,20 +135,20 @@ namespace NAMESPACE
     // are performing meta reduction, then reduction should stop. Otherwise,
     // a no-match exception will be raised.
 
-    if (0 == c->arg_count())
+    if (0 == m->arg_count())
       throw E_MODE;
 
     if (! empty())
       for (iterator i = begin(); i != end(); ++i)
-	if (TermPtr result = (*i)->reduce (c, flags, expected))
+	if (TermPtr result = (*i)->reduce (m, flags, expected))
 	  return result;
 
     if (ALL != flags)
       throw E_MODE;
     else {
       TermPtr given = Term::T;
-      for (int i = ((int)c->arg_count()) - 1; i >= 0; --i)
-	given = Proj::create (c->arg(i)->type(), given);
+      for (int i = ((int)m->arg_count()) - 1; i >= 0; --i)
+	given = Proj::create (m->arg(i)->type(), given);
       throw E (E_NO_MATCH, SELF, given);
     }
   }

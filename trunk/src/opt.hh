@@ -30,7 +30,7 @@ namespace NAMESPACE
 
   public:
 
-    virtual TermPtr reduce (Context* context, int flags, TermPtr expected);
+    virtual TermPtr reduce (Machine* machine, int flags, TermPtr expected);
   };
 
 //   class Let : public STree<2>
@@ -42,7 +42,7 @@ namespace NAMESPACE
 
 //   public:
 
-//     virtual TermPtr reduce (Context* context, int flags, TermPtr expected);
+//     virtual TermPtr reduce (Machine* machine, int flags, TermPtr expected);
 
 //   protected:
 

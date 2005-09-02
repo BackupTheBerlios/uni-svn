@@ -1,4 +1,4 @@
-#include <context.hh>
+#include <machine.hh>
 #include <raw.hh>
 #include <seq.hh>
 #include <style.hh>
@@ -54,25 +54,25 @@ namespace NAMESPACE
   }
 
   TermPtr
-  Seq::reduce (Context* context, int flags, TermPtr expected)
+  Seq::reduce (Machine* machine, int flags, TermPtr expected)
   {
     if (ALL_CTXT != (flags & ALL_CTXT))
       throw E_MODE;
 
     for (iterator i = begin(); i != end(); ++i) {
       if (RawPtr raw = CAST<Raw> (*i)) {
-	for (RawPtr next; next = raw->deoutfix (context); raw = next) {
-	  raw->construct (context, CONS);
-	  if (RetPtr ret = CAST<Ret> (context->reduce (raw, flags)))
+	for (RawPtr next; next = raw->deoutfix (machine); raw = next) {
+	  raw->construct (machine, CONS);
+	  if (RetPtr ret = CAST<Ret> (machine->reduce (raw, flags)))
 	    return ret->value();
 	}
 
-	raw->construct (context, CONS);
-	if (RetPtr ret = CAST<Ret> (context->reduce (raw, flags)))
+	raw->construct (machine, CONS);
+	if (RetPtr ret = CAST<Ret> (machine->reduce (raw, flags)))
 	  return ret->value();
       }
       else {
-	TermPtr r = context->reduce (*i, flags);
+	TermPtr r = machine->reduce (*i, flags);
 	assert (r);
 	if (RetPtr ret = CAST<Ret> (r))
 	  return ret->value();

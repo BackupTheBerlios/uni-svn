@@ -30,7 +30,7 @@ namespace NAMESPACE
 
   public:
 
-    virtual TermPtr reduce (Context* context, int flags, TermPtr expected);
+    virtual TermPtr reduce (Machine* machine, int flags, TermPtr expected);
 
   protected:
 
@@ -45,7 +45,7 @@ namespace NAMESPACE
 
   private:
 
-    typedef TermPtr (*_entry_type)(Context*,TermPtr,TermPtr,TermPtr,TermPtr,TermPtr,TermPtr,TermPtr,TermPtr);
+    typedef TermPtr (*_entry_type)(Machine*,TermPtr,TermPtr,TermPtr,TermPtr,TermPtr,TermPtr,TermPtr,TermPtr);
 
     _entry_type  _entry;
   };
@@ -72,7 +72,7 @@ namespace NAMESPACE
 
   public:
 
-    virtual TermPtr reduce (Context* c, int flags, TermPtr expected);
+    virtual TermPtr reduce (Machine* c, int flags, TermPtr expected);
 
   protected:
 
@@ -93,7 +93,7 @@ namespace NAMESPACE
 
   public:
 
-    virtual TermPtr reduce (Context* context, int flags, TermPtr expected);
+    virtual TermPtr reduce (Machine* machine, int flags, TermPtr expected);
 
   public:
 

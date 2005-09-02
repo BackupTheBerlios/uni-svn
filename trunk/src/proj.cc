@@ -1,4 +1,4 @@
-#include <context.hh>
+#include <machine.hh>
 #include <proj.hh>
 
 namespace NAMESPACE
@@ -6,7 +6,7 @@ namespace NAMESPACE
   IMP_TYPE (Proj, "PROJ");
 
   TermPtr
-  Proj::reduce (Context* c, int flags, TermPtr expected)
+  Proj::reduce (Machine* c, int flags, TermPtr expected)
   {
     from (c->reduce (from(), c->current_flags()));
     to   (c->reduce (to(),   c->current_flags()));

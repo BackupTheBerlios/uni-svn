@@ -6,24 +6,24 @@
 
 namespace NAMESPACE
 {
-  class Context;
+  class Machine;
 
-  TermPtr add_i (Context* context, TermPtr left, TermPtr right);
-  TermPtr sub_i (Context* context, TermPtr left, TermPtr right);
-  TermPtr mul_i (Context* context, TermPtr left, TermPtr right);
-  TermPtr div_i (Context* context, TermPtr left, TermPtr right);
-  TermPtr mod_i (Context* context, TermPtr left, TermPtr right);
-  TermPtr equ_i (Context* context, TermPtr left, TermPtr right);
-  TermPtr less_i (Context* context, TermPtr left, TermPtr right);
-  TermPtr greater_i (Context* context, TermPtr left, TermPtr right);
+  TermPtr add_i (Machine* machine, TermPtr left, TermPtr right);
+  TermPtr sub_i (Machine* machine, TermPtr left, TermPtr right);
+  TermPtr mul_i (Machine* machine, TermPtr left, TermPtr right);
+  TermPtr div_i (Machine* machine, TermPtr left, TermPtr right);
+  TermPtr mod_i (Machine* machine, TermPtr left, TermPtr right);
+  TermPtr equ_i (Machine* machine, TermPtr left, TermPtr right);
+  TermPtr less_i (Machine* machine, TermPtr left, TermPtr right);
+  TermPtr greater_i (Machine* machine, TermPtr left, TermPtr right);
 
-  TermPtr concat (Context* context, TermPtr left, TermPtr right);
-  TermPtr raw_print (Context* context, TermPtr str);
-  TermPtr str (Context* context, TermPtr term);
-  TermPtr str_ansi (Context* context, TermPtr term);
-  TermPtr cstr (Context* context, TermPtr src);
+  TermPtr concat (Machine* machine, TermPtr left, TermPtr right);
+  TermPtr raw_print (Machine* machine, TermPtr str);
+  TermPtr str (Machine* machine, TermPtr term);
+  TermPtr str_ansi (Machine* machine, TermPtr term);
+  TermPtr cstr (Machine* machine, TermPtr src);
 
-  TermPtr cast_str (Context* context, TermPtr term);
+  TermPtr cast_str (Machine* machine, TermPtr term);
 };
 
 #endif

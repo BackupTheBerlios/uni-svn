@@ -6,14 +6,14 @@
 
 namespace NAMESPACE
 {
-  class Context;
+  class Machine;
 
   class Builtin
   {
   public:
 
-    void init (Context* context);
-    void uninit (Context* context);
+    void init (Machine* machine);
+    void uninit (Machine* machine);
   };
 };
 

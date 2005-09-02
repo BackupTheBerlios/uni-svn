@@ -14,7 +14,7 @@ namespace NAMESPACE
 
   public:
 
-    virtual TermPtr reduce (Context* context, int flags, TermPtr expected);
+    virtual TermPtr reduce (Machine* machine, int flags, TermPtr expected);
 
     virtual unsigned int size() const { return TermVec::size(); }
     virtual void elem (unsigned int i, TermPtr e) { (*this)[i] = e; }

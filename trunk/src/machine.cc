@@ -1,5 +1,5 @@
 #include <app.hh>
-#include <context.hh>
+#include <machine.hh>
 #include <exception.hh>
 #include <family.hh>
 #include <frame.hh>
@@ -22,7 +22,7 @@ namespace NAMESPACE
   };
 
   //// ctor ////////////////////////////////////////////////////////////////////
-  Context::Context ()
+  Machine::Machine ()
     : _scopes (new ScopeStack),
       _step_break (false)
   {
@@ -36,14 +36,14 @@ namespace NAMESPACE
     //===============================================
   }
 
-  Context::~Context()
+  Machine::~Machine()
   {
     assert (_scopes);
     delete _scopes;
   }
 
   TermPtr
-  Context::special_sym (const string& id) const
+  Machine::special_sym (const string& id) const
   {
     try {
       return _scopes->get_symbol (_scopes->get_special (id));
@@ -54,7 +54,7 @@ namespace NAMESPACE
   }
 
   void
-  Context::set_attr (const string& id, int val)
+  Machine::set_attr (const string& id, int val)
   {
     if (id == "step_break")
       step_break (val != 0);
@@ -62,7 +62,7 @@ namespace NAMESPACE
 
   //// arguments ///////////////////////////////////////////////////////////////
   TermPtr
-  Context::arg (unsigned int i)
+  Machine::arg (unsigned int i)
   {
     assert (HAS_FRAME);
     assert (TOP_FRAME->size() > i);
@@ -73,7 +73,7 @@ namespace NAMESPACE
   }
 
   AppPtr
-  Context::arg_root (unsigned int i)
+  Machine::arg_root (unsigned int i)
   {
     assert (HAS_FRAME);
     assert (TOP_FRAME->size() > i);
@@ -84,7 +84,7 @@ namespace NAMESPACE
   }
 
   TermPtr
-  Context::arg_type (unsigned int i)
+  Machine::arg_type (unsigned int i)
   {
     assert (HAS_FRAME);
     assert (TOP_FRAME->size() > i);
@@ -98,7 +98,7 @@ namespace NAMESPACE
    *         all rely on it.
    */
   TermPtr
-  Context::arg_reduce (unsigned int i, int flags, TermPtr expected, bool collect)
+  Machine::arg_reduce (unsigned int i, int flags, TermPtr expected, bool collect)
   {
     assert (HAS_FRAME);
     assert (TOP_FRAME->size() > i);
@@ -123,7 +123,7 @@ namespace NAMESPACE
    *         for trying to match with other family members.
    */
   bool
-  Context::arg_compat (unsigned int i, int flags, TermPtr type)
+  Machine::arg_compat (unsigned int i, int flags, TermPtr type)
   {
     TermPtr r = arg (i);
 
@@ -138,7 +138,7 @@ namespace NAMESPACE
       else if (Raw::T == got && (BIND & flags))   // if we got a raw term...
 	f = BIND;                                 // then we need to bind it
       else if (DEP_T == got)                      // if we got a dependent term...
-	f = ALL_CTXT;                             // then reduced it with context-side-effect
+	f = ALL_CTXT;                             // then reduced it with machine-side-effect
       else if (UPR_T == got)                      // if we got a unpredictable term...
 	f = ALL;                                  // then we need to fully reduce it
       else {                                      // otherwise...
@@ -158,7 +158,7 @@ namespace NAMESPACE
   }
 
   unsigned int
-  Context::arg_count () const
+  Machine::arg_count () const
   {
     if (HAS_FRAME)
       return TOP_FRAME->size();
@@ -167,41 +167,41 @@ namespace NAMESPACE
   }
 
   unsigned int
-  Context::frame_depth () const
+  Machine::frame_depth () const
   {
     return TOP_SHIELD->size();
   }
 
   void
-  Context::push (AppPtr app)
+  Machine::push (AppPtr app)
   {
     assert (HAS_FRAME);
     TOP_FRAME->push (app);
   }
 
   int
-  Context::current_flags () const
+  Machine::current_flags () const
   {
     assert (HAS_FRAME);
     return TOP_FRAME->flags();
   }
 
   Frame*
-  Context::current_frame () const
+  Machine::current_frame () const
   {
     assert (HAS_FRAME);
     return TOP_FRAME;
   }
 
   void
-  Context::pop (unsigned int n)
+  Machine::pop (unsigned int n)
   {
     assert (HAS_FRAME);
     TOP_FRAME->pop (n);
   }
 
   TermPtr
-  Context::pop ()
+  Machine::pop ()
   {
     assert (HAS_FRAME);
     assert (TOP_FRAME->size());
@@ -212,7 +212,7 @@ namespace NAMESPACE
   }
 
   TermPtr
-  Context::reduce (TermPtr term, int flags, TermPtr expect, bool collect)
+  Machine::reduce (TermPtr term, int flags, TermPtr expect, bool collect)
   {
     assert (term);
 
@@ -277,7 +277,7 @@ namespace NAMESPACE
   }
 
   TermPtr
-  Context::reduce_in_shield (TermPtr term, int flags, TermPtr exit)
+  Machine::reduce_in_shield (TermPtr term, int flags, TermPtr exit)
   {
     assert (term);
 
@@ -303,7 +303,7 @@ namespace NAMESPACE
   }
 
   TermPtr
-  Context::eval (RawPtr raw, int flags)
+  Machine::eval (RawPtr raw, int flags)
   {
     if (raw->empty())
       return VOID;
@@ -318,13 +318,13 @@ namespace NAMESPACE
   }
 
   void
-  Context::import (const string& lib)
+  Machine::import (const string& lib)
   {
     _importer->import (this, lib);
   }
 
   void
-  Context::_new_frame (int flags)
+  Machine::_new_frame (int flags)
   {
     assert (HAS_SHIELD);
     TOP_SHIELD->push_back (new Frame (flags));
@@ -332,7 +332,7 @@ namespace NAMESPACE
   }
 
   void
-  Context::_del_frame ()
+  Machine::_del_frame ()
   {
     assert (HAS_SHIELD && HAS_FRAME);
     delete TOP_SHIELD->back();
@@ -340,14 +340,14 @@ namespace NAMESPACE
   }
 
   void
-  Context::_new_shield (TermPtr exit)
+  Machine::_new_shield (TermPtr exit)
   {
     push_back (new Shield (exit));
     assert (HAS_SHIELD);
   }
 
   void
-  Context::_del_shield (int flags)
+  Machine::_del_shield (int flags)
   {
     assert (! empty());
 
@@ -359,7 +359,7 @@ namespace NAMESPACE
   }
 
   TermPtr
-  Context::_expand_app (TermPtr term)
+  Machine::_expand_app (TermPtr term)
   {
     while (AppPtr app = CAST<App> (term)) {
       push (app);
@@ -370,7 +370,7 @@ namespace NAMESPACE
     return term;
   }
 
-  AppPtr Context::_pop_root ()    { assert (HAS_FRAME); return TOP_FRAME->pop(); }
-  AppPtr Context::_top_root ()    { assert (HAS_FRAME); return TOP_FRAME->top_root(); }
-  AppPtr Context::_bottom_root () { assert (HAS_FRAME); return TOP_FRAME->bottom_root(); }
+  AppPtr Machine::_pop_root ()    { assert (HAS_FRAME); return TOP_FRAME->pop(); }
+  AppPtr Machine::_top_root ()    { assert (HAS_FRAME); return TOP_FRAME->top_root(); }
+  AppPtr Machine::_bottom_root () { assert (HAS_FRAME); return TOP_FRAME->bottom_root(); }
 };
