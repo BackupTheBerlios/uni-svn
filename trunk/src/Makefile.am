@@ -51,6 +51,7 @@ libuni_la_SOURCES = app.hh \
 		seq.cc \
 		string.hh \
 		string.cc \
+		style.hh \
 		sym.hh \
 		sym.cc \
 		temp.hh \
@@ -63,6 +64,7 @@ libuni_la_SOURCES = app.hh \
 		tree.cc \
 		type.hh \
 		type.cc \
-		typdef.hh \
+		typedef.hh \
 		utils.hh \
-		utils.cc
+		utils.cc \
+		visitor.hh
