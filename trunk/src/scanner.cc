@@ -1,7 +1,6 @@
 #include <app.hh>
 #include <machine.hh>
 #include <scanner.hh>
-#include <scope.hh>
 #include <string.hh>
 #include <tok.hh>
 

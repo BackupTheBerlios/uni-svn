@@ -3,6 +3,7 @@
 #include <bool.hh>
 #include <builtin.hh>
 #include <cons.hh>
+#include <context.hh>
 #include <machine.hh>
 #include <exception.hh>
 #include <family.hh>
@@ -13,7 +14,6 @@
 #include <proj.hh>
 #include <raw.hh>
 #include <reflection.hh>
-#include <scope.hh>
 #include <seq.hh>
 #include <style.hh>
 #include <sym.hh>
@@ -201,11 +201,11 @@ main (int argc, char** argv)
 
     builtin.init (&machine);
 
-    machine.scopes()->set_special ("num_ctor", "num_ctor");
-    machine.scopes()->set_special ("str_ctor", "str_ctor");
+    machine.context()->set_special ("num_ctor", "num_ctor");
+    machine.context()->set_special ("str_ctor", "str_ctor");
 
-    machine.scopes()->add_symbol (num_ctor_f, "num_ctor");
-    machine.scopes()->add_symbol (str_ctor_f, "str_ctor");
+    machine.context()->add_symbol (num_ctor_f, "num_ctor");
+    machine.context()->add_symbol (str_ctor_f, "str_ctor");
 
     clo::parser clo_parser;
     clo_parser.parse (argc, argv);

@@ -15,6 +15,8 @@ libuni_la_SOURCES = app.hh \
 		builtin.cc \
 		cons.hh \
 		cons.cc \
+		context.hh \
+		context.cc \
 		cval.hh \
 		cval.cc \
 		dict.hh \
@@ -45,8 +47,6 @@ libuni_la_SOURCES = app.hh \
 		reflection.cc \
 		scanner.hh \
 		scanner.cc \
-		scope.hh \
-		scope.cc \
 		seq.hh \
 		seq.cc \
 		string.hh \

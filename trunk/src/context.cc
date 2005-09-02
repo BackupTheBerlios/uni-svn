@@ -1,5 +1,5 @@
 #include <family.hh>
-#include <scope.hh>
+#include <context.hh>
 #include <style.hh>
 #include <type.hh>
 
@@ -104,8 +104,8 @@ namespace NAMESPACE
   }
 
   //// scope stack /////////////////////////////////////////////////////////////
-  ScopeStack::reverse_iterator
-  ScopeStack::_writable ()
+  Context::reverse_iterator
+  Context::_writable ()
   {
     for (reverse_iterator r = rbegin(); r != rend(); ++r)
       if (! ((*r)->flags & SET_TRANS))
@@ -114,7 +114,7 @@ namespace NAMESPACE
     assert (false);
   }
 
-  void ScopeStack::push (int flags)
+  void Context::push (int flags)
   {
     push_back (Scope::create());
     back()->nspace = SpacePtr();
@@ -122,14 +122,14 @@ namespace NAMESPACE
   }
 
   void
-  ScopeStack::add_symbol (TermPtr term, const string& sym, SpacePtr nspace)
+  Context::add_symbol (TermPtr term, const string& sym, SpacePtr nspace)
   {
     reverse_iterator r = _writable();
     (*r)->symbols.add (sym, nspace ? nspace : (*r)->nspace, term);
   }
 
   bool
-  ScopeStack::del_symbol (const string& sym, SpacePtr nspace)
+  Context::del_symbol (const string& sym, SpacePtr nspace)
   {
     for (reverse_iterator r = rbegin(); r != rend(); ++r)
       if ((*r)->symbols.del(sym, nspace))
@@ -139,7 +139,7 @@ namespace NAMESPACE
   }
 
   bool
-  ScopeStack::set_symbol (const string& sym, TermPtr term, SpacePtr nspace)
+  Context::set_symbol (const string& sym, TermPtr term, SpacePtr nspace)
   {
     for (reverse_iterator r = rbegin(); r != rend(); ++r) {
       if ((*r)->symbols.set (sym, nspace, term))
@@ -152,7 +152,7 @@ namespace NAMESPACE
   }
 
   TermPtr
-  ScopeStack::get_symbol (const string& sym, SpacePtr nspace) const
+  Context::get_symbol (const string& sym, SpacePtr nspace) const
   {
     for (const_reverse_iterator r = rbegin(); r != rend(); ++r) {
       if (TermPtr result = (*r)->symbols.get (sym, nspace))
@@ -165,13 +165,13 @@ namespace NAMESPACE
   }
 
   void
-  ScopeStack::add_style (const string& sym, unsigned int style)
+  Context::add_style (const string& sym, unsigned int style)
   {
     (*_writable())->styles.add (sym, style);
   }
 
   int
-  ScopeStack::get_style (const string& sym) const
+  Context::get_style (const string& sym) const
   {
     for (const_reverse_iterator r = rbegin(); r != rend(); ++r) {
       if (unsigned int result = (*r)->styles.get (sym))
@@ -184,7 +184,7 @@ namespace NAMESPACE
   }
 
   void
-  ScopeStack::add_outfix (const string& left, const string& right)
+  Context::add_outfix (const string& left, const string& right)
   {
     reverse_iterator r = _writable();
     (*r)->pairs.add (left, right);
@@ -193,7 +193,7 @@ namespace NAMESPACE
   }
 
   bool
-  ScopeStack::has_outfix (const string& left, const string& right) const
+  Context::has_outfix (const string& left, const string& right) const
   {
     for (const_reverse_iterator r = rbegin(); r != rend(); ++r) {
       if ((*r)->pairs.has (left, right))
@@ -206,7 +206,7 @@ namespace NAMESPACE
   }
 
   const string&
-  ScopeStack::get_special (const string& id) const
+  Context::get_special (const string& id) const
   {
     for (const_reverse_iterator r = rbegin(); r != rend(); ++r) {
       if (const string* val = (*r)->names.get (id))
@@ -219,13 +219,13 @@ namespace NAMESPACE
   }
 
   void
-  ScopeStack::set_special (const string& id, const string& name)
+  Context::set_special (const string& id, const string& name)
   {
     (*_writable())->names.add (id, name);
   }
 
   TermPtr
-  ScopeStack::get_slot (const string& name) const
+  Context::get_slot (const string& name) const
   {
     for (const_reverse_iterator r = rbegin(); r != rend(); ++r) {
       if (TermPtr result = (*r)->slots.get (name))
@@ -238,13 +238,13 @@ namespace NAMESPACE
   }
 
   void
-  ScopeStack::set_slot (const string& name, TermPtr val)
+  Context::set_slot (const string& name, TermPtr val)
   {
     (*_writable())->slots.set (name, val);
   }
 
   TermPtr
-  ScopeStack::get_mod (const string& name) const
+  Context::get_mod (const string& name) const
   {
     for (const_reverse_iterator r = rbegin(); r != rend(); ++r) {
       if (TermPtr result = (*r)->mods.get (name))
@@ -257,7 +257,7 @@ namespace NAMESPACE
   }
 
   void
-  ScopeStack::set_mod (const string& name, TermPtr val)
+  Context::set_mod (const string& name, TermPtr val)
   {
     (*_writable())->mods.set (name, val);
   }

@@ -1,7 +1,7 @@
 #include <app.hh>
 #include <machine.hh>
 #include <raw.hh>
-#include <scope.hh>
+#include <context.hh>
 #include <seq.hh>
 #include <style.hh>
 #include <sym.hh>
@@ -87,7 +87,7 @@ namespace NAMESPACE
   {
     for (iterator iter = begin(); iter != end(); ++iter) {
       if (TokPtr tok = CAST<Tok> (iter->first)) {
- 	if (DUMMY & (iter->second = c->scopes()->get_style (tok->str()))) {
+ 	if (DUMMY & (iter->second = c->context()->get_style (tok->str()))) {
 	  iterator i = iter;
 	  --iter;
 	  erase (i);
@@ -198,14 +198,14 @@ namespace NAMESPACE
     iterator start = li;
     string   name  = string (ltok->str()) + " " + string (rtok->str());
 
-    if (! c->scopes()->has_outfix (ltok->str(), rtok->str()))
+    if (! c->context()->has_outfix (ltok->str(), rtok->str()))
       throw E (E_OUTFIX_MISMATCH, ltok, rtok);
 
     RawPtr raw = Raw::create();
     raw->splice (raw->end(), *this, start, ri);
     erase (li);
 
-    int fix = GET_FIX (c->scopes()->get_style (name));
+    int fix = GET_FIX (c->context()->get_style (name));
     if (GROUP & fix)
       ri->first = raw;
     else
@@ -215,7 +215,7 @@ namespace NAMESPACE
   }
 
   RawPtr
-  Raw::deoutfix (Machine* c)
+  Raw::deoutfix (Machine *m)
   {
     iterator        iter;
     unsigned int    fix = 0;
@@ -223,7 +223,7 @@ namespace NAMESPACE
 
     for (iter = begin(); end() != iter; ++iter) {
       if (TokPtr tok = CAST<Tok> (iter->first)) {
-	fix = GET_FIX (c->scopes()->get_style (tok->str()));
+	fix = GET_FIX (m->context()->get_style (tok->str()));
 
 	if (EOS & fix && s.empty())              // if it's EOS and we are not inside outfix...
 	  break;                                 // then done with searching for pairs.
@@ -234,7 +234,7 @@ namespace NAMESPACE
 	    throw E (E_OUTFIX_R, tok);           // error, lonely right opt.
 	  else {                                 // if there is at least a left opt. ...
 	    iterator left = s.top(); s.pop();    // pop the left opt.
-	    if (EOS & (_detach (c, left, iter))) // detach the pair, and if pair is also an EOS...
+	    if (EOS & (_detach (m, left, iter))) // detach the pair, and if pair is also an EOS...
 	      break;                             // then done with searching for pairs.
 	  }
 	}

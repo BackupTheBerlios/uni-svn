@@ -9,7 +9,7 @@
 #include <proj.hh>
 #include <raw.hh>
 #include <reflection.hh>
-#include <scope.hh>
+#include <context.hh>
 #include <seq.hh>
 #include <string.hh>
 #include <style.hh>
@@ -128,8 +128,8 @@ namespace NAMESPACE
       {"E_DUP",    Int::create (E_DUP_NAME)},
       {"E_USER",   Int::create (E_USER)},
       //// scope flags ////
-      {"GET_OPAQUE", Int::create (ScopeStack::GET_OPAQUE)},
-      {"SET_TRANS",  Int::create (ScopeStack::SET_TRANS)},
+      {"GET_OPAQUE", Int::create (Context::GET_OPAQUE)},
+      {"SET_TRANS",  Int::create (Context::SET_TRANS)},
       //// evaluation ////
       {_F ("bind",  bind,              1, BIND, 0,  P1 (Raw::T, DEP_T))},
       {_F ("red",   red,               2, SIDE, 0,  P2 (Raw::T, Int::T, UPR_T))},
@@ -238,6 +238,6 @@ namespace NAMESPACE
     };
 
     for (unsigned int i=0; i<sizeof(_builtins)/sizeof(_builtin_t); ++i)
-      machine->scopes()->add_symbol (_builtins[i].term, _builtins[i].name);
+      machine->context()->add_symbol (_builtins[i].term, _builtins[i].name);
   }
 };

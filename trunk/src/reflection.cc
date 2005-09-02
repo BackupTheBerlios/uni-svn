@@ -10,7 +10,7 @@
 #include <list.hh>
 #include <proj.hh>
 #include <reflection.hh>
-#include <scope.hh>
+#include <context.hh>
 #include <seq.hh>
 #include <string.hh>
 #include <style.hh>
@@ -66,7 +66,7 @@ namespace NAMESPACE
   TermPtr
   retpop (Machine* c, TermPtr term)
   {
-    c->scopes()->pop();
+    c->context()->pop();
     return Ret::create (term);
   }
 
@@ -118,7 +118,7 @@ namespace NAMESPACE
     int fix  = TCAST<Int>(f)->val();
     int prec = TCAST<Int>(p)->val();
     int sty  = MAKE_STYLE (fix, prec);
-    c->scopes()->add_style (name, sty);
+    c->context()->add_style (name, sty);
     return VOID;
   }
 
@@ -128,7 +128,7 @@ namespace NAMESPACE
   {
     const char *lhs = TCAST<Str>(t_lhs)->str();
     const char *rhs = TCAST<Str>(t_rhs)->str();
-    c->scopes()->add_outfix (lhs, rhs);
+    c->context()->add_outfix (lhs, rhs);
     return VOID;
   }
 
@@ -138,7 +138,7 @@ namespace NAMESPACE
   {
     string  name = TCAST<Str>(n)->str();
     TermPtr body = term;
-    c->scopes()->add_symbol (body, name);
+    c->context()->add_symbol (body, name);
     return VOID;
   }
 
@@ -148,7 +148,7 @@ namespace NAMESPACE
   {
     string  name = TCAST<Str>(n)->str();
     TermPtr func = Intf::create (name, b, t);
-    c->scopes()->add_symbol (func, name);
+    c->context()->add_symbol (func, name);
     return VOID;
   }
 
@@ -156,7 +156,7 @@ namespace NAMESPACE
   defaty (Machine* machine, TermPtr t_name)
   {
     const char* name = TCAST<Str>(t_name)->str();
-    machine->scopes()->add_symbol (Type::create (name), name);
+    machine->context()->add_symbol (Type::create (name), name);
     return VOID;
   }
 
@@ -166,7 +166,7 @@ namespace NAMESPACE
   {
     string name = (TCAST<Str> (t_name))->str();
     string path = (TCAST<Str> (t_path))->str();
-    machine->scopes()->add_symbol (Lib::create (path), name);
+    machine->context()->add_symbol (Lib::create (path), name);
     return VOID;
   }
 
@@ -187,7 +187,7 @@ namespace NAMESPACE
     P(Lib)  lib   = TCAST<Lib> (t_lib);
     TermPtr func  = Extf::create (cname, (unsigned int) arity, lib, t_type, ret);
 
-    machine->scopes()->add_symbol (func, name);
+    machine->context()->add_symbol (func, name);
     return VOID;
   }
 
@@ -197,7 +197,7 @@ namespace NAMESPACE
   {
     const char* name = TCAST<Str>(n)->str();
     shared_ptr<Temp> ft = Temp::create (name, var, type, body);
-    c->scopes()->add_symbol (ft, name);
+    c->context()->add_symbol (ft, name);
     return VOID;
   }
 
@@ -205,7 +205,7 @@ namespace NAMESPACE
   TermPtr
   undef (Machine* c, TermPtr name)
   {
-    c->scopes()->del_symbol (TCAST<Str>(name)->str());
+    c->context()->del_symbol (TCAST<Str>(name)->str());
     return VOID;
   }
 
@@ -214,7 +214,7 @@ namespace NAMESPACE
   {
     SpacePtr nspace = TCAST<Space> (t_nspace);
     StrPtr   name   = TCAST<Str>   (t_name);
-    c->scopes()->del_symbol (name->str(), nspace);
+    c->context()->del_symbol (name->str(), nspace);
     return VOID;
   }
 
@@ -222,8 +222,8 @@ namespace NAMESPACE
   TermPtr redef (Machine* machine, TermPtr t_name, TermPtr term)
   {
     const char* name = TCAST<Str>(t_name)->str();
-    if (! machine->scopes()->set_symbol (name, term))
-      machine->scopes()->add_symbol (term, name);
+    if (! machine->context()->set_symbol (name, term))
+      machine->context()->add_symbol (term, name);
     return VOID;
   }
 
@@ -239,7 +239,7 @@ namespace NAMESPACE
     SpacePtr nspace = TCAST<Space> (t_ns);
     StrPtr   name   = TCAST<Str> (t_name);
 
-    if (TermPtr result = machine->scopes()->get_symbol (name->str(), nspace))
+    if (TermPtr result = machine->context()->get_symbol (name->str(), nspace))
       return result;
     else
       return NIL;
@@ -249,10 +249,10 @@ namespace NAMESPACE
   set_ns (Machine* machine, TermPtr t_ns)
   {
     if (NIL == t_ns)
-      machine->scopes()->current_nspace (SpacePtr());
+      machine->context()->current_nspace (SpacePtr());
     else {
       SpacePtr nspace = TCAST<Space> (t_ns);
-      machine->scopes()->current_nspace (nspace);
+      machine->context()->current_nspace (nspace);
     }
 
     return VOID;
@@ -357,7 +357,7 @@ namespace NAMESPACE
   get_special (Machine* c, TermPtr n)
   {
     const char* name = TCAST<Str>(n)->str();
-    return MStr::create (c->scopes()->get_special(name).c_str());
+    return MStr::create (c->context()->get_special(name).c_str());
   }
 
   TermPtr
@@ -365,7 +365,7 @@ namespace NAMESPACE
   {
     const char* name  = TCAST<Str>(n)->str();
     const char* value = TCAST<Str>(v)->str();
-    c->scopes()->set_special (name, value);
+    c->context()->set_special (name, value);
     return VOID;
   }
 
@@ -381,7 +381,7 @@ namespace NAMESPACE
   TermPtr get_slot (Machine* c, TermPtr t_name)
   {
     const char* name  = TCAST<Str>(t_name)->str();
-    if (TermPtr result = c->scopes()->get_slot (name))
+    if (TermPtr result = c->context()->get_slot (name))
       return result;
     else
       throw E (E_NO_MATCH, t_name, Term::T);
@@ -390,66 +390,66 @@ namespace NAMESPACE
   TermPtr set_slot (Machine* c, TermPtr n, TermPtr val)
   {
     const char* name  = TCAST<Str>(n)->str();
-    c->scopes()->set_slot (name, val);
+    c->context()->set_slot (name, val);
     return VOID;
   }
 
   TermPtr scope_pushx (Machine* c, TermPtr t_scope)
   {
     ScopePtr scope = TCAST <Scope> (t_scope);
-    c->scopes()->push (scope);
+    c->context()->push (scope);
     return VOID;
   }
 
   TermPtr scope_push (Machine* c)
   {
-    c->scopes()->push();
+    c->context()->push();
     return VOID;
   }
 
   TermPtr scope_pop (Machine* c)
   {
-    c->scopes()->pop();
+    c->context()->pop();
     return VOID;
   }
 
   TermPtr scope_popx (Machine* c)
   {
-    ScopePtr result = c->scopes()->top();
-    c->scopes()->pop();
+    ScopePtr result = c->context()->top();
+    c->context()->pop();
     return result;
   }
 
-  TermPtr scope_set (Machine* c, TermPtr t_flags)
+  TermPtr scope_set (Machine *m, TermPtr t_flags)
   {
     int flags = TCAST<Int>(t_flags)->val();
-    c->scopes()->current_flags (flags);
+    m->context()->current_flags (flags);
     return VOID;
   }
 
   TermPtr
-  import (Machine* c, TermPtr name)
+  import (Machine *m, TermPtr name)
   {
-    c->import (TCAST<Str>(name)->str());
+    m->import (TCAST<Str>(name)->str());
     return VOID;
   }
 
   TermPtr
-  set_int (Machine* c, TermPtr i, TermPtr val)
+  set_int (Machine *m, TermPtr i, TermPtr val)
   {
     TCAST<Int>(i)->val (TCAST<Int>(val)->val());
     return VOID;
   }
 
   TermPtr
-  set_str (Machine* c, TermPtr i, TermPtr val)
+  set_str (Machine *m, TermPtr i, TermPtr val)
   {
 //     TCAST<Str>(i)->str (TCAST<Str>(val)->str());
     return VOID;
   }
 
   TermPtr
-  ifeq (Machine* c, TermPtr lhs, TermPtr rhs, TermPtr eq, TermPtr ne)
+  ifeq (Machine *m, TermPtr lhs, TermPtr rhs, TermPtr eq, TermPtr ne)
   {
     return ((lhs == rhs) || (lhs->equ (rhs))) ? eq : ne;
   }

@@ -1,5 +1,5 @@
 #include <machine.hh>
-#include <scope.hh>
+#include <context.hh>
 #include <style.hh>
 #include <sym.hh>
 #include <tok.hh>
@@ -22,19 +22,18 @@ namespace NAMESPACE
    *         not exist, an exception will be thrown.
    */
   TermPtr
-  Tok::reduce (Machine* c, int flags, TermPtr expected)
+  Tok::reduce (Machine *m, int flags, TermPtr expected)
   {
     if (_spec) {
-	if (TermPtr r = c->special_sym(str()))
+	if (TermPtr r = m->special_sym(str()))
 	  return r;
 	else {
-	  // \todo return a application to [name_get] or [special_get]
 	  // \todo special symbol should always exist. if not: exception!
 	  return TermPtr();
 	}
     }
     else {
-      if (TermPtr r = c->scopes()->get_symbol(str()))
+      if (TermPtr r = m->context()->get_symbol(str()))
 	return r;
       else if (BIND & flags)
 	return Sym::create (str());

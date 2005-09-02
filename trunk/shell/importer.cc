@@ -1,7 +1,7 @@
 #include <machine.hh>
 #include <exception.hh>
 #include <importer.hh>
-#include <scope.hh>
+#include <context.hh>
 #include <string.hh>
 #include <raw.hh>
 
@@ -11,7 +11,7 @@
 bool
 MyImportHandler::import (Machine* machine, const string& name)
 {
-  if (! machine->scopes()->get_mod (name)) {
+  if (! machine->context()->get_mod (name)) {
     // \todo iterate through library path list as well
     // \todo directly use + operator on string might be very slow.
     map<string,string>::iterator i;
@@ -20,7 +20,7 @@ MyImportHandler::import (Machine* machine, const string& name)
       ifstream file (filename.c_str());
       if (file.good()) {
 	Scanner *scanner = load_scanner(i->second);
-	machine->scopes()->set_mod (name, NIL);
+	machine->context()->set_mod (name, NIL);
 	run (machine, scanner, file, ALL);
 	return true;
       }

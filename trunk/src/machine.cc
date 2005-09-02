@@ -5,7 +5,7 @@
 #include <frame.hh>
 #include <handler.hh>
 #include <raw.hh>
-#include <scope.hh>
+#include <context.hh>
 #include <style.hh>
 #include <sym.hh>
 #include <term.hh>
@@ -23,30 +23,30 @@ namespace NAMESPACE
 
   //// ctor ////////////////////////////////////////////////////////////////////
   Machine::Machine ()
-    : _scopes (new ScopeStack),
+    : _context (new Context),
       _step_break (false)
   {
     _new_shield();   // create the outmost shield.
-    _scopes->push(); // create root scope.
+    _context->push(); // create root scope.
 
     //===============================================
-    _scopes->add_style  (";",   MAKE_STYLE (EOS, PREC_SEP));
-    _scopes->add_style  ("( )", MAKE_STYLE (GROUP, PREC_SEP));
-    _scopes->add_outfix ("(", ")");
+    _context->add_style  (";",   MAKE_STYLE (EOS, PREC_SEP));
+    _context->add_style  ("( )", MAKE_STYLE (GROUP, PREC_SEP));
+    _context->add_outfix ("(", ")");
     //===============================================
   }
 
   Machine::~Machine()
   {
-    assert (_scopes);
-    delete _scopes;
+    assert (_context);
+    delete _context;
   }
 
   TermPtr
   Machine::special_sym (const string& id) const
   {
     try {
-      return _scopes->get_symbol (_scopes->get_special (id));
+      return _context->get_symbol (_context->get_special (id));
     }
     catch (...) {
       return TermPtr();
@@ -244,7 +244,7 @@ namespace NAMESPACE
 
 	if (0 == TOP_FRAME->size())                       // if nothing left on stack...
 	  break;                                          // then we are done.
-	else if (TermPtr f = _scopes->get_symbol (" ")) { // if the space opt is defined...
+	else if (TermPtr f = _context->get_symbol (" ")) { // if the space opt is defined...
 	  term = App::create (f, term);                   // create app with space as head
 	  while (TOP_FRAME->size())                       // and append all args lefted
 	    term = App::create (term, pop());             // then continue to reduce it

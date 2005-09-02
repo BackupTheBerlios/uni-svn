@@ -13,7 +13,7 @@
 namespace NAMESPACE
 {
   class Frame;
-  class ScopeStack;
+  class Context;
   class Shield;
 
   class ImportHandler;
@@ -25,7 +25,7 @@ namespace NAMESPACE
    */
   class Machine : private vector<Shield*>
   {
-    VAL_PROPERTY_RO (ScopeStack*, scopes);
+    VAL_PROPERTY_RO (Context*, context);
 
     VAL_PROPERTY (bool, step_break);
 
@@ -122,7 +122,7 @@ namespace NAMESPACE
      * This function internally call [reduce] perform the reduction,
      * however, this function will catch all the exception thrown
      * during the reduction, and try to pass them to handlers
-     * defined in the scopes, and only throw out exceptions
+     * defined in the context, and only throw out exceptions
      * when no handler can handle the exception.
      *
      * \param   term    The term to be reduced.

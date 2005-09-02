@@ -44,7 +44,7 @@ namespace NAMESPACE
     DEF_TERM (Scope);
     DEF_VISITABLE (Scope, scope);
 
-    friend class ScopeStack;
+    friend class Context;
 
   private:
 
@@ -60,10 +60,10 @@ namespace NAMESPACE
 
   /**
    * Class for scope stack objects.
-   * A scope stack is a stack of nested scopes.
+   * A scope stack is a stack of nested context.
    *
    */
-  class ScopeStack : private vector <ScopePtr>
+  class Context : private vector <ScopePtr>
   {
   public:
 
@@ -104,7 +104,7 @@ namespace NAMESPACE
     /**
      * delete the mapping between a symbol and corresponding term.
      * it will only delete the "topmost" symbol that has the name
-     * in the stack of scopes.
+     * in the stack of context.
      *
      * \param   name     the symbolic name of the symbol to be deleted.
      * \param   nspace   the namespace into which the symbol will be added.
