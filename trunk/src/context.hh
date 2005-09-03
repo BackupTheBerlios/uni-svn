@@ -59,8 +59,8 @@ namespace NAMESPACE
   };
 
   /**
-   * Class for scope stack objects.
-   * A scope stack is a stack of nested context.
+   * Class for context objects.
+   * A context is a stack of nested scopes.
    *
    */
   class Context : private vector <ScopePtr>
@@ -85,7 +85,7 @@ namespace NAMESPACE
     int  current_flags () const { return back()->flags; }
 
     /**
-     * Add a symbol to the scope stack.
+     * Add a symbol to the context.
      * More specificly it will add the symbol to the topmost
      * non-write-through scope found on the scope stack.
      * If a family with the same name already exist in the
