@@ -34,12 +34,12 @@ namespace NAMESPACE
 
   private:
 
-    class BindState : private list<BindState*>
+    class BindState : private std::list<BindState*>
     {
     public:
 
       void add (TermPtr body, TermPtr type);
-      unsigned int size() const { return list<BindState*>::size(); }
+      unsigned int size() const { return std::list<BindState*>::size(); }
 
       BindState* move (Machine* machine, int flags, unsigned int argi);
       TermPtr move (TermPtr type);

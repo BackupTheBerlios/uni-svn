@@ -3,11 +3,9 @@
 #include <bool.hh>
 #include <cons.hh>
 #include <machine.hh>
-#include <dict.hh>
 #include <exception.hh>
 #include <func.hh>
 #include <int.hh>
-#include <list.hh>
 #include <proj.hh>
 #include <reflection.hh>
 #include <context.hh>
@@ -22,41 +20,6 @@
 
 namespace NAMESPACE
 {
-  class RefListVisitor : public ListVisitor
-  {
-    Machine* _machine;
-    TermPtr  _visitor;
-
-  public:
-
-    RefListVisitor (Machine *machine, TermPtr visitor)
-      : _machine (machine), _visitor (visitor) { }
-
-    virtual void visit_list_item (TermPtr item)
-    {
-      AppPtr app = App::create (_visitor, item);
-      _machine->reduce (app, ALL);
-    };
-  };
-
-  class RefDictVisitor : public DictVisitor
-  {
-    Machine* _machine;
-    TermPtr  _visitor;
-
-  public:
-
-    RefDictVisitor (Machine *machine, TermPtr visitor)
-      : _machine (machine), _visitor (visitor) { }
-
-    virtual void visit_dict_item (const string& key, TermPtr item)
-    {
-      AppPtr app = App::create (_visitor, MStr::create (key));
-      app = App::create (app, item);
-      _machine->reduce (app, ALL);
-    };
-  };
-
   TermPtr
   retval (Machine* c, TermPtr term)
   {
@@ -507,107 +470,29 @@ namespace NAMESPACE
   }
 
 //   TermPtr
-//   let (Machine* machine, TermPtr var, TermPtr exp, TermPtr body)
+//   set (Machine* machine, TermPtr t_ref, TermPtr term)
 //   {
-//     return Let::create (var, exp, body);
+//     DictPtr ref = TCAST<Dict> (t_ref);
+//     TermPtr obj = ref->get ("obj");
+//     TermPtr key = ref->get ("key");
+
+//     if (obj) {
+//       if (IntPtr x = CAST<Int> (obj))
+// 	return set_int (machine, x, term);
+//       else if (StrPtr x = CAST<Str> (obj))
+// 	return set_str (machine, x, term);
+//       else if (DictPtr x = CAST<Dict> (obj)) {
+// 	if (key)
+// 	  return dict_set (machine, x, key, term);
+// 	else
+// 	  throw E (E_NO_KEY, x, key);
+//       }
+//       else
+// 	throw 4;
+//     }
+//     else
+//       throw E (E_NO_KEY, ref, MStr::create ("obj"));
 //   }
-
-  TermPtr
-  dict_new (Machine* machine, TermPtr type)
-  {
-    return Dict::create (type);
-  }
-
-  TermPtr
-  dict_has (Machine* machine, TermPtr t_dict, TermPtr t_name)
-  {
-    DictPtr dict = TCAST<Dict> (t_dict);
-    StrPtr  name = TCAST<Str>  (t_name);
-
-    return (dict->has (name->str())) ? Bool::TRUE : Bool::FALSE;
-  }
-
-  TermPtr
-  dict_get (Machine* machine, TermPtr t_dict, TermPtr t_name)
-  {
-    DictPtr dict = TCAST<Dict> (t_dict);
-    StrPtr  name = TCAST<Str>  (t_name);
-
-    if (TermPtr result = dict->get (name->str()))
-      return result;
-    else
-      throw E (E_NO_KEY, t_dict, t_name);
-  }
-
-  TermPtr
-  dict_set (Machine* machine, TermPtr t_dict, TermPtr t_name, TermPtr term)
-  {
-    DictPtr dict = TCAST<Dict> (t_dict);
-    StrPtr  name = TCAST<Str>  (t_name);
-
-    dict->set (name->str(), term);
-    return VOID;
-  }
-
-  TermPtr dict_vis (Machine* machine, TermPtr t_dict, TermPtr t_visitor)
-  {
-    DictPtr dict = TCAST<Dict> (t_dict);
-    RefDictVisitor visitor (machine, t_visitor);
-    dict->visit_dict (visitor);
-    return VOID;
-  }
-
-  TermPtr list_new (Machine* machine, TermPtr type)
-  {
-    return List::create (type);
-  }
-
-  TermPtr list_ins (Machine* machine, TermPtr t_list, TermPtr term)
-  {
-    ListPtr list = TCAST<List> (t_list);
-    list->insert_front (term);
-    return VOID;
-  }
-
-  TermPtr list_add (Machine* machine, TermPtr t_list, TermPtr term)
-  {
-    ListPtr list = TCAST<List> (t_list);
-    list->insert_back (term);
-    return VOID;
-  }
-
-  TermPtr list_vis (Machine* machine, TermPtr t_list, TermPtr t_visitor)
-  {
-    ListPtr list = TCAST<List> (t_list);
-    RefListVisitor visitor (machine, t_visitor);
-    list->visit_list (visitor);
-    return VOID;
-  }
-
-  TermPtr
-  set (Machine* machine, TermPtr t_ref, TermPtr term)
-  {
-    DictPtr ref = TCAST<Dict> (t_ref);
-    TermPtr obj = ref->get ("obj");
-    TermPtr key = ref->get ("key");
-
-    if (obj) {
-      if (IntPtr x = CAST<Int> (obj))
-	return set_int (machine, x, term);
-      else if (StrPtr x = CAST<Str> (obj))
-	return set_str (machine, x, term);
-      else if (DictPtr x = CAST<Dict> (obj)) {
-	if (key)
-	  return dict_set (machine, x, key, term);
-	else
-	  throw E (E_NO_KEY, x, key);
-      }
-      else
-	throw 4;
-    }
-    else
-      throw E (E_NO_KEY, ref, MStr::create ("obj"));
-  }
 
   TermPtr tok_str (Machine* machine, TermPtr t_name)
   {
@@ -625,11 +510,11 @@ namespace NAMESPACE
     throw E (id, t1, t2, t3);
   }
 
-  TermPtr red (Machine* machine, TermPtr term, TermPtr t_flags)
-  {
-    int flags = TCAST<Int>(t_flags)->val();
-    ListPtr l = List::create();
-    l->insert_back (machine->reduce (term, flags));
-    return l;
-  }
+//   TermPtr red (Machine* machine, TermPtr term, TermPtr t_flags)
+//   {
+//     int flags = TCAST<Int>(t_flags)->val();
+//     ListPtr l = List::create();
+//     l->insert_back (machine->reduce (term, flags));
+//     return l;
+//   }
 };

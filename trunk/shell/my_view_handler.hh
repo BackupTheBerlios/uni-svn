@@ -11,9 +11,7 @@ namespace NAMESPACE
 	 C_INT, C_RET, C_SCOPE, C_STR, C_SYM,
 	 C_TEMP, C_TOK, C_TYPE, C_VAR, C_E, C_TERM, C_SIZE };
 
-  class MyViewHandler : public ViewHandler,
-			public DictVisitor,
-			public ListVisitor
+  class MyViewHandler : public ViewHandler
   {
   private:
 
@@ -36,12 +34,10 @@ namespace NAMESPACE
     virtual void visit_cons   (ConsPtr  ptr);
     virtual void visit_consh  (ConshPtr ptr);
     virtual void visit_const  (ConstPtr ptr);
-    virtual void visit_dict   (DictPtr  ptr);
     virtual void visit_exc    (ExcPtr   ptr);
     virtual void visit_fam    (FamPtr   ptr);
     virtual void visit_func   (FuncPtr  ptr);
     virtual void visit_int    (IntPtr   ptr);
-    virtual void visit_list   (ListPtr  ptr);
     virtual void visit_proj   (ProjPtr  ptr);
     virtual void visit_raw    (RawPtr   ptr);
     virtual void visit_ret    (RetPtr   ptr);
@@ -53,12 +49,6 @@ namespace NAMESPACE
     virtual void visit_type   (TypePtr  ptr);
     virtual void visit_var    (VarPtr   ptr);
     virtual void visit_term   (TermPtr  ptr);
-
-    virtual void visit_dict_item (const string& key, TermPtr val);
-    virtual void visit_dict_break ();
-
-    void visit_list_item (TermPtr term);
-    void visit_list_break ();
   };
 };
 

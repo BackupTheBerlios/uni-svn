@@ -54,7 +54,7 @@ namespace NAMESPACE
   TermPtr bind (Machine* machine, TermPtr term);
   TermPtr redsh  (Machine* machine, TermPtr term);
   TermPtr redshx (Machine* machine, TermPtr term, TermPtr exit);
-  TermPtr red (Machine* machine, TermPtr term, TermPtr t_flags);
+//   TermPtr red (Machine* machine, TermPtr term, TermPtr t_flags);
 
   TermPtr is_sub (Machine* machine, TermPtr sub, TermPtr super);
   TermPtr type_of (Machine* machine, TermPtr term);
@@ -85,18 +85,7 @@ namespace NAMESPACE
 
   TermPtr cons_t2 (Machine* machine, TermPtr term);
 
-  TermPtr dict_new (Machine* machine, TermPtr type);
-  TermPtr dict_has (Machine* machine, TermPtr t_dict, TermPtr t_name);
-  TermPtr dict_get (Machine* machine, TermPtr t_dict, TermPtr t_name);
-  TermPtr dict_set (Machine* machine, TermPtr t_dict, TermPtr t_name, TermPtr term);
-  TermPtr dict_vis (Machine* machine, TermPtr t_dict, TermPtr t_visitor);
-
-  TermPtr list_new (Machine* machine, TermPtr type);
-  TermPtr list_ins (Machine* machine, TermPtr t_list, TermPtr term);
-  TermPtr list_add (Machine* machine, TermPtr t_list, TermPtr term);
-  TermPtr list_vis (Machine* machine, TermPtr t_list, TermPtr t_visitor);
-
-  TermPtr set (Machine* machine, TermPtr t_ref, TermPtr term);
+//   TermPtr set (Machine* machine, TermPtr t_ref, TermPtr term);
 
   TermPtr tok_str (Machine* machine, TermPtr t_name);
   TermPtr tok_sym (Machine* machine, TermPtr t_name);

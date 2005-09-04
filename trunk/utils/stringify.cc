@@ -1,10 +1,8 @@
 #include <abs.hh>
 #include <app.hh>
 #include <cons.hh>
-#include <dict.hh>
 #include <family.hh>
 #include <func.hh>
-#include <list.hh>
 #include <proj.hh>
 #include <string.hh>
 #include <tok.hh>
@@ -50,9 +48,7 @@ enum { C_NOR = 0, C_SEP, C_BOOL, C_DICT,
 
 vector <string> cols (C_SIZE);
 
-class MyViewHandler : public ViewHandler,
-		      public DictVisitor,
-		      public ListVisitor
+class MyViewHandler : public ViewHandler
 {
 private:
 
@@ -75,12 +71,10 @@ public:
   virtual void visit_cons   (ConsPtr  ptr);
   virtual void visit_consh  (ConshPtr ptr);
   virtual void visit_const  (ConstPtr ptr);
-  virtual void visit_dict   (DictPtr  ptr);
   virtual void visit_exc    (ExcPtr   ptr);
   virtual void visit_fam    (FamPtr   ptr);
   virtual void visit_func   (FuncPtr  ptr);
   virtual void visit_int    (IntPtr   ptr);
-  virtual void visit_list   (ListPtr  ptr);
   virtual void visit_proj   (ProjPtr  ptr);
   virtual void visit_raw    (RawPtr   ptr);
   virtual void visit_ret    (RetPtr   ptr);
@@ -92,12 +86,6 @@ public:
   virtual void visit_type   (TypePtr  ptr);
   virtual void visit_var    (VarPtr   ptr);
   virtual void visit_term   (TermPtr  ptr);
-
-  virtual void visit_dict_item (const string& key, TermPtr val);
-  virtual void visit_dict_break ();
-
-  void visit_list_item (TermPtr term);
-  void visit_list_break ();
 };
 
   vector <string> MyViewHandler::_default_cols (C_SIZE);
@@ -142,13 +130,6 @@ public:
   void MyViewHandler::visit_const (ConstPtr ptr)
   {
     *this << _c[C_CONST] << ptr->name();
-  }
-
-  void MyViewHandler::visit_dict  (DictPtr ptr)
-  {
-    *this << _c[C_SEP] << "{";
-    ptr->visit_dict (*this);
-    *this << _c[C_SEP] << "}";
   }
 
   void MyViewHandler::visit_exc (ExcPtr ptr)
@@ -239,13 +220,6 @@ public:
   void MyViewHandler::visit_func  (FuncPtr  ptr) { *this << _c[C_FUNC] << ptr->name(); }
   void MyViewHandler::visit_int   (IntPtr   ptr) { *this << _c[C_INT] << ptr->val(); }
 
-  void MyViewHandler::visit_list (ListPtr ptr)
-  {
-    *this << _c [C_SEP] << "[";
-    ptr->visit_list (*this);
-    *this << _c [C_SEP] << "]";
-  }
-
   void MyViewHandler::visit_proj  (ProjPtr  ptr)
   {
     if (CAST<Tree> (ptr->from())) {
@@ -288,26 +262,6 @@ public:
   void MyViewHandler::visit_term  (TermPtr ptr)
   {
     *this << _c[C_TERM] << "?";
-  }
-
-  void MyViewHandler::visit_dict_item (const string& key, TermPtr val)
-  {
-    *this << _c[C_NOR] << key << _c[C_SEP] << ": " << val;
-  }
-
-  void MyViewHandler::visit_dict_break ()
-  {
-    *this << _c[C_SEP] << ", ";
-  }
-
-  void MyViewHandler::visit_list_item (TermPtr term)
-  {
-    *this << _c[C_NOR] << term;
-  }
-
-  void MyViewHandler::visit_list_break ()
-  {
-    *this << _c [C_SEP] << ", ";
   }
 
 static TermPtr

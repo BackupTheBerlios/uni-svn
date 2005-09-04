@@ -12,7 +12,7 @@ namespace NAMESPACE
   typedef std::pair<TermPtr,unsigned int> TOK;
 
   class Raw : public Tree,
-	      private list <TOK>
+	      private std::list <TOK>
   {
     DEF_TERM      (Raw);
     DEF_VISITABLE (Raw, raw);
@@ -31,7 +31,7 @@ namespace NAMESPACE
 
     void append (TermPtr term) { push_back(TOK (term, MAKE_STYLE (PREFIX, PREC_NOR))); }
     void append (const_iterator i, const_iterator j) { insert (end(), i, j); }
-    bool empty () const { return list<TOK>::empty(); }
+    bool empty () const { return std::list<TOK>::empty(); }
 
     RawPtr  deoutfix (Machine* c);
     TermPtr construct (Machine* machine, int flags);

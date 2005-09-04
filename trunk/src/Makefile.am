@@ -19,8 +19,6 @@ libuni_la_SOURCES = app.hh \
 		context.cc \
 		cval.hh \
 		cval.cc \
-		dict.hh \
-		dict.cc \
 		exception.hh \
 		exception.cc \
 		family.hh \
@@ -29,10 +27,10 @@ libuni_la_SOURCES = app.hh \
 		frame.cc \
 		func.hh \
 		func.cc \
+		handle.hh \
+		handler.hh \
 		int.hh \
 		int.cc \
-		list.hh \
-		list.cc \
 		machine.hh \
 		machine.cc \
 		opt.hh \

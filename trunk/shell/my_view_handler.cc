@@ -1,10 +1,8 @@
 #include <abs.hh>
 #include <app.hh>
 #include <cons.hh>
-#include <dict.hh>
 #include <family.hh>
 #include <func.hh>
-#include <list.hh>
 #include <proj.hh>
 #include <string.hh>
 #include <tok.hh>
@@ -61,13 +59,6 @@ namespace NAMESPACE
   void MyViewHandler::visit_const (ConstPtr ptr)
   {
     *this << _c[C_CONST] << ptr->name();
-  }
-
-  void MyViewHandler::visit_dict  (DictPtr ptr)
-  {
-    *this << _c[C_SEP] << "{";
-    ptr->visit_dict (*this);
-    *this << _c[C_SEP] << "}";
   }
 
   void MyViewHandler::visit_exc (ExcPtr ptr)
@@ -158,13 +149,6 @@ namespace NAMESPACE
   void MyViewHandler::visit_func  (FuncPtr  ptr) { *this << _c[C_FUNC] << ptr->name(); }
   void MyViewHandler::visit_int   (IntPtr   ptr) { *this << _c[C_INT] << ptr->val(); }
 
-  void MyViewHandler::visit_list (ListPtr ptr)
-  {
-    *this << _c [C_SEP] << "[";
-    ptr->visit_list (*this);
-    *this << _c [C_SEP] << "]";
-  }
-
   void MyViewHandler::visit_proj  (ProjPtr  ptr)
   {
     if (CAST<Tree> (ptr->from())) {
@@ -207,25 +191,5 @@ namespace NAMESPACE
   void MyViewHandler::visit_term  (TermPtr ptr)
   {
     *this << _c[C_TERM] << "?";
-  }
-
-  void MyViewHandler::visit_dict_item (const string& key, TermPtr val)
-  {
-    *this << _c[C_NOR] << key << _c[C_SEP] << ": " << val;
-  }
-
-  void MyViewHandler::visit_dict_break ()
-  {
-    *this << _c[C_SEP] << ", ";
-  }
-
-  void MyViewHandler::visit_list_item (TermPtr term)
-  {
-    *this << _c[C_NOR] << term;
-  }
-
-  void MyViewHandler::visit_list_break ()
-  {
-    *this << _c [C_SEP] << ", ";
   }
 };

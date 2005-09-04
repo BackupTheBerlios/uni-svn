@@ -3,7 +3,6 @@
 
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
-#include <list>
 #include <map>
 #include <string>
 #include <utility>
@@ -13,7 +12,6 @@ using boost::shared_ptr;
 using boost::weak_ptr;
 using boost::dynamic_pointer_cast;
 using boost::const_pointer_cast;
-using std::list;
 using std::map;
 using std::pair;
 using std::string;
@@ -37,11 +35,9 @@ namespace NAMESPACE
   DEF_PTR (Const);
   DEF_PTR (CPtr);
   DEF_PTR (CMem);
-  DEF_PTR (Dict);
   DEF_PTR (Exc);
   DEF_PTR (Func);
   DEF_PTR (Int);
-  DEF_PTR (List);
   DEF_PTR (Proj);
   DEF_PTR (Raw);
   DEF_PTR (Ret);
@@ -62,7 +58,6 @@ namespace NAMESPACE
 
   typedef vector<TermPtr>       TermVec;
   typedef map<TermPtr,TermPtr>  TermMap;
-  typedef list<TermPtr>         TermList;
   typedef pair<TermPtr,TermPtr> TermPair;
 
   class Machine;

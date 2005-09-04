@@ -132,7 +132,7 @@ namespace NAMESPACE
       {"SET_TRANS",  Int::create (Context::SET_TRANS)},
       //// evaluation ////
       {_F ("bind",  bind,              1, BIND, 0,  P1 (Raw::T, DEP_T))},
-      {_F ("red",   red,               2, SIDE, 0,  P2 (Raw::T, Int::T, UPR_T))},
+//       {_F ("red",   red,               2, SIDE, 0,  P2 (Raw::T, Int::T, UPR_T))},
       {_F ("redsh",  redsh,             1, SIDE, 0,  P1 (Raw::T, UPR_T))},
       {_F ("redshx", redshx,            2, SIDE, 0,  P2 (Raw::T, Raw::T, UPR_T))},
       {_F ("tok",    tok_str,           1, BIND, S0, P1 (Str::T, Raw::T))},
@@ -191,19 +191,7 @@ namespace NAMESPACE
       {_F ("typeof",   type_of,  1, PURE, 0,        P1 (Term::T, Type::T))},
       ////
       {_F ("throw",    raise,    4, CTXT, SX,       P4 (Int::T, Term::T, Term::T, Term::T, VOID_T))},
-      //// dictionary manipulation ////
-      {_F ("set",      set,      2, CTXT, S0+S1,    P2 (Term::T, Term::T, VOID_T))},
-      {_F ("dict_new", dict_new, 1, CTXT, S0,       P1 (Term::T, Term::T))},
-      {_F ("dict_set", dict_set, 3, CTXT, S0+S1+S2, P3 (Term::T, Str::T, Term::T, VOID_T))},
-      {_F ("dict_setr",dict_set, 3, CTXT, S0+S1,    P3 (Term::T, Str::T, Term::T, VOID_T))},
-      {_F ("dict_has", dict_has, 2, PURE, S0+S1,    P2 (Term::T, Str::T, Bool::T))},
-      {_F ("dict_get", dict_get, 2, PURE, S0+S1,    P2 (Term::T, Str::T, DEP_T))},
-      {_F ("dict_vis", dict_vis, 2, CTXT, S0+S1,    P2 (Term::T, Term::T, VOID_T))},
-      //// list manipulation ////
-      {_F ("list_new", list_new, 1, CTXT, S0,       P1 (Term::T, Term::T))},
-      {_F ("list_ins", list_ins, 2, CTXT, S0+S1,    P2 (Term::T, Term::T, VOID_T))},
-      {_F ("list_add", list_add, 2, CTXT, S0+S1,    P2 (Term::T, Term::T, VOID_T))},
-      {_F ("list_vis", list_vis, 2, CTXT, S0+S1,    P2 (Term::T, Term::T, VOID_T))},
+//       {_F ("set",      set,      2, CTXT, S0+S1,    P2 (Term::T, Term::T, VOID_T))},
       //// homogenuous cons list functions ////
       {_T ("cons",     cons,     2, PURE, B0+B1,    P2 (x, _TT(Cons::T, x), _TT (Cons::T, x)), x)},
       {_T ("cons",     cons,     2, PURE, B0+B1,    P2 (x, x, _TT(Cons::T, x)), x)},
