@@ -3,7 +3,6 @@
 #include <exception.hh>
 #include <int.hh>
 #include <string.hh>
-#include <my_view_handler.hh>
 
 #include <sstream>
 #include <stdio.h>
@@ -71,32 +70,6 @@ namespace NAMESPACE
   {
     std::cout << TCAST<Str>(str)->str() << std::flush;
     return VOID;
-  }
-
-  TermPtr
-  str (Machine* c, TermPtr term)
-  {
-    if (CAST<MStr> (term) && (Str::T == term->type()))
-      return term;
-    else {
-      std::ostringstream os;
-      MyViewHandler viewer (os);
-      viewer << term;
-      return MStr::create (os.str().c_str());
-    }
-  }
-
-  TermPtr
-  str_ansi (Machine* c, TermPtr term)
-  {
-    if (c->ansi_attrs()) {
-      std::ostringstream os;
-      MyViewHandler viewer (os, *c->ansi_attrs());
-      viewer << term;
-      return MStr::create (os.str().c_str());
-    }
-    else
-      return str (c, term);
   }
 
   TermPtr

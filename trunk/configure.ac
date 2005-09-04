@@ -30,6 +30,7 @@ src/Makefile
 shell/Makefile
 filter/Makefile
 scanners/Makefile
+utils/Makefile
 doc/Makefile
 ])
 

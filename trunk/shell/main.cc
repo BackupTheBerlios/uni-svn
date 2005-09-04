@@ -197,7 +197,6 @@ main (int argc, char** argv)
 
     machine.importer (&importer);
     machine.debugger (&debugger);
-    machine.ansi_attrs (&cols);
 
     builtin.init (&machine);
 

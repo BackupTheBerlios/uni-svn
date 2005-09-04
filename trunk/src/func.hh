@@ -16,6 +16,32 @@ namespace NAMESPACE
     Func (TermPtr type, const string& name) : Term (type), _name (name) { }
   };
 
+  class SimpleFunc : public Func
+  {
+    DEF_DYNAMIC  (SimpleFunc);
+    VAL_PROPERTY (unsigned int, arity);
+    VAL_PROPERTY (unsigned int, style);
+
+  public:
+
+    virtual TermPtr reduce (Machine* machine, int flags, TermPtr expected);
+
+  protected:
+
+    SimpleFunc () { }
+
+    SimpleFunc (unsigned int  arity,
+	        unsigned int  style,
+		void*         entry,
+		TermPtr       type);
+
+  private:
+
+    typedef TermPtr (*_entry_type)(TermPtr,TermPtr,TermPtr,TermPtr,TermPtr,TermPtr,TermPtr,TermPtr);
+
+    _entry_type  _entry;
+  };
+
   class Envf : public Func
   {
     DEF_DYNAMIC  (Envf);

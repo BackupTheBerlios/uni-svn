@@ -33,6 +33,51 @@ namespace NAMESPACE
   }
 
   //////////////////////////////////////////////////////////////////////////////
+  SimpleFunc::SimpleFunc (unsigned int  arity,
+			  unsigned int  style,
+			  void*         entry,
+			  TermPtr       type)
+    : Func (type, "@"),
+      _arity (arity),
+      _style (style | BIND),      // BIND is always required
+      _entry ((_entry_type)entry)
+  {
+    assert (_arity <= MAX_C_ARGS);
+  }
+  
+  TermPtr
+  SimpleFunc::reduce (Machine *m, int flags, TermPtr expected)
+  {
+    if ((flags & _style) != _style) // if some style is not desired...
+      throw E_MODE;                 // then it cannot be reduced
+    if (m->arg_count() < _arity)    // if no enough arguments...
+      return TermPtr();             // then it cannot be reduced neither
+
+    TermPtr a[MAX_C_ARGS], curr = type(), next;
+
+    for (unsigned int i = 0; i < _arity; ++i, curr = next) {
+      assert (curr);
+      if (ProjPtr p = CAST<Proj> (curr)) {
+	curr = p->from();
+	next = p->to();
+      }
+      a[i] = m->arg_reduce (i, flags, curr);
+      assert (a[i]);
+    }
+
+    // \todo extend to multi-arg case.
+
+    TermPtr result = _entry (a[0], a[1], a[2], a[3],
+			     a[4], a[5], a[6], a[7]);
+
+    if (_arity)
+      m->pop (_arity);
+
+    assert (result);
+    return result;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
   Envf::Envf (const string& name,
 	      unsigned int  arity,
 	      unsigned int  style,

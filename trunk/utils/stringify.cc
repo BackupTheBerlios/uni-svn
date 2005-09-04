@@ -15,10 +15,91 @@
 #include <bool.hh>
 #include <temp.hh>
 
-#include <my_view_handler.hh>
+#include <handler.hh>
 
-namespace NAMESPACE
+#include <vector>
+#include <map>
+#include <iostream>
+#include <sstream>
+
+#define RED        "\033[0;31m"
+#define GREEN      "\033[0;32m"
+#define YELLOW     "\033[0;33m"
+#define BLUE       "\033[0;34m"
+#define MAGENTA    "\033[0;35m"
+#define CYAN       "\033[0;36m"
+#define WHITE      "\033[0;37m"
+
+#define B_RED      "\033[1;31m"
+#define B_GREEN    "\033[1;32m"
+#define B_YELLOW   "\033[1;33m"
+#define B_BLUE     "\033[1;34m"
+#define B_MAGENTA  "\033[1;35m"
+#define B_CYAN     "\033[1;36m"
+#define B_WHITE    "\033[1;37m"
+
+#define COL_NORMAL "\033[0m"
+
+using namespace NAMESPACE;
+using namespace std;
+
+enum { C_NOR = 0, C_SEP, C_BOOL, C_DICT,
+       C_FAM, C_FUNC, C_CONST,
+       C_INT, C_RET, C_SCOPE, C_STR, C_SYM,
+       C_TEMP, C_TOK, C_TYPE, C_VAR, C_E, C_TERM, C_SIZE };
+
+vector <string> cols (C_SIZE);
+
+class MyViewHandler : public ViewHandler,
+		      public DictVisitor,
+		      public ListVisitor
 {
+private:
+
+  static vector <string> _default_cols;
+
+private:
+
+  const vector <string>& _c;
+
+public:
+
+  MyViewHandler (std::ostream& os, const vector<string>& cols = _default_cols)
+    : ViewHandler (os), _c (cols) { }
+
+public:
+
+  virtual void visit_abs    (AbsPtr   ptr);
+  virtual void visit_app    (AppPtr   ptr);
+  virtual void visit_bool   (BoolPtr  ptr);
+  virtual void visit_cons   (ConsPtr  ptr);
+  virtual void visit_consh  (ConshPtr ptr);
+  virtual void visit_const  (ConstPtr ptr);
+  virtual void visit_dict   (DictPtr  ptr);
+  virtual void visit_exc    (ExcPtr   ptr);
+  virtual void visit_fam    (FamPtr   ptr);
+  virtual void visit_func   (FuncPtr  ptr);
+  virtual void visit_int    (IntPtr   ptr);
+  virtual void visit_list   (ListPtr  ptr);
+  virtual void visit_proj   (ProjPtr  ptr);
+  virtual void visit_raw    (RawPtr   ptr);
+  virtual void visit_ret    (RetPtr   ptr);
+  virtual void visit_seq    (SeqPtr   ptr);
+  virtual void visit_str    (StrPtr   ptr);
+  virtual void visit_sym    (SymPtr   ptr);
+  virtual void visit_temp   (TempPtr  ptr);
+  virtual void visit_tok    (TokPtr   ptr);
+  virtual void visit_type   (TypePtr  ptr);
+  virtual void visit_var    (VarPtr   ptr);
+  virtual void visit_term   (TermPtr  ptr);
+
+  virtual void visit_dict_item (const string& key, TermPtr val);
+  virtual void visit_dict_break ();
+
+  void visit_list_item (TermPtr term);
+  void visit_list_break ();
+};
+
   vector <string> MyViewHandler::_default_cols (C_SIZE);
 
   void MyViewHandler::visit_abs (AbsPtr ptr)
@@ -227,5 +308,64 @@ namespace NAMESPACE
   void MyViewHandler::visit_list_break ()
   {
     *this << _c [C_SEP] << ", ";
+  }
+
+static TermPtr
+str (TermPtr term)
+{
+  if (CAST<MStr> (term) && (Str::T == term->type()))
+    return term;
+  else {
+    std::ostringstream os;
+    MyViewHandler viewer (os);
+    viewer << term;
+    return MStr::create (os.str().c_str());
+  }
+}
+
+static TermPtr
+str_ansi (TermPtr term)
+{
+  std::ostringstream os;
+  MyViewHandler viewer (os, cols);
+  viewer << term;
+  return MStr::create (os.str().c_str());
+}
+
+typedef map<string,TermPtr> ext_map_t;
+
+extern "C"
+{
+  void* create_map ()
+  {
+    ext_map_t *map = new ext_map_t;
+
+  cols [C_NOR]   = COL_NORMAL;
+  cols [C_SEP]   = RED;
+  cols [C_BOOL]  = GREEN;
+  cols [C_CONST] = B_MAGENTA;
+  cols [C_FAM]   = B_RED;
+  cols [C_FUNC]  = B_GREEN;
+  cols [C_INT]   = MAGENTA;
+  cols [C_RET]   = COL_NORMAL;
+  cols [C_SCOPE] = COL_NORMAL;
+  cols [C_STR]   = COL_NORMAL;
+  cols [C_SYM]   = COL_NORMAL;
+  cols [C_TEMP]  = B_GREEN;
+  cols [C_TOK]   = YELLOW;
+  cols [C_TYPE]  = B_BLUE;
+  cols [C_VAR]   = CYAN;
+  cols [C_E]     = B_WHITE;
+  cols [C_TERM]  = B_MAGENTA;
+
+    (*map) ["str"] = SimpleFunc::create (1, PURE, (void*)str, Proj::create (Term::T, Str::T));
+    (*map) ["str_ansi"] = SimpleFunc::create (1, PURE, (void*)str_ansi, Proj::create (Term::T, Str::T));
+
+    return (void*) (map);
+  }
+
+  void destroy_map (void *map)
+  {
+    delete (ext_map_t*)(map);
   }
 };

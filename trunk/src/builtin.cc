@@ -231,10 +231,7 @@ namespace NAMESPACE
       {_F ("concat",   concat,   2, PURE, SX,       P2 (Str::T, Str::T, Str::T))},
       {_F ("raw_out",  raw_print,1, SIDE, S0,       P1 (Str::T, VOID_T))},
       {_F ("caststr",  cast_str, 1, PURE, SX,       P1 (Term::T, Str::T))},
-      {_F ("cstr",     cstr,     1, PURE, SX,       P1 (Str::T, Str::T))},
-      {_F ("str_ansi", str_ansi, 1, PURE, S0,       P1 (Term::T, Str::T))},
-      {_F ("rstr",     str,      1, META, Z0,       P1 (Raw::T, Str::T))},
-      {_F ("str",      str,      1, PURE, S0,       P1 (Term::T, Str::T))}
+      {_F ("cstr",     cstr,     1, PURE, SX,       P1 (Str::T, Str::T))}
     };
 
     for (unsigned int i=0; i<sizeof(_builtins)/sizeof(_builtin_t); ++i)

@@ -31,7 +31,6 @@ namespace NAMESPACE
 
     VAL_PROPERTY (ImportHandler*,  importer);
     VAL_PROPERTY (DebugHandler*,   debugger);
-    VAL_PROPERTY (vector<string>*, ansi_attrs);
 
   public:
 
