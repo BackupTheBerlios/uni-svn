@@ -1,6 +1,5 @@
 #include <abs.hh>
 #include <app.hh>
-#include <cons.hh>
 #include <family.hh>
 #include <func.hh>
 #include <handle.hh>
@@ -13,8 +12,6 @@
 #include <func.hh>
 #include <bool.hh>
 #include <temp.hh>
-
-#include <handler.hh>
 
 #include <vector>
 #include <map>
@@ -49,28 +46,23 @@ enum { C_NOR = 0, C_SEP, C_BOOL, C_DICT,
 
 vector <string> cols (C_SIZE);
 
-class MyViewHandler : public ViewHandler
+class ViewHandler : public Visitor
 {
 private:
 
-  static vector <string> _default_cols;
-
-private:
-
-  const vector <string>& _c;
+  std::ostream& _os;
+  const vector <string> _c;
 
 public:
 
-  MyViewHandler (std::ostream& os, const vector<string>& cols = _default_cols)
-    : ViewHandler (os), _c (cols) { }
+  ViewHandler (std::ostream& os) : _os (os) { }
+  ViewHandler (std::ostream& os, const vector<string>& cols) : _os (os), _c (cols) { }
 
 public:
 
   virtual void visit_abs    (AbsPtr   ptr);
   virtual void visit_app    (AppPtr   ptr);
   virtual void visit_bool   (BoolPtr  ptr);
-  virtual void visit_cons   (ConsPtr  ptr);
-  virtual void visit_consh  (ConshPtr ptr);
   virtual void visit_const  (ConstPtr ptr);
   virtual void visit_exc    (ExcPtr   ptr);
   virtual void visit_fam    (FamPtr   ptr);
@@ -87,19 +79,25 @@ public:
   virtual void visit_type   (TypePtr  ptr);
   virtual void visit_var    (VarPtr   ptr);
   virtual void visit_term   (TermPtr  ptr);
+
+public:
+
+  ViewHandler& operator << (TermPtr term) { term->visit (*this); return *this; }
+  ViewHandler& operator << (const string& x) { _os << x; return *this; }
+  ViewHandler& operator << (char x) { _os << x; return *this; }
+  ViewHandler& operator << (int x) { _os << x; return *this; }
+  ViewHandler& operator << (unsigned int x) { _os << x; return *this; }
 };
 
-  vector <string> MyViewHandler::_default_cols (C_SIZE);
+void ViewHandler::visit_abs (AbsPtr ptr)
+{
+  *this << _c[C_SEP] << "\\"
+	<< ptr->bv()
+	<< _c[C_SEP] << "."
+	<< ptr->body();
+}
 
-  void MyViewHandler::visit_abs (AbsPtr ptr)
-  {
-    *this << _c[C_SEP] << "\\"
-	  << ptr->bv()
-	  << _c[C_SEP] << "."
-	  << ptr->body();
-  }
-
-  void MyViewHandler::visit_app (AppPtr ptr)
+  void ViewHandler::visit_app (AppPtr ptr)
   {
     ptr->rator()->visit (*this);
 
@@ -114,26 +112,14 @@ public:
     }
   }
 
-  void MyViewHandler::visit_bool (BoolPtr ptr) { *this << _c[C_BOOL] << (ptr->val() ? "true" : "false"); }
+  void ViewHandler::visit_bool (BoolPtr ptr) { *this << _c[C_BOOL] << (ptr->val() ? "true" : "false"); }
 
-  void MyViewHandler::visit_cons (ConsPtr ptr)
-  {
-    ptr->left()->visit (*this);
-    *this << _c[C_SEP] << " | ";
-    ptr->right()->visit (*this);
-  }
-
-  void MyViewHandler::visit_consh (ConshPtr ptr)
-  {
-    *this << ptr->left() << _c[C_SEP] << ", " << ptr->right();
-  }
-
-  void MyViewHandler::visit_const (ConstPtr ptr)
+  void ViewHandler::visit_const (ConstPtr ptr)
   {
     *this << _c[C_CONST] << ptr->name();
   }
 
-  void MyViewHandler::visit_exc (ExcPtr ptr)
+  void ViewHandler::visit_exc (ExcPtr ptr)
   {
     switch (ptr->id()) {
     case E_ASSIGNMENT:
@@ -217,11 +203,11 @@ public:
     }
   }
 
-  void MyViewHandler::visit_fam   (FamPtr   ptr) { *this << _c[C_FAM] << ptr->name(); }
-  void MyViewHandler::visit_func  (FuncPtr  ptr) { *this << _c[C_FUNC] << ptr->name(); }
-  void MyViewHandler::visit_int   (IntPtr   ptr) { *this << _c[C_INT] << ptr->val(); }
+  void ViewHandler::visit_fam   (FamPtr   ptr) { *this << _c[C_FAM] << ptr->name(); }
+  void ViewHandler::visit_func  (FuncPtr  ptr) { *this << _c[C_FUNC] << ptr->name(); }
+  void ViewHandler::visit_int   (IntPtr   ptr) { *this << _c[C_INT] << ptr->val(); }
 
-  void MyViewHandler::visit_proj  (ProjPtr  ptr)
+  void ViewHandler::visit_proj  (ProjPtr  ptr)
   {
     if (CAST<Tree> (ptr->from())) {
       *this << _c[C_SEP] << '(';
@@ -235,15 +221,15 @@ public:
     ptr->to()->visit (*this);
   }
 
-  void MyViewHandler::visit_raw (RawPtr ptr)
+  void ViewHandler::visit_raw (RawPtr ptr)
   {
     *this << _c[C_SEP] << "<";
     ptr->visit_children (*this);
     *this << _c[C_SEP] << ">";
   }
 
-  void MyViewHandler::visit_ret   (RetPtr   ptr) { }
-  void MyViewHandler::visit_seq   (SeqPtr   ptr)
+  void ViewHandler::visit_ret   (RetPtr   ptr) { }
+  void ViewHandler::visit_seq   (SeqPtr   ptr)
   {
     *this << _c[C_SEP] << '{';
     for (unsigned int i = 0; i < ptr->size(); ++i) {
@@ -253,14 +239,14 @@ public:
     *this << _c[C_SEP] << '}';
   }
 
-  void MyViewHandler::visit_str   (StrPtr   ptr) { *this << _c[C_STR] << '\"' << ptr->str() << '\"'; }
-  void MyViewHandler::visit_sym   (SymPtr   ptr) { *this << _c[C_SYM] << ptr->str(); }
-  void MyViewHandler::visit_temp  (TempPtr  ptr) { *this << _c[C_TEMP] << ptr->name(); }
-  void MyViewHandler::visit_tok   (TokPtr   ptr) { *this << _c[C_TOK] << ptr->str(); }
-  void MyViewHandler::visit_type  (TypePtr  ptr) { *this << _c[C_TYPE] << ptr->str(); }
-  void MyViewHandler::visit_var   (VarPtr   ptr) { *this << _c[C_VAR] << "$" << ptr->id(); }
+  void ViewHandler::visit_str   (StrPtr   ptr) { *this << _c[C_STR] << '\"' << ptr->str() << '\"'; }
+  void ViewHandler::visit_sym   (SymPtr   ptr) { *this << _c[C_SYM] << ptr->str(); }
+  void ViewHandler::visit_temp  (TempPtr  ptr) { *this << _c[C_TEMP] << ptr->name(); }
+  void ViewHandler::visit_tok   (TokPtr   ptr) { *this << _c[C_TOK] << ptr->str(); }
+  void ViewHandler::visit_type  (TypePtr  ptr) { *this << _c[C_TYPE] << ptr->str(); }
+  void ViewHandler::visit_var   (VarPtr   ptr) { *this << _c[C_VAR] << "$" << ptr->id(); }
 
-  void MyViewHandler::visit_term  (TermPtr ptr)
+  void ViewHandler::visit_term  (TermPtr ptr)
   {
     *this << _c[C_TERM] << "?";
   }
@@ -272,7 +258,7 @@ str (TermPtr term)
     return term;
   else {
     std::ostringstream os;
-    MyViewHandler viewer (os);
+    ViewHandler viewer (os);
     viewer << term;
     return MStr::create (os.str().c_str());
   }
@@ -282,7 +268,7 @@ static TermPtr
 str_ansi (TermPtr term)
 {
   std::ostringstream os;
-  MyViewHandler viewer (os, cols);
+  ViewHandler viewer (os, cols);
   viewer << term;
   return MStr::create (os.str().c_str());
 }

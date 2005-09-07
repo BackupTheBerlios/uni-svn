@@ -66,13 +66,6 @@ namespace NAMESPACE
   }
 
   TermPtr
-  raw_print (Machine* c, TermPtr str)
-  {
-    std::cout << TCAST<Str>(str)->str() << std::flush;
-    return VOID;
-  }
-
-  TermPtr
   cstr (Machine* c, TermPtr src)
   {
     std::ostringstream os;

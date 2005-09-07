@@ -1,6 +1,4 @@
-AM_YFLAGS = -d
-AM_LFLAGS = -olex.yy.c
-AM_CXXFLAGS = -g -O0 -Wall -Werror -Wno-unused-label -Wno-unused-function -DDEBUG
+#AM_CXXFLAGS = -g -O0 -Wall -Werror -Wno-unused-label -Wno-unused-function -DDEBUG
 
 lib_LTLIBRARIES = libuni.la
 
@@ -28,7 +26,6 @@ libuni_la_SOURCES = app.hh \
 		func.hh \
 		func.cc \
 		handle.hh \
-		handler.hh \
 		int.hh \
 		int.cc \
 		machine.hh \
@@ -62,5 +59,4 @@ libuni_la_SOURCES = app.hh \
 		type.cc \
 		typedef.hh \
 		utils.hh \
-		utils.cc \
-		visitor.hh
+		utils.cc

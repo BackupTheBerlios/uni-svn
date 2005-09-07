@@ -4,7 +4,6 @@
 #include <machine.hh>
 #include <exception.hh>
 #include <func.hh>
-#include <handler.hh>
 #include <int.hh>
 #include <proj.hh>
 #include <raw.hh>
@@ -20,6 +19,7 @@
 #include <debugger.hh>
 #include <importer.hh>
 
+#include <iostream>
 #include <sstream>
 #include <fstream>
 #include <readline/readline.h>

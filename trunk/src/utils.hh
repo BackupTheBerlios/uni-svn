@@ -18,7 +18,6 @@ namespace NAMESPACE
   TermPtr greater_i (Machine* machine, TermPtr left, TermPtr right);
 
   TermPtr concat (Machine* machine, TermPtr left, TermPtr right);
-  TermPtr raw_print (Machine* machine, TermPtr str);
   TermPtr str (Machine* machine, TermPtr term);
   TermPtr str_ansi (Machine* machine, TermPtr term);
   TermPtr cstr (Machine* machine, TermPtr src);

@@ -2,7 +2,7 @@
 #define _SHELL_IMPORTER_HH_
 
 #include <scanner.hh>
-#include <handler.hh>
+#include <typedef.hh>
 
 #include <string>
 #include <fstream>
@@ -10,7 +10,7 @@
 using namespace NAMESPACE;
 using namespace std;
 
-class MyImportHandler : public ImportHandler
+class MyImportHandler
 {
 public:
 
@@ -22,7 +22,7 @@ public:
   TermPtr run (Machine* machine, Scanner* scanner, std::istream& input, int flags);
 
   MyImportHandler (const string& lib_path);
-  ~MyImportHandler();
+  virtual ~MyImportHandler();
 
 private:
 

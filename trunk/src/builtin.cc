@@ -216,7 +216,6 @@ namespace NAMESPACE
       {_F ("less",     less_i,   2, PURE, SX,       P2 (Int::T, Int::T, Bool::T))},
       {_F ("greater",  greater_i,2, PURE, SX,       P2 (Int::T, Int::T, Bool::T))},
       {_F ("concat",   concat,   2, PURE, SX,       P2 (Str::T, Str::T, Str::T))},
-      {_F ("raw_out",  raw_print,1, SIDE, S0,       P1 (Str::T, VOID_T))},
       {_F ("caststr",  cast_str, 1, PURE, SX,       P1 (Term::T, Str::T))},
       {_F ("cstr",     cstr,     1, PURE, SX,       P1 (Str::T, Str::T))}
     };

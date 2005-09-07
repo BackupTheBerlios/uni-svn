@@ -1,16 +1,61 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+
 #ifndef _UNI_TERM_HH_
 #define _UNI_TERM_HH_
 
 #include <basicdef.hh>
 #include <typedef.hh>
-#include <visitor.hh>
-
-#include <iostream>
-#include <vector>
 
 namespace NAMESPACE
 {
   class Machine;
+
+  class Visitor
+  {
+  public:
+
+    virtual ~Visitor () { }
+
+    virtual void visit_abs   (AbsPtr   ptr) { }
+    virtual void visit_app   (AppPtr   ptr) { }
+    virtual void visit_bool  (BoolPtr  ptr) { }
+    virtual void visit_cons  (ConsPtr  ptr) { }
+    virtual void visit_consh (ConshPtr ptr) { }
+    virtual void visit_const (ConstPtr ptr) { }
+    virtual void visit_cptr  (CPtrPtr  ptr) { }
+    virtual void visit_exc   (ExcPtr   ptr) { }
+    virtual void visit_fam   (FamPtr   ptr) { }
+    virtual void visit_func  (FuncPtr  ptr) { }
+    virtual void visit_int   (IntPtr   ptr) { }
+    virtual void visit_proj  (ProjPtr  ptr) { }
+    virtual void visit_raw   (RawPtr   ptr) { }
+    virtual void visit_ret   (RetPtr   ptr) { }
+    virtual void visit_scope (ScopePtr ptr) { }
+    virtual void visit_seq   (SeqPtr   ptr) { }
+    virtual void visit_space (SpacePtr ptr) { }
+    virtual void visit_str   (StrPtr   ptr) { }
+    virtual void visit_sym   (SymPtr   ptr) { }
+    virtual void visit_temp  (TempPtr  ptr) { }
+    virtual void visit_tok   (TokPtr   ptr) { }
+    virtual void visit_type  (TypePtr  ptr) { }
+    virtual void visit_var   (VarPtr   ptr) { }
+
+    virtual void visit_term  (TermPtr  ptr) { }
+  };
 
   /**
    * Abstract base class for all terms.
