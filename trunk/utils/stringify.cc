@@ -3,6 +3,7 @@
 #include <cons.hh>
 #include <family.hh>
 #include <func.hh>
+#include <handle.hh>
 #include <proj.hh>
 #include <string.hh>
 #include <tok.hh>
@@ -286,34 +287,32 @@ str_ansi (TermPtr term)
   return MStr::create (os.str().c_str());
 }
 
-typedef map<string,TermPtr> ext_map_t;
-
 extern "C"
 {
   void* create_map ()
   {
     ext_map_t *map = new ext_map_t;
 
-  cols [C_NOR]   = COL_NORMAL;
-  cols [C_SEP]   = RED;
-  cols [C_BOOL]  = GREEN;
-  cols [C_CONST] = B_MAGENTA;
-  cols [C_FAM]   = B_RED;
-  cols [C_FUNC]  = B_GREEN;
-  cols [C_INT]   = MAGENTA;
-  cols [C_RET]   = COL_NORMAL;
-  cols [C_SCOPE] = COL_NORMAL;
-  cols [C_STR]   = COL_NORMAL;
-  cols [C_SYM]   = COL_NORMAL;
-  cols [C_TEMP]  = B_GREEN;
-  cols [C_TOK]   = YELLOW;
-  cols [C_TYPE]  = B_BLUE;
-  cols [C_VAR]   = CYAN;
-  cols [C_E]     = B_WHITE;
-  cols [C_TERM]  = B_MAGENTA;
+    cols [C_NOR]   = COL_NORMAL;
+    cols [C_SEP]   = RED;
+    cols [C_BOOL]  = GREEN;
+    cols [C_CONST] = B_MAGENTA;
+    cols [C_FAM]   = B_RED;
+    cols [C_FUNC]  = B_GREEN;
+    cols [C_INT]   = MAGENTA;
+    cols [C_RET]   = COL_NORMAL;
+    cols [C_SCOPE] = COL_NORMAL;
+    cols [C_STR]   = COL_NORMAL;
+    cols [C_SYM]   = COL_NORMAL;
+    cols [C_TEMP]  = B_GREEN;
+    cols [C_TOK]   = YELLOW;
+    cols [C_TYPE]  = B_BLUE;
+    cols [C_VAR]   = CYAN;
+    cols [C_E]     = B_WHITE;
+    cols [C_TERM]  = B_MAGENTA;
 
-    (*map) ["str"] = SimpleFunc::create (1, PURE, (void*)str, Proj::create (Term::T, Str::T));
-    (*map) ["str_ansi"] = SimpleFunc::create (1, PURE, (void*)str_ansi, Proj::create (Term::T, Str::T));
+    (*map) ["str"] = ext_t (1, PURE, (void*)str, Proj::create (Term::T, Str::T));
+    (*map) ["str_ansi"] = ext_t (1, PURE, (void*)str_ansi, Proj::create (Term::T, Str::T));
 
     return (void*) (map);
   }

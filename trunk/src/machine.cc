@@ -318,12 +318,6 @@ namespace NAMESPACE
   }
 
   void
-  Machine::import (const string& lib)
-  {
-    _importer->import (this, lib);
-  }
-
-  void
   Machine::_new_frame (int flags)
   {
     assert (HAS_SHIELD);

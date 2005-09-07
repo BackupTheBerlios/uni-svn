@@ -25,6 +25,13 @@ namespace NAMESPACE
 
     Proj (TermPtr from, TermPtr to) { elem(0,from); elem(1,to); }
   };
+
+#define P1(T1, T2) (Proj::create (T1, T2))
+#define P2(T, ...) (Proj::create (T, P1(__VA_ARGS__)))
+#define P3(T, ...) (Proj::create (T, P2(__VA_ARGS__)))
+#define P4(T, ...) (Proj::create (T, P3(__VA_ARGS__)))
+#define P5(T, ...) (Proj::create (T, P4(__VA_ARGS__)))
+#define P6(T, ...) (Proj::create (T, P5(__VA_ARGS__)))
 };
 
 #endif

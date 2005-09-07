@@ -128,11 +128,17 @@ namespace NAMESPACE
 			     a[0], a[1], a[2], a[3],
 			     a[4], a[5], a[6], a[7]);
 
-    if (_arity)
-      m->pop (_arity);
-
-    assert (result);
-    return result;
+    if (result) {
+      if (_arity)
+	m->pop (_arity);
+      return result;
+    }
+    else if (_successor)
+      return _successor;
+    else {
+      // \todo thow an exception
+      throw "end of chain of responsibility";
+    }
   }
 
   //////////////////////////////////////////////////////////////////////////////

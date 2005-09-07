@@ -391,13 +391,6 @@ namespace NAMESPACE
   }
 
   TermPtr
-  import (Machine *m, TermPtr name)
-  {
-    m->import (TCAST<Str>(name)->str());
-    return VOID;
-  }
-
-  TermPtr
   set_int (Machine *m, TermPtr i, TermPtr val)
   {
     TCAST<Int>(i)->val (TCAST<Int>(val)->val());

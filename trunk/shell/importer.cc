@@ -10,9 +10,6 @@
 #include <map>
 #include <iostream>
 
-typedef std::map<string,TermPtr> ext_map_t;
-typedef void* (ctor_map_t)();
-
 bool
 MyImportHandler::import (Machine* machine, const string& name)
 {
@@ -26,25 +23,6 @@ MyImportHandler::import (Machine* machine, const string& name)
 	machine->context()->set_mod (name, NIL);
 	run (machine, scanner, file, ALL);
 	return true;
-      }
-    }
-
-    if (0 == name.find ("libuni-")) {
-      string libfile (name + ".so");
-      dlerror();
-      if (void* handle = dlopen (libfile.c_str(), RTLD_LAZY)) {
-	if (const char *e = dlerror())
-	  throw e;
-	ctor_map_t* ctor_map = (ctor_map_t*) dlsym (handle, "create_map");
-	if (const char *e = dlerror())
-	  throw e;
-	if (ext_map_t *fs = (ext_map_t*)ctor_map()) {
-	  for (ext_map_t::iterator iter = fs->begin(); iter != fs->end(); ++iter)
-	    machine->context()->add_symbol (iter->second, iter->first);
-	  return true;
-	}
-	else
-	  throw "cannot load library";
       }
     }
 

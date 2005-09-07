@@ -76,8 +76,6 @@ namespace NAMESPACE
   TermPtr scope_pop (Machine* machine);
   TermPtr scope_set (Machine* c, TermPtr t_flags);
 
-  TermPtr import (Machine* c, TermPtr name);
-
   TermPtr set_int (Machine* c, TermPtr v, TermPtr val);
   TermPtr set_str (Machine* c, TermPtr v, TermPtr val);
 

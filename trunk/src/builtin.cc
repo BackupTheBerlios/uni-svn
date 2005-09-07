@@ -183,7 +183,6 @@ namespace NAMESPACE
       {_F ("proj",     proj,     2, META, M0+M1,    P2 (Term::T, Term::T, Type::T))},
       //// reflection functions ////
       {_F ("is_sub",   is_sub,   2, PURE, SX,       P2 (Type::T, Type::T, Bool::T))},
-      {_F ("import",   import,   1, CTXT, SX,       P1 (Str::T, VOID_T))},
       {_F ("type",     type,     1, PURE, SX,       P1 (Str::T, Type::T))},
       {_F ("typetmp",  typetmp,  2, PURE, SX,       P2 (Term::T, Term::T, Type::T))},
       {_F ("set_int",  set_int,  2, CTXT, SX,       P2 (Int::T, Int::T, VOID_T))},

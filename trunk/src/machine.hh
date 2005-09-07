@@ -15,8 +15,6 @@ namespace NAMESPACE
   class Frame;
   class Context;
   class Shield;
-
-  class ImportHandler;
   class DebugHandler;
 
   /**
@@ -26,11 +24,8 @@ namespace NAMESPACE
   class Machine : private vector<Shield*>
   {
     VAL_PROPERTY_RO (Context*, context);
-
-    VAL_PROPERTY (bool, step_break);
-
-    VAL_PROPERTY (ImportHandler*,  importer);
-    VAL_PROPERTY (DebugHandler*,   debugger);
+    VAL_PROPERTY    (bool, step_break);
+    VAL_PROPERTY    (DebugHandler*,   debugger);
 
   public:
 
@@ -159,19 +154,6 @@ namespace NAMESPACE
      *          otherwise the original term is returned.
      */
     TermPtr eval (RawPtr raw, int flags = ALL);
-
-    /**
-     * Import a library.
-     * Programs can request to import a library through this interface.
-     * The request will be forward to the import handler, by which
-     * the request will be checked against security settings and the
-     * list of available libraries.
-     * And all these behaviors are depending on the import handler.
-     *
-     * \param   libname   the name of the library; this parameter will be
-     *                    passed to the handler directly, with no interpretion.
-     */
-    void import (const string& libname);
 
   private:
 

@@ -48,6 +48,7 @@ namespace NAMESPACE
     VAL_PROPERTY (unsigned int, arity);
     VAL_PROPERTY (unsigned int, style);
     VAL_PROPERTY (unsigned int, strict);
+    VAL_PROPERTY (TermPtr,      successor);
 
   public:
 

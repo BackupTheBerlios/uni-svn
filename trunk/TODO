@@ -10,14 +10,9 @@
   this would allow things like markup language easier
   to implement.
 
-* (2005-06-17) a context object should have a set of
-  "well known" resources, like stdout, stdin, stderr,
-  and etc. so that functions like [raw_out] can behave
-  correctly.
-
 * (2005-06-17) some arguments should be passed to scanners
   so that scanners can be more flexible. e.g. change the
   comment splitters, and quotation marks.
 
-* (2005-09-01) add a new directory [utils] where many loadable
-  libraries will be in. move some built-ins and ctors to there.
+* (2005-09-06) thow an exception when reached the end of
+  chain of responsibility.

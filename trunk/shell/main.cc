@@ -1,31 +1,24 @@
 #include <app.hh>
-#include <abs.hh>
-#include <bool.hh>
 #include <builtin.hh>
-#include <cons.hh>
 #include <context.hh>
 #include <machine.hh>
 #include <exception.hh>
-#include <family.hh>
 #include <func.hh>
-#include <frame.hh>
 #include <handler.hh>
 #include <int.hh>
 #include <proj.hh>
 #include <raw.hh>
 #include <reflection.hh>
-#include <seq.hh>
 #include <style.hh>
 #include <sym.hh>
-#include <temp.hh>
 #include <tok.hh>
+
+#include <dlimport.hh>
 
 #include <clo.h>
 #include <color.hh>
 #include <debugger.hh>
 #include <importer.hh>
-
-#include <my_view_handler.hh>
 
 #include <sstream>
 #include <fstream>
@@ -35,14 +28,14 @@
 using namespace NAMESPACE;
 using namespace std;
 
-static TermPtr _num_ctor (Machine*, TermPtr arg);
-static TermPtr _str_ctor (Machine*, TermPtr arg);
+static TermPtr _num_ctor (TermPtr arg);
+static TermPtr _str_ctor (TermPtr arg);
 
-TermPtr num_ctor_f = Envf::create ("num_ctor", 1, CONS, 0, (void*)_num_ctor, Proj::create(Str::T,Int::T));
-TermPtr str_ctor_f = Envf::create ("str_ctor", 1, CONS, 0, (void*)_str_ctor, Proj::create(Str::T,Str::T));
+TermPtr num_ctor_f = SimpleFunc::create (1, CONS, (void*)_num_ctor, Proj::create(Str::T,Int::T));
+TermPtr str_ctor_f = SimpleFunc::create (1, CONS, (void*)_str_ctor, Proj::create(Str::T,Str::T));
 
 TermPtr
-_num_ctor (Machine* c, TermPtr arg)
+_num_ctor (TermPtr arg)
 {
   if (StrPtr s = CAST<Str> (arg))
     return Int::create (s->str());
@@ -53,7 +46,7 @@ _num_ctor (Machine* c, TermPtr arg)
 }
 
 TermPtr
-_str_ctor (Machine* c, TermPtr arg)
+_str_ctor (TermPtr arg)
 {
   if (CAST<Str> (arg))
     return arg;
@@ -66,7 +59,6 @@ _str_ctor (Machine* c, TermPtr arg)
 void
 exec_files (Machine* machine,
 	    const vector<string>& files,
-	    MyViewHandler& viewer,
 	    MyImportHandler& importer)
 {
   try {
@@ -80,8 +72,7 @@ exec_files (Machine* machine,
   }
   catch (TermPtr e) {
     cout << RED << "exception: " << COL_NORMAL;
-    viewer << e;
-    cout << endl;
+    cout << str_ansi(machine, e)->str() << endl;
   }
   catch (const char* s) {
     cout << "[ERROR] " << s << endl;
@@ -98,7 +89,6 @@ void
 shell (Machine* machine,
        Scanner* scanner,
        const string& prompt,
-       MyViewHandler& viewer,
        MyImportHandler& importer)
 {
   while (char* cs = readline (prompt.c_str())) {
@@ -123,10 +113,6 @@ shell (Machine* machine,
 	  TermPtr app_result = App::create (str,result);
 	  TermPtr app_type   = App::create (str,type);
 
-	  assert (str);
-	  assert (app_result);
-	  assert (app_type);
-
 	  result = machine->reduce_in_shield (app_result);
 	  type   = machine->reduce_in_shield (app_type);
 
@@ -142,8 +128,7 @@ shell (Machine* machine,
       }
       catch (TermPtr e) {
 	cout << RED << "exception: " << COL_NORMAL;
-	viewer << e;
-	cout << endl;
+	cout << str_ansi(machine, e)->str() << endl;
       }
       catch (const char* s) {
 	cout << "[ERROR] " << s << endl;
@@ -163,39 +148,17 @@ shell (Machine* machine,
 int
 main (int argc, char** argv)
 {
-  vector <string> cols (C_SIZE);
-
-  cols [C_NOR]   = COL_NORMAL;
-  cols [C_SEP]   = RED;
-  cols [C_BOOL]  = GREEN;
-  cols [C_CONST] = B_MAGENTA;
-  cols [C_FAM]   = B_RED;
-  cols [C_FUNC]  = B_GREEN;
-  cols [C_INT]   = MAGENTA;
-  cols [C_RET]   = COL_NORMAL;
-  cols [C_SCOPE] = COL_NORMAL;
-  cols [C_STR]   = COL_NORMAL;
-  cols [C_SYM]   = COL_NORMAL;
-  cols [C_TEMP]  = B_GREEN;
-  cols [C_TOK]   = YELLOW;
-  cols [C_TYPE]  = B_BLUE;
-  cols [C_VAR]   = CYAN;
-  cols [C_E]     = B_WHITE;
-  cols [C_TERM]  = B_MAGENTA;
-
   try {
     const char* lib_path = getenv ("UNI_LIBRARY_PATH");
     if (0 == lib_path)
       throw "error: environment variable UNI_LIBRARY_PATH is not set.";
 
     MyImportHandler importer (lib_path);
-    MyViewHandler   viewer (cout, cols);
-    MyDebugHandler  debugger (viewer);
+    ShellDebugger   debugger;
 
     Builtin         builtin;
     Machine         machine;
 
-    machine.importer (&importer);
     machine.debugger (&debugger);
 
     builtin.init (&machine);
@@ -206,15 +169,18 @@ main (int argc, char** argv)
     machine.context()->add_symbol (num_ctor_f, "num_ctor");
     machine.context()->add_symbol (str_ctor_f, "str_ctor");
 
+    lib_register (&machine, dlimport_create_map());
+    lib_import (&machine, "libuni-stringify");
+
     clo::parser clo_parser;
     clo_parser.parse (argc, argv);
 
     machine.step_break (clo_parser.get_options().dumpstack);
 
     if (! clo_parser.get_non_options().empty())
-      exec_files (&machine, clo_parser.get_non_options(), viewer, importer);
+      exec_files (&machine, clo_parser.get_non_options(), importer);
     if (clo_parser.get_options().interactive || clo_parser.get_non_options().empty())
-      shell (&machine, importer.load_scanner ("curly-ascii"), string(RED) + "] " + COL_NORMAL, viewer, importer);
+      shell (&machine, importer.load_scanner ("curly-ascii"), string(RED) + "] " + COL_NORMAL, importer);
     return 0;
   }
   catch (clo::autoexcept &e) {
