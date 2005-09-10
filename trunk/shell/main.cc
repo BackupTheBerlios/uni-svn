@@ -13,11 +13,11 @@
 #include <tok.hh>
 
 #include <dlimport.hh>
+#include <import.hh>
 
 #include <clo.h>
 #include <color.hh>
 #include <debugger.hh>
-#include <importer.hh>
 
 #include <iostream>
 #include <sstream>
@@ -37,35 +37,24 @@ TermPtr str_ctor_f = SimpleFunc::create (1, CONS, (void*)_str_ctor, Proj::create
 TermPtr
 _num_ctor (TermPtr arg)
 {
-  if (StrPtr s = CAST<Str> (arg))
-    return Int::create (s->str());
-  else {
-    // \todo something is wrong, throw an exception.
-    return TermPtr();
-  }
+  StrPtr s = TCAST<Str> (arg);
+  return Int::create (s->str());
 }
 
 TermPtr
 _str_ctor (TermPtr arg)
 {
-  if (CAST<Str> (arg))
-    return arg;
-  else {
-    // \todo something is wrong, throw an exception.
-    return TermPtr();
-  }
+  return TCAST<Str> (arg);
 }
 
 void
-exec_files (Machine* machine,
-	    const vector<string>& files,
-	    MyImportHandler& importer)
+exec_files (Machine* machine, const vector<string>& files)
 {
   try {
     for (vector<string>::const_iterator f = files.begin(); f != files.end(); ++f ) {
       ifstream infile (f->c_str());
       if (infile.good())
-	importer.run (machine, importer.load_scanner_for(*f), infile, ALL);
+	uni_run (machine, uni_load_scanner_for(*f), infile, ALL);
       else
 	cout << "cannot open file " << *f << endl;
     }
@@ -88,8 +77,7 @@ exec_files (Machine* machine,
 void
 shell (Machine* machine,
        Scanner* scanner,
-       const string& prompt,
-       MyImportHandler& importer)
+       const string& prompt)
 {
   while (char* cs = readline (prompt.c_str())) {
     if (*cs) {
@@ -99,7 +87,7 @@ shell (Machine* machine,
       free (cs);
 
       try {
-	TermPtr result = importer.run (machine, scanner, input, ALL);
+	TermPtr result = uni_run (machine, scanner, input, ALL);
 	TermPtr type   = type_of (machine, result);
 
 	assert (result);
@@ -153,7 +141,6 @@ main (int argc, char** argv)
     if (0 == lib_path)
       throw "error: environment variable UNI_LIBRARY_PATH is not set.";
 
-    MyImportHandler importer (lib_path);
     ShellDebugger   debugger;
 
     Builtin         builtin;
@@ -178,9 +165,9 @@ main (int argc, char** argv)
     machine.step_break (clo_parser.get_options().dumpstack);
 
     if (! clo_parser.get_non_options().empty())
-      exec_files (&machine, clo_parser.get_non_options(), importer);
+      exec_files (&machine, clo_parser.get_non_options());
     if (clo_parser.get_options().interactive || clo_parser.get_non_options().empty())
-      shell (&machine, importer.load_scanner ("curly-ascii"), string(RED) + "] " + COL_NORMAL, importer);
+      shell (&machine, uni_load_scanner ("curly-ascii"), string(RED) + "] " + COL_NORMAL);
     return 0;
   }
   catch (clo::autoexcept &e) {

@@ -16,3 +16,6 @@
 
 * (2005-09-06) thow an exception when reached the end of
   chain of responsibility.
+
+* (2005-09-09) use smart pointer for BindState, since they
+  are now not freed.

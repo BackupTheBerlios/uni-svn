@@ -1,5 +1,6 @@
 #include <machine.hh>
 #include <family.hh>
+#include <func.hh>
 #include <exception.hh>
 #include <proj.hh>
 #include <temp.hh>
@@ -14,18 +15,26 @@ namespace NAMESPACE
     assert (type);
 
     _leaf = false;
-    TermPtr curr = type, next;
+    TermPtr next, curr = type;
 
     if (ProjPtr p = CAST<Proj>(type)) {
       curr = p->from();
       next = p->to();
     }
 
-    if (next) {
+    if (next)
       for (iterator i = begin(); i != end(); ++i)
 	if ((**i)._edge->equ (curr))
 	  return (**i).add (body, next);
-    }
+
+    for (iterator i = begin(); i != end(); ++i)       // first, try to mount to chain
+      if ((**i)._edge->equ (curr))
+	if ((**i)._body)
+	  if (FuncPtr f = CAST<Func> ((**i)._body))
+	    if (FuncPtr fbody = CAST<Func> (body)) {
+	      (**i)._body = body;
+	      return fbody->successor (f);
+	    }
 
     BindState* f = new BindState;
     f->_edge = curr;

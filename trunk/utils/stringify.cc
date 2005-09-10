@@ -203,7 +203,7 @@ void ViewHandler::visit_abs (AbsPtr ptr)
     }
   }
 
-  void ViewHandler::visit_fam   (FamPtr   ptr) { *this << _c[C_FAM] << ptr->name(); }
+  void ViewHandler::visit_fam   (FamPtr   ptr) { *this << _c[C_FAM] << "*"; }
   void ViewHandler::visit_func  (FuncPtr  ptr) { *this << _c[C_FUNC] << ptr->name(); }
   void ViewHandler::visit_int   (IntPtr   ptr) { *this << _c[C_INT] << ptr->val(); }
 

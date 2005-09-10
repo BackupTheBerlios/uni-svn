@@ -64,7 +64,7 @@ extern "C"
     ext_map_t *map = new ext_map_t;
 
     (*map) ["import"] = ext_t (1, Envf::create ("import",
-						1, PURE, Envf::N,
+						1, CTXT, Envf::N,
 						(void*) import,
 						P1 (Str::T, VOID_T)));
 
@@ -72,11 +72,11 @@ extern "C"
   }
 
   void
-  delete_map (ext_map_t* map)
+  destroy_map (ext_map_t* map)
   {
     delete map;
   }
 };
 
 ext_map_t* dlimport_create_map () { return create_map(); }
-void dlimport_delete_map (ext_map_t* map) { delete_map (map); }
+void dlimport_delete_map (ext_map_t* map) { destroy_map (map); }

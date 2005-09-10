@@ -31,7 +31,7 @@ namespace NAMESPACE
     if (end() != iter)
       iter->second->add (term, term->type());
     else {
-      FamPtr family = Family::create (sym);
+      FamPtr family = Family::create ();
       family->add (term, term->type());
       (*this) [make_pair (sym, nspace)] = family;
     }
@@ -54,7 +54,7 @@ namespace NAMESPACE
   {
     iterator iter = find (make_pair (sym, nspace));
     if (end() != iter) {
-      FamPtr family = Family::create (sym);
+      FamPtr family = Family::create ();
       family->add (term, term->type());
       iter->second = family;
       return true;
