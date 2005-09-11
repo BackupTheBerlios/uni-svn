@@ -161,34 +161,24 @@ list_iter_dec (TermPtr obj_term)
 }
 
 //// library entry points //////////////////////////////////////////
-extern "C"
-{
-  ext_map_t* create_map ()
-  {
-    ext_map_t *map = new ext_map_t;
+static ext_t _exts[] = {
+  {"map_new", SimpleFunc::create (1, PURE, (void*)map_new, P1 (Term::T, Term::T))},
+  {"map_get", SimpleFunc::create (2, PURE, (void*)map_get, P2 (Term::T, Str::T, Term::T))},
+  {"map_has", SimpleFunc::create (2, PURE, (void*)map_has, P2 (Term::T, Str::T, Bool::T))},
+  {"map_set", SimpleFunc::create (3, PURE, (void*)map_set, P3 (Term::T, Str::T, Term::T, VOID_T))},
 
-    (*map) ["map_new"] = ext_t (1, PURE, (void*)map_new, P1 (Term::T, Term::T));
-    (*map) ["map_get"] = ext_t (2, PURE, (void*)map_get, P2 (Term::T, Str::T, Term::T));
-    (*map) ["map_has"] = ext_t (2, PURE, (void*)map_has, P2 (Term::T, Str::T, Bool::T));
-    (*map) ["map_set"] = ext_t (3, PURE, (void*)map_set, P3 (Term::T, Str::T, Term::T, VOID_T));
+  {"list_new",    SimpleFunc::create (1, PURE, (void*)list_new, P1 (Term::T, Term::T))},
+  {"list_append", SimpleFunc::create (2, PURE, (void*)list_append, P2 (Term::T, Term::T, VOID_T))},
+  {"list_front",  SimpleFunc::create (1, PURE, (void*)list_front, P1 (Term::T, Term::T))},
+  {"list_back",   SimpleFunc::create (1, PURE, (void*)list_back, P1 (Term::T, Term::T))},
 
-    (*map) ["list_new"]    = ext_t (1, PURE, (void*)list_new, P1 (Term::T, Term::T));
-    (*map) ["list_append"] = ext_t (2, PURE, (void*)list_append, P2 (Term::T, Term::T, VOID_T));
-    (*map) ["list_front"]  = ext_t (1, PURE, (void*)list_front, P1 (Term::T, Term::T));
-    (*map) ["list_back"]   = ext_t (1, PURE, (void*)list_back, P1 (Term::T, Term::T));
+  {"list_begin",  SimpleFunc::create (1, PURE, (void*)list_begin, P1 (Term::T, Term::T))},
+  {"list_end",    SimpleFunc::create (1, PURE, (void*)list_end, P1 (Term::T, Term::T))},
 
-    (*map) ["list_begin"]  = ext_t (1, PURE, (void*)list_begin, P1 (Term::T, Term::T));
-    (*map) ["list_end"]    = ext_t (1, PURE, (void*)list_end, P1 (Term::T, Term::T));
-
-    (*map) ["list_iter_deref"] = ext_t (1, PURE, (void*)list_iter_deref, P1 (Term::T, Term::T));
-    (*map) ["list_iter_inc"]   = ext_t (1, PURE, (void*)list_iter_inc,   P1 (Term::T, VOID_T));
-    (*map) ["list_iter_dec"]   = ext_t (1, PURE, (void*)list_iter_dec,   P1 (Term::T, VOID_T));
-
-    return map;
-  }
-
-  void destroy_map (ext_map_t *map)
-  {
-    delete map;
-  }
+  {"list_iter_deref", SimpleFunc::create (1, PURE, (void*)list_iter_deref, P1 (Term::T, Term::T))},
+  {"list_iter_inc",   SimpleFunc::create (1, PURE, (void*)list_iter_inc,   P1 (Term::T, VOID_T))},
+  {"list_iter_dec",   SimpleFunc::create (1, PURE, (void*)list_iter_dec,   P1 (Term::T, VOID_T))},
+  {0, TermPtr()}
 };
+
+extern "C" { ext_t* create_map () { return _exts; } };

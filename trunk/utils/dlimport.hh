@@ -7,10 +7,9 @@
 
 using namespace NAMESPACE;
 
-bool lib_register (Machine *machine, const ext_map_t* m);
+bool lib_register (Machine *machine, const ext_t* m);
 bool lib_import (Machine *machine, const std::string& name);
 
-ext_map_t* dlimport_create_map ();
-void dlimport_delete_map (ext_map_t* map);
+ext_t* dlimport_create_map ();
 
 #endif

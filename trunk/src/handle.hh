@@ -19,17 +19,11 @@ namespace NAMESPACE
 
   struct ext_t
   {
+    char*   name;
     TermPtr term;
-
-    ext_t () { }
-    ext_t (TermPtr term) : term (term) { }
-    ext_t (int a, int s, void* e, TermPtr t) : term (SimpleFunc::create (a, s, e, t)) { }
   };
 
-  typedef std::map<std::string,ext_t> ext_map_t;
-
-  typedef ext_map_t* (*ext_ctor_t)();
-  typedef ext_map_t* (*ext_dtor_t)(ext_map_t*);
+  typedef ext_t* (*ext_ctor_t)();
 };
 
 #endif

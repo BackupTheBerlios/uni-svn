@@ -273,12 +273,17 @@ str_ansi (TermPtr term)
   return MStr::create (os.str().c_str());
 }
 
+static ext_t _exts[] = {
+  {"str",      SimpleFunc::create (1, PURE, (void*)str, Proj::create (Term::T, Str::T))},
+  {"str_ansi", SimpleFunc::create (1, PURE, (void*)str_ansi, Proj::create (Term::T, Str::T))},
+  {0, TermPtr()}
+};
+
 extern "C"
 {
-  void* create_map ()
+  ext_t*
+  create_map ()
   {
-    ext_map_t *map = new ext_map_t;
-
     cols [C_NOR]   = COL_NORMAL;
     cols [C_SEP]   = RED;
     cols [C_BOOL]  = GREEN;
@@ -297,14 +302,6 @@ extern "C"
     cols [C_E]     = B_WHITE;
     cols [C_TERM]  = B_MAGENTA;
 
-    (*map) ["str"] = ext_t (1, PURE, (void*)str, Proj::create (Term::T, Str::T));
-    (*map) ["str_ansi"] = ext_t (1, PURE, (void*)str_ansi, Proj::create (Term::T, Str::T));
-
-    return (void*) (map);
-  }
-
-  void destroy_map (void *map)
-  {
-    delete (ext_map_t*)(map);
+    return _exts;
   }
 };

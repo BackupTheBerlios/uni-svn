@@ -1,3 +1,6 @@
+#ifndef _UNI_IMPORT_HH_
+#define _UNI_IMPORT_HH_
+
 #include <machine.hh>
 #include <scanner.hh>
 
@@ -12,3 +15,5 @@ extern "C"
   Scanner* uni_load_scanner_for (const std::string& filename);
   bool uni_import (Machine *machine, const std::string& name);
 };
+
+#endif

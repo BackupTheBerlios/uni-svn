@@ -15,10 +15,10 @@
 using namespace NAMESPACE;
 
 bool
-lib_register (Machine *machine, const ext_map_t* m)
+lib_register (Machine *machine, const ext_t *m)
 {
-  for (ext_map_t::const_iterator i = m->begin(); i != m->end(); ++i)
-    machine->context()->add_symbol (i->second.term, i->first);
+  for ( ; m->name; ++m)
+    machine->context()->add_symbol (m->term, m->name);
   return true;
 }
 
@@ -33,7 +33,7 @@ lib_import (Machine *machine, const std::string& name)
 	if (0 == dlerror()) {
 	  ext_ctor_t ctor_map = (ext_ctor_t) dlsym (handle, "create_map");
 	  if (0 == dlerror()) {
-	    if (ext_map_t *m = (ext_map_t*)ctor_map())
+	    if (ext_t *m = ctor_map())
 	      return lib_register (machine, m);
 	  }
 	}
@@ -56,27 +56,11 @@ import (Machine* machine, TermPtr t_name)
   return TermPtr(); // call next handler on the chain of responsibility
 }
 
-extern "C"
-{
-  ext_map_t*
-  create_map ()
-  {
-    ext_map_t *map = new ext_map_t;
-
-    (*map) ["import"] = ext_t (Envf::create ("import",
-					     1, CTXT, Envf::N,
-					     (void*) import,
-					     P1 (Str::T, VOID_T)));
-
-    return map;
-  }
-
-  void
-  destroy_map (ext_map_t* map)
-  {
-    delete map;
-  }
+static ext_t _exts[] = {
+  {"import", Envf::create ("import", 1, CTXT, Envf::N, (void*) import, P1 (Str::T, VOID_T))},
+  {0, TermPtr()}
 };
 
-ext_map_t* dlimport_create_map () { return create_map(); }
-void dlimport_delete_map (ext_map_t* map) { destroy_map (map); }
+extern "C" { ext_t* create_map () { return _exts; } };
+
+ext_t* dlimport_create_map () { return create_map(); }

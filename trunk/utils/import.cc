@@ -26,6 +26,11 @@ static std::map<string,string> _ext;
 static std::map<string,Scanner*> _scanners;
 static std::string _default_ext;
 
+static ext_t _exts[] = {
+  {"import", Envf::create ("import", 1, CTXT, Envf::N, (void*) import, P1 (Str::T, VOID_T))},
+  {0, TermPtr()}
+};
+
 extern "C"
 {
   TermPtr
@@ -97,7 +102,7 @@ extern "C"
       return true;
   }
 
-  ext_map_t*
+  ext_t*
   create_map ()
   {
     _default_ext = "curly-ascii";
@@ -106,23 +111,7 @@ extern "C"
 
     path.push_back (getenv("UNI_LIBRARY_PATH"));
 
-    ext_map_t *map = new ext_map_t;
-
-    (*map) ["import"] = ext_t (Envf::create ("import",
-					     1, CTXT, Envf::N,
-					     (void*) import,
-					     P1 (Str::T, VOID_T)));
-
-    return map;
-  }
-
-  void
-  _map (ext_map_t* m)
-  {
-    map<string,Scanner*>::iterator i;
-    for (i = _scanners.begin(); i != _scanners.end(); ++i)
-      delete i->second;
-    delete m;
+    return _exts;
   }
 };
 
