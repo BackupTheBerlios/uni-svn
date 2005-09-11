@@ -9,39 +9,43 @@
 #include <list>
 #include <map>
 #include <string>
+#include <utility>
 
 using namespace NAMESPACE;
 using std::list;
 using std::map;
 using std::string;
+using std::make_pair;
 
 typedef map <string, TermPtr> map_t;
 typedef list <TermPtr> list_t;
 
 //// map ////////////////////////////////////////////////////////////////
-static void
-map_delete (void* obj)
+class MapHandle : public Term, public map_t
 {
-  map_t *m = static_cast<map_t*> (obj);
-  delete m;
-}
+  DEF_DYNAMIC (MapHandle);
+
+protected:
+
+  MapHandle () { assert (false); }
+  MapHandle (TermPtr type) : Term (type) { }
+};
 
 static TermPtr
 map_new (TermPtr type)
 {
-  return Handle::create (type, new map_t, map_delete);
+  return MapHandle::create (type);
 }
 
 static TermPtr
 map_get (TermPtr obj_term, TermPtr key_term)
 {
-  P(Handle) obj = TCAST<Handle> (obj_term);
-  P(Str)    key = TCAST<Str>    (key_term);
+  P(MapHandle) obj = TCAST<MapHandle> (obj_term);
+  P(Str)       key = TCAST<Str>       (key_term);
 
-  map_t *m = static_cast<map_t*> (obj->handle());
-  map_t::iterator iter = m->find (key->str());
+  map_t::iterator iter = obj->find (key->str());
 
-  if (m->end() != iter)
+  if (obj->end() != iter)
     return iter->second;
   else
     return TermPtr(); // \todo throw an exception.
@@ -50,107 +54,109 @@ map_get (TermPtr obj_term, TermPtr key_term)
 static TermPtr
 map_has (TermPtr obj_term, TermPtr key_term)
 {
-  P(Handle) obj = TCAST<Handle> (obj_term);
-  P(Str)    key = TCAST<Str>    (key_term);
+  P(MapHandle) obj = TCAST<MapHandle> (obj_term);
+  P(Str)       key = TCAST<Str>       (key_term);
 
-  map_t *m = static_cast<map_t*> (obj->handle());
-  map_t::iterator iter = m->find (key->str());
-
-  if (m->end() != iter)
-    return Bool::TRUE;
-  else
+  if (obj->end() == obj->find (key->str()))
     return Bool::FALSE;
+  else
+    return Bool::TRUE;
 }
 
 static TermPtr
 map_set (TermPtr obj_term, TermPtr key_term, TermPtr val_term)
 {
-  P(Handle) obj = TCAST<Handle> (obj_term);
-  P(Str)    key = TCAST<Str> (key_term);
+  P(MapHandle) obj = TCAST<MapHandle> (obj_term);
+  P(Str)       key = TCAST<Str> (key_term);
 
-  map_t *m = static_cast<map_t*> (obj->handle());
-  (*m)[key->str()] = val_term;
+  obj->insert (make_pair (key->str(), val_term));
   return VOID;
 }
 
 //// list ////////////////////////////////////////////////////////////
-static void
-list_delete (void* obj)
+class ListHandle : public Term, public list_t
 {
-  list_t *l = static_cast<list_t*> (obj);
-  delete l;
-}
+  DEF_DYNAMIC (ListHandle);
+
+protected:
+
+  ListHandle () { assert (false); }
+  ListHandle (TermPtr type) : Term (type) { }
+};
 
 static TermPtr
 list_new (TermPtr type)
 {
-  return Handle::create (type, new list_t, list_delete);
+  return ListHandle::create (type);
 }
 
 static TermPtr
 list_append (TermPtr obj_term, TermPtr val_term)
 {
-  list_t *l = static_cast<list_t*> ((TCAST<Handle>(obj_term))->handle());
-  l->insert(l->end(), val_term);
+  P(ListHandle) obj = TCAST<ListHandle> (obj_term);
+  obj->insert(obj->end(), val_term);
   return VOID;
 }
 
 static TermPtr
 list_front (TermPtr obj_term)
 {
-  list_t *l = static_cast<list_t*> ((TCAST<Handle>(obj_term))->handle());
-  return l->front();
+  P(ListHandle) obj = TCAST<ListHandle> (obj_term);
+  return obj->front();
 }
 
 static TermPtr
 list_back (TermPtr obj_term)
 {
-  list_t *l = static_cast<list_t*> ((TCAST<Handle>(obj_term))->handle());
-  return l->back();
+  P(ListHandle) obj = TCAST<ListHandle> (obj_term);
+  return obj->back();
 }
 
 //// list iterator ///////////////////////////////////////////////////////
-static void
-list_iter_delete (void* obj)
+class ListIter : public Term, public list_t::iterator
 {
-  list_t::iterator *iter = static_cast<list_t::iterator*> (obj);
-  delete iter;
-}
+  DEF_DYNAMIC (ListIter);
+
+protected:
+
+  ListIter () { assert (false); }
+  ListIter (TermPtr type, const list_t::iterator& iter) : Term (type), list_t::iterator (iter) { }
+};
 
 static TermPtr
 list_begin (TermPtr obj_term)
 {
-  list_t *l = static_cast<list_t*> ((TCAST<Handle>(obj_term))->handle());
-  return Handle::create (Term::T, new list_t::iterator (l->begin()), list_iter_delete);
+  P(ListHandle) obj = TCAST<ListHandle> (obj_term);
+  return ListIter::create (Term::T, obj->begin());
 }
 
 static TermPtr
 list_end (TermPtr obj_term)
 {
-  list_t *l = static_cast<list_t*> ((TCAST<Handle>(obj_term))->handle());
-  return Handle::create (Term::T, new list_t::iterator (l->end()), list_iter_delete);
+  P(ListHandle) obj = TCAST<ListHandle> (obj_term);
+  return ListIter::create (Term::T, obj->end());
 }
 
 static TermPtr
 list_iter_deref (TermPtr obj_term)
 {
-  list_t::iterator *iter = static_cast<list_t::iterator*> ((TCAST<Handle>(obj_term))->handle());
-  return **iter;
+  P(ListIter) obj = TCAST<ListIter> (obj_term);
+  return **obj;
 }
 
 static TermPtr
 list_iter_inc (TermPtr obj_term)
 {
-  list_t::iterator *iter = static_cast<list_t::iterator*> ((TCAST<Handle>(obj_term))->handle());
-  ++(*iter);
+  P(ListIter) obj = TCAST<ListIter> (obj_term);
+  ++(*obj);
   return VOID;
 }
 
 static TermPtr
 list_iter_dec (TermPtr obj_term)
 {
-  list_t::iterator *iter = static_cast<list_t::iterator*> ((TCAST<Handle>(obj_term))->handle());
-  --(*iter);
+  P(ListIter) obj = TCAST<ListIter> (obj_term);
+  --(*obj);
   return VOID;
 }
 

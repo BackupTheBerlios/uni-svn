@@ -8,31 +8,22 @@ namespace NAMESPACE
 {
   class Handle : public Term
   {
-    typedef void (*dtor_t)(void*);
-
     DEF_DYNAMIC  (Handle);
     VAL_PROPERTY (void*, handle);
-    VAL_PROPERTY (dtor_t, dtor);
-
-  public:
-
-    ~Handle () { if (_dtor) _dtor (_handle); }
 
   protected:
 
-    Handle () : Term (Term::T) { }
-    Handle (TermPtr type, void* handle, dtor_t dtor = 0) : Term (type), _handle (handle), _dtor (dtor) { }
+    Handle () { assert (false); }
+    Handle (TermPtr type, void* handle) : Term (type), _handle (handle) { }
   };
 
   struct ext_t
   {
-    int     special : 1;
-    int     chained : 1;
     TermPtr term;
 
     ext_t () { }
-    ext_t (int special, TermPtr term) : special (special), term (term) { }
-    ext_t (int a, int s, void* e, TermPtr t) : special (0), term (SimpleFunc::create (a, s, e, t)) { }
+    ext_t (TermPtr term) : term (term) { }
+    ext_t (int a, int s, void* e, TermPtr t) : term (SimpleFunc::create (a, s, e, t)) { }
   };
 
   typedef std::map<std::string,ext_t> ext_map_t;

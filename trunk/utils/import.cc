@@ -108,10 +108,10 @@ extern "C"
 
     ext_map_t *map = new ext_map_t;
 
-    (*map) ["import"] = ext_t (1, Envf::create ("import",
-						1, CTXT, Envf::N,
-						(void*) import,
-						P1 (Str::T, VOID_T)));
+    (*map) ["import"] = ext_t (Envf::create ("import",
+					     1, CTXT, Envf::N,
+					     (void*) import,
+					     P1 (Str::T, VOID_T)));
 
     return map;
   }
