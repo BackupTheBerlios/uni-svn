@@ -77,10 +77,9 @@ namespace NAMESPACE
 
   protected:
 
-    Envf () { }
+    Envf () { assert (false); }
 
-    Envf (const string& name,
-	  unsigned int  arity,
+    Envf (unsigned int  arity,
 	  unsigned int  style,
 	  unsigned int  strictness,
 	  void*         entry,
@@ -120,7 +119,7 @@ namespace NAMESPACE
   protected:
 
     Intf () { assert (false); }
-    Intf (const std::string& name, TermPtr body, TermPtr type);
+    Intf (TermPtr body, TermPtr type);
 
   private:
 

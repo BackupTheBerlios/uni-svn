@@ -73,56 +73,6 @@ namespace NAMESPACE
     return lhs->solve (var, rhs);
   }
 
-  //// defsty //////////////////////////////////////////////////////////////////
-  TermPtr
-  defsty (Machine* c, TermPtr n, TermPtr f, TermPtr p)
-  {
-    const char* name = TCAST<Str>(n)->str();
-    int fix  = TCAST<Int>(f)->val();
-    int prec = TCAST<Int>(p)->val();
-    int sty  = MAKE_STYLE (fix, prec);
-    c->context()->add_style (name, sty);
-    return VOID;
-  }
-
-  //// defout //////////////////////////////////////////////////////////////////
-  TermPtr
-  defout (Machine* c, TermPtr t_lhs, TermPtr t_rhs)
-  {
-    const char *lhs = TCAST<Str>(t_lhs)->str();
-    const char *rhs = TCAST<Str>(t_rhs)->str();
-    c->context()->add_outfix (lhs, rhs);
-    return VOID;
-  }
-
-  //// defmap //////////////////////////////////////////////////////////////////
-  TermPtr
-  defmap (Machine* c, TermPtr n, TermPtr term)
-  {
-    string  name = TCAST<Str>(n)->str();
-    TermPtr body = term;
-    c->context()->add_symbol (body, name);
-    return VOID;
-  }
-
-  //// define //////////////////////////////////////////////////////////////////
-  TermPtr
-  define (Machine* c, TermPtr n, TermPtr t, TermPtr b)
-  {
-    string  name = TCAST<Str>(n)->str();
-    TermPtr func = Intf::create (name, b, t);
-    c->context()->add_symbol (func, name);
-    return VOID;
-  }
-
-  TermPtr
-  defaty (Machine* machine, TermPtr t_name)
-  {
-    const char* name = TCAST<Str>(t_name)->str();
-    machine->context()->add_symbol (Type::create (name), name);
-    return VOID;
-  }
-
   //// deflib //////////////////////////////////////////////////////////////////
   TermPtr
   deflib (Machine* machine, TermPtr t_name, TermPtr t_path)
@@ -154,41 +104,15 @@ namespace NAMESPACE
     return VOID;
   }
 
-  //// deftmp //////////////////////////////////////////////////////////////////
-  TermPtr
-  deftmp (Machine* c, TermPtr n, TermPtr var, TermPtr type, TermPtr body)
-  {
-    const char* name = TCAST<Str>(n)->str();
-    shared_ptr<Temp> ft = Temp::create (name, var, type, body);
-    c->context()->add_symbol (ft, name);
-    return VOID;
-  }
-
-  //// undefine ////////////////////////////////////////////////////////////////
-  TermPtr
-  undef (Machine* c, TermPtr name)
-  {
-    c->context()->del_symbol (TCAST<Str>(name)->str());
-    return VOID;
-  }
-
-  TermPtr
-  undefx (Machine* c, TermPtr t_nspace, TermPtr t_name)
-  {
-    SpacePtr nspace = TCAST<Space> (t_nspace);
-    StrPtr   name   = TCAST<Str>   (t_name);
-    c->context()->del_symbol (name->str(), nspace);
-    return VOID;
-  }
-
-  //// redef ///////////////////////////////////////////////////////////////////
-  TermPtr redef (Machine* machine, TermPtr t_name, TermPtr term)
-  {
-    const char* name = TCAST<Str>(t_name)->str();
-    if (! machine->context()->set_symbol (name, term))
-      machine->context()->add_symbol (term, name);
-    return VOID;
-  }
+//   //// deftmp //////////////////////////////////////////////////////////////////
+//   TermPtr
+//   deftmp (Machine* c, TermPtr n, TermPtr var, TermPtr type, TermPtr body)
+//   {
+//     const char* name = TCAST<Str>(n)->str();
+//     shared_ptr<Temp> ft = Temp::create (name, var, type, body);
+//     c->context()->add_symbol (ft, name);
+//     return VOID;
+//   }
 
   TermPtr
   new_ns (Machine* machine)
@@ -265,55 +189,6 @@ namespace NAMESPACE
   is_sub (Machine* c, TermPtr sub, TermPtr super)
   {
     return sub->compat (super) ? Bool::TRUE : Bool::FALSE;
-  }
-
-  TermPtr
-  type_of (Machine* c, TermPtr term)
-  {
-    // For raw terms, they have to be bound before
-    // any meaningful type can be extracted from it.
-    // For terms whose types are DEP, the have to be
-    // evaluated first, however, no side-effects are
-    // wanted here, since typeof is a pure function.
-    // Terms with unpredictable type (UPR) will not
-    // be reduced, and UPR will be returned.
-
-    TermPtr result = term->type();
-
-    if (Raw::T == result) {
-      term = c->reduce (term, BIND);
-      if (Raw::T == term->type())
-	return Raw::T;
-      else
-	return type_of (c, term);
-    }
-    else if (DEP_T == result) {
-      term = c->reduce (term, ALL_CTXT);
-      if (DEP_T == term->type())
-	return Raw::T;
-      else
-	return type_of(c, term);
-    }
-    else
-      return result;
-  }
-
-  TermPtr
-  proj (Machine* c, TermPtr left, TermPtr right)
-  {
-    return Proj::create (left,right);
-  }
-
-  TermPtr
-  type (Machine* c, TermPtr name)
-  {
-    return Type::create ((TCAST<Str>(name))->str());
-  }
-
-  TermPtr
-  typetmp (Machine* machine, TermPtr body, TermPtr param)
-  {
-    return TypeTemplate::create (body, param);
   }
 
   TermPtr

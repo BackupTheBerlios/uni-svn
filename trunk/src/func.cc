@@ -14,8 +14,8 @@
 namespace NAMESPACE
 {
   //////////////////////////////////////////////////////////////////////////////
-  Intf::Intf (const std::string& name, TermPtr body, TermPtr type)
-    : Func (type, name), _body(body)
+  Intf::Intf (TermPtr body, TermPtr type)
+    : Func (type, "*"), _body(body)
   {
     assert (body);
     _proj = CAST<Proj>(type) ? true : false;
@@ -78,13 +78,12 @@ namespace NAMESPACE
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  Envf::Envf (const string& name,
-	      unsigned int  arity,
+  Envf::Envf (unsigned int  arity,
 	      unsigned int  style,
 	      unsigned int  strictness,
 	      void*         entry,
 	      TermPtr       type)
-    : Func (type, name),
+    : Func (type, "*"),
       _arity (arity),
       _style (style | BIND),      // BIND is always required
       _strict (strictness),

@@ -16,3 +16,6 @@
 
 * (2005-09-09) use smart pointer for BindState, since they
   are now not freed.
+
+* (2005-09-11) use smart pointer for Scanners in
+  [libuni-import], since they are now not freed.
