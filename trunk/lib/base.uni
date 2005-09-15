@@ -1,29 +1,33 @@
+import "ref";
+
 defsty "->" RINFIX (add PREC_NOR 2);
-define "->" (proj ANY (proj ANY TYPE)) (\x(\y(proj x y)));
+define "->" (proj ANY (proj ANY TYPE)) proj;
 
-defsty ":=" LINFIX (sub PREC_NOR 5);
-define ":=" (RAW->ANY->VOID) (\x(\y(defmap (rstr x) y)));
+#define "\" (RAW->RAW->DEP) lambda;
 
-defsty "<=" LINFIX (sub PREC_NOR 5);
-define "<=" (RAW->ANY->VOID) (\x(\y(defvar (rstr x) y)));
+#defsty ":=" LINFIX (sub PREC_NOR 5);
+#define ":=" (RAW->ANY->VOID) (\x(\y(defmap (rstr x) y)));
 
-defsty "=" LINFIX (sub PREC_NOR 5);
-define "=" (RAW->RAW->VOID) (\x(\y(redef (rstr x) y)));
+#defsty "<=" LINFIX (sub PREC_NOR 5);
+#define "<=" (RAW->ANY->VOID) (\x(\y(defvar (rstr x) y)));
 
-defsty "==" LINFIX (sub PREC_NOR 4);
-define "==" (ANY->ANY->BOOL) (\x(\y(ifeq x y true false)));
+#defsty "=" LINFIX (sub PREC_NOR 5);
+#define "=" (RAW->RAW->VOID) (\x(\y(redef (rstr x) y)));
 
-defsty "!=" LINFIX (sub PREC_NOR 4);
-define "!=" (ANY->ANY->BOOL) (\x(\y(ifeq x y false true)));
+#defsty "==" LINFIX (sub PREC_NOR 4);
+#define "==" (ANY->ANY->BOOL) (\x(\y(ifeq x y true false)));
 
-defout "{" "}";
-define "{ }" (RAW->UPR) (\x(scope_push; retpop x;));
+#defsty "!=" LINFIX (sub PREC_NOR 4);
+#define "!=" (ANY->ANY->BOOL) (\x(\y(ifeq x y false true)));
 
-define "debug" VOID (set_attr "step_break" 1);
+#defout "{" "}";
+#define "{ }" (RAW->UPR) (\x(scope_push; retpop x;));
 
-defsty "$" PREFIX (add PREC_NOR 4);
-define "$" (ANY->STR) str;
+#define "debug" VOID (set_attr "step_break" 1);
 
-define " " (VOID->RAW->UPR) (\x(\y y));
+#defsty "$" PREFIX (add PREC_NOR 4);
+#define "$" (ANY->STR) str;
 
-name_set "str_ctor" "cstr";
+#define " " (VOID->RAW->UPR) (\x(\y y));
+
+# name_set "str_ctor" "cstr";

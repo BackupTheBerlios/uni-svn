@@ -84,8 +84,8 @@ namespace NAMESPACE
       {"AMB",     AMB_T},
       {"ANY",     Term::T},
       {"BOOL",    Bool::T},
-      {"CONS",    Cons::T},
-      {"CONSH",   Consh::T},
+//       {"CONS",    Cons::T},
+//       {"CONSH",   Consh::T},
       {"EXC",     Exc::T},
       {"INT",     Int::T},
       {"PROJ",    Proj::T},
@@ -142,8 +142,8 @@ namespace NAMESPACE
       {_F ("name_set",          set_special,       2, CTXT, SX, P2 (Str::T, Str::T, VOID_T))},
       {_F ("set_attr",          set_attr,          2, CTXT, SX, P2 (Str::T, Int::T, VOID_T))},
       //// machine manipulation functions ////
-      {_F ("slot_get", get_slot, 1, CTXT, SX, P1 (Str::T, Term::T))},
-      {_F ("slot_set", set_slot, 2, CTXT, SX, P2 (Str::T, Raw::T, VOID_T))},
+//       {_F ("slot_get", get_slot, 1, CTXT, SX, P1 (Str::T, Term::T))},
+//       {_F ("slot_set", set_slot, 2, CTXT, SX, P2 (Str::T, Raw::T, VOID_T))},
       //// scope manipulation functions ////
       {_F ("scope_pop",   scope_pop,   0, CTXT, 0,  VOID_T)},
       {_F ("scope_popx",  scope_popx,  0, CTXT, 0,  Scope::T)},
@@ -167,11 +167,7 @@ namespace NAMESPACE
       {_F ("crec",     crec,     1, CTXT, S0,       P1 (Int::T, Term::T))},
       {_F ("cmem",     cmem,     2, CTXT, S0+S1,    P2 (Term::T, Int::T, Term::T))},
       //// pure meta-reflection functions ////
-      {_F ("\\",       lambda,   2, META, Z0+Z1,    P2 (Raw::T, Raw::T, DEP_T))},
-      {_F ("\\\\",     lambdax,  2, META, S0+Z1,    P2 (Sym::T, Raw::T, DEP_T))},
-      {_F ("\\\\\\",   lambdas,  2, META, S0+B1,    P2 (Str::T, Raw::T, DEP_T))},
       //// reflection functions ////
-      {_F ("is_sub",   is_sub,   2, PURE, SX,       P2 (Type::T, Type::T, Bool::T))},
 //       {_F ("set_int",  set_int,  2, CTXT, SX,       P2 (Int::T, Int::T, VOID_T))},
 //       {_F ("set_str",  set_str,  2, CTXT, SX,       P2 (Str::T, Str::T, VOID_T))},
       ////
@@ -190,7 +186,6 @@ namespace NAMESPACE
       //// utility functions ////
 //       {_F ("cons_t2",  cons_t2,  1, PURE, 0,        P1 (Raw::T, _TT(Cons::T, Raw::T)))},
       //// utility functions ////
-      {_F ("solve",    solve,    3, PURE, S0+M1+M2, P3 (Term::T, Raw::T, Raw::T, DEP_T))},
       {_F ("subs",     subs,     3, PURE, S0+S1+M2, P3 (Term::T, Term::T, Term::T, Term::T))},
       {_F ("ifeq",     ifeq,     4, PURE, S0+S1,    P4 (Term::T, Term::T, Raw::T, Raw::T, DEP_T))},
       {_F ("add",      add_i,    2, PURE, SX,       P2 (Int::T, Int::T, Int::T))},

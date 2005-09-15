@@ -7,12 +7,11 @@
 #include <string.hh>
 #include <style.hh>
 
-#include <fstream>
-#include <map>
-
+#include <sstream>
 #include <dlfcn.h>
 
 using namespace NAMESPACE;
+using std::stringstream;
 
 bool
 lib_register (Machine *machine, const ext_t *m)
@@ -26,16 +25,15 @@ bool
 lib_import (Machine *machine, const std::string& name)
 {
   if (! machine->context()->get_mod (name)) {
-    if (0 == name.find ("libuni-")) {
-      string libfile (name + ".so");
-      dlerror();
-      if (void* handle = dlopen (libfile.c_str(), RTLD_LAZY)) {
+    stringstream libfile;
+    libfile << "libuni-" << name << ".so";
+    dlerror();
+    if (void* handle = dlopen (libfile.str().c_str(), RTLD_LAZY)) {
+      if (0 == dlerror()) {
+	ext_ctor_t ctor_map = (ext_ctor_t) dlsym (handle, "create_map");
 	if (0 == dlerror()) {
-	  ext_ctor_t ctor_map = (ext_ctor_t) dlsym (handle, "create_map");
-	  if (0 == dlerror()) {
-	    if (ext_t *m = ctor_map())
-	      return lib_register (machine, m);
-	  }
+	  if (ext_t *m = ctor_map())
+	    return lib_register (machine, m);
 	}
       }
     }

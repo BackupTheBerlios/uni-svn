@@ -11,10 +11,6 @@ namespace NAMESPACE
   TermPtr as (Machine* machine, TermPtr type, TermPtr term);
   TermPtr sa (Machine* machine, TermPtr term);
 
-  TermPtr lambda (Machine* machine, TermPtr var, TermPtr body);
-  TermPtr lambdax (Machine* machine, TermPtr var, TermPtr body);
-  TermPtr lambdas (Machine* machine, TermPtr var, TermPtr body);
-
   TermPtr deflib (Machine* machine, TermPtr name, TermPtr path);
   TermPtr defext (Machine* machine, TermPtr name, TermPtr type,
 		  TermPtr arity, TermPtr cname, TermPtr lib, TermPtr ret);
@@ -28,21 +24,17 @@ namespace NAMESPACE
 
   TermPtr subs (Machine* machine, TermPtr from, TermPtr to, TermPtr term);
 
-  TermPtr solve (Machine* machine, TermPtr var, TermPtr lhs, TermPtr rhs);
-
   TermPtr bind (Machine* machine, TermPtr term);
   TermPtr redsh  (Machine* machine, TermPtr term);
   TermPtr redshx (Machine* machine, TermPtr term, TermPtr exit);
 //   TermPtr red (Machine* machine, TermPtr term, TermPtr t_flags);
 
-  TermPtr is_sub (Machine* machine, TermPtr sub, TermPtr super);
-
   TermPtr get_special (Machine* machine, TermPtr name);
   TermPtr set_special (Machine* machine, TermPtr name, TermPtr value);
   TermPtr set_attr (Machine* machine, TermPtr name, TermPtr value);
 
-  TermPtr get_slot (Machine* machine, TermPtr id);
-  TermPtr set_slot (Machine* machine, TermPtr id, TermPtr val);
+//   TermPtr get_slot (Machine* machine, TermPtr id);
+//   TermPtr set_slot (Machine* machine, TermPtr id, TermPtr val);
 
   TermPtr scope_pushx (Machine* machine, TermPtr t_scope);
   TermPtr scope_push (Machine* machine);

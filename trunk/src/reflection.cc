@@ -46,33 +46,6 @@ namespace NAMESPACE
     return as->body();
   }
 
-  TermPtr
-  lambda (Machine* c, TermPtr var, TermPtr body)
-  {
-    return Abs::create (var, body);
-  }
-
-  TermPtr
-  lambdax (Machine* c, TermPtr t_var, TermPtr body)
-  {
-    const char* var = TCAST<Str>(t_var)->str();
-    return Abs::create (Tok::create (var), body);
-  }
-
-  TermPtr
-  lambdas (Machine* c, TermPtr t_var, TermPtr body)
-  {
-    const char* var = TCAST<Str>(t_var)->str();
-    AbsPtr abs = Abs::create (Sym::create (var), body);
-    return Abs::create (Tok::create (var), abs->body());
-  }
-
-  TermPtr
-  solve (Machine* c, TermPtr var, TermPtr lhs, TermPtr rhs)
-  {
-    return lhs->solve (var, rhs);
-  }
-
   //// deflib //////////////////////////////////////////////////////////////////
   TermPtr
   deflib (Machine* machine, TermPtr t_name, TermPtr t_path)
@@ -103,16 +76,6 @@ namespace NAMESPACE
     machine->context()->add_symbol (func, name);
     return VOID;
   }
-
-//   //// deftmp //////////////////////////////////////////////////////////////////
-//   TermPtr
-//   deftmp (Machine* c, TermPtr n, TermPtr var, TermPtr type, TermPtr body)
-//   {
-//     const char* name = TCAST<Str>(n)->str();
-//     shared_ptr<Temp> ft = Temp::create (name, var, type, body);
-//     c->context()->add_symbol (ft, name);
-//     return VOID;
-//   }
 
   TermPtr
   new_ns (Machine* machine)
@@ -186,12 +149,6 @@ namespace NAMESPACE
   }
 
   TermPtr
-  is_sub (Machine* c, TermPtr sub, TermPtr super)
-  {
-    return sub->compat (super) ? Bool::TRUE : Bool::FALSE;
-  }
-
-  TermPtr
   get_special (Machine* c, TermPtr n)
   {
     const char* name = TCAST<Str>(n)->str();
@@ -216,21 +173,21 @@ namespace NAMESPACE
     return VOID;
   }
 
-  TermPtr get_slot (Machine* c, TermPtr t_name)
-  {
-    const char* name  = TCAST<Str>(t_name)->str();
-    if (TermPtr result = c->context()->get_slot (name))
-      return result;
-    else
-      throw E (E_NO_MATCH, t_name, Term::T);
-  }
+//   TermPtr get_slot (Machine* c, TermPtr t_name)
+//   {
+//     const char* name  = TCAST<Str>(t_name)->str();
+//     if (TermPtr result = c->context()->get_slot (name))
+//       return result;
+//     else
+//       throw E (E_NO_MATCH, t_name, Term::T);
+//   }
 
-  TermPtr set_slot (Machine* c, TermPtr n, TermPtr val)
-  {
-    const char* name  = TCAST<Str>(n)->str();
-    c->context()->set_slot (name, val);
-    return VOID;
-  }
+//   TermPtr set_slot (Machine* c, TermPtr n, TermPtr val)
+//   {
+//     const char* name  = TCAST<Str>(n)->str();
+//     c->context()->set_slot (name, val);
+//     return VOID;
+//   }
 
   TermPtr scope_pushx (Machine* c, TermPtr t_scope)
   {
@@ -265,19 +222,19 @@ namespace NAMESPACE
     return VOID;
   }
 
-  TermPtr
-  set_int (Machine *m, TermPtr i, TermPtr val)
-  {
-    TCAST<Int>(i)->val (TCAST<Int>(val)->val());
-    return VOID;
-  }
+//   TermPtr
+//   set_int (Machine *m, TermPtr i, TermPtr val)
+//   {
+//     TCAST<Int>(i)->val (TCAST<Int>(val)->val());
+//     return VOID;
+//   }
 
-  TermPtr
-  set_str (Machine *m, TermPtr i, TermPtr val)
-  {
+//   TermPtr
+//   set_str (Machine *m, TermPtr i, TermPtr val)
+//   {
 //     TCAST<Str>(i)->str (TCAST<Str>(val)->str());
-    return VOID;
-  }
+//     return VOID;
+//   }
 
   TermPtr
   ifeq (Machine *m, TermPtr lhs, TermPtr rhs, TermPtr eq, TermPtr ne)

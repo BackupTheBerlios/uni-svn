@@ -75,7 +75,11 @@ extern "C"
       return uni_load_scanner (_default_ext);
     else {
       string ext (filename, i+1, filename.size() - (i+1));
-      return uni_load_scanner (_ext [ext]);
+      map<string,string>::iterator ei = _ext.find (ext);
+      if (_ext.end() == ei)
+	throw ext;
+      else
+	return uni_load_scanner (_ext [ext]);
     }
   }
 

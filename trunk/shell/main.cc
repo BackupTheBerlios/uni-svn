@@ -66,6 +66,9 @@ exec_files (Machine* machine, const vector<string>& files)
   catch (const char* s) {
     cout << "[ERROR] " << s << endl;
   }
+  catch (const string& s) {
+    cout << "[ERROR] \"" << s << "\"" << endl;
+  }
   catch (int e) {
     cout << "int exception: " << e << endl;
   }
@@ -156,8 +159,10 @@ main (int argc, char** argv)
     machine.context()->add_symbol (num_ctor_f, "num_ctor");
     machine.context()->add_symbol (str_ctor_f, "str_ctor");
 
-    lib_register (&machine, dlimport_create_map());
-    lib_import (&machine, "libuni-stringify");
+    if (! lib_register (&machine, dlimport_create_map()))
+      throw "cannot load library: \"dlimport\"";
+    if (! lib_import (&machine, "stringify"))
+      throw "cannot load library: \"dlimport\"";
 
     clo::parser clo_parser;
     clo_parser.parse (argc, argv);

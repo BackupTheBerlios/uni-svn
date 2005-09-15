@@ -83,9 +83,37 @@ redef (Machine* machine, TermPtr t_name, TermPtr term)
   return VOID;
 }
 
+//// lambda expressions //////////////////////////////////////////////////////
+static TermPtr
+lambda (Machine *m, TermPtr var, TermPtr body)
+{
+  return Abs::create (var, body);
+}
+
+static TermPtr
+lambda_t (Machine *m, TermPtr t_var, TermPtr body)
+{
+  const char* var = TCAST<Str>(t_var)->str();
+  return Abs::create (Tok::create (var), body);
+}
+
+static TermPtr
+lambda_s (Machine *m, TermPtr t_var, TermPtr body)
+{
+  const char* var = TCAST<Str>(t_var)->str();
+  AbsPtr abs = Abs::create (Sym::create (var), body);
+  return Abs::create (Tok::create (var), abs->body());
+}
+
+static TermPtr
+solve (Machine *m, TermPtr var, TermPtr lhs, TermPtr rhs)
+{
+  return lhs->solve (var, rhs);
+}
+
 //// simple functions ////////////////////////////////////////////////////////
 static TermPtr
-proj (TermPtr left, TermPtr right)
+proj (Machine *m, TermPtr left, TermPtr right)
 {
   return Proj::create (left, right);
 }
@@ -101,6 +129,13 @@ typex (TermPtr body, TermPtr param)
 {
   return TypeTemplate::create (body, param);
 }
+
+static TermPtr
+is_sub (TermPtr sub, TermPtr super)
+{
+  return sub->compat (super) ? Bool::TRUE : Bool::FALSE;
+}
+
 
 //// C functions ///////////////////////////////////////////////////////////
 extern "C"
@@ -140,7 +175,7 @@ extern "C"
 //// export functions //////////////////////////////////////////////////////
 static ext_t _exts[] = {
   {"defsty", Envf::create (3, CTXT, S0+S1+S2, (void*) defstyle, P3 (Str::T, Int::T, Int::T, VOID_T))},
-  {"defout", Envf::create (2, CTXT, S0+S1,    (void*) defgroup, P2 (Str::T, Str::T, VOID_T))},
+  {"defgrp", Envf::create (2, CTXT, S0+S1,    (void*) defgroup, P2 (Str::T, Str::T, VOID_T))},
   {"defmap", Envf::create (2, CTXT, S0+S1,    (void*) defmap,   P2 (Str::T, Term::T, VOID_T))},
   {"defvar", Envf::create (2, CTXT, S0+M1,    (void*) defmap,   P2 (Str::T, Term::T, VOID_T))},
   {"define", Envf::create (3, CTXT, S0+S1+M2, (void*) define,   P3 (Str::T, Term::T, Raw::T, VOID_T))},
@@ -151,8 +186,17 @@ static ext_t _exts[] = {
   {"typeof", Envf::create (1, PURE, 0,        (void*) type_of,  P1 (Term::T, Type::T))},
 
   {"proj",   Envf::create (2, META, M0+M1,    (void*) proj,     P2 (Term::T, Term::T, Type::T))},
-  {"type",   Envf::create (1, PURE, SX,       (void*) type,     P1 (Str::T, Type::T))},
-  {"type",   Envf::create (2, PURE, SX,       (void*) typex,    P2 (Term::T, Term::T, Type::T))},
+
+  {"type",   SimpleFunc::create (1, PURE, (void*) type,     P1 (Str::T, Type::T))},
+  {"type",   SimpleFunc::create (2, PURE, (void*) typex,    P2 (Term::T, Term::T, Type::T))},
+  {"is_sub", SimpleFunc::create (2, META, (void*) is_sub,    P2 (Type::T, Type::T, Bool::T))},
+
+  {"solve",  Envf::create (3, PURE, S0+M1+M2, (void*) solve,    P3 (Term::T, Raw::T, Raw::T, DEP_T))},
+
+  {"lambda", Envf::create (2, META, Z0+Z1,    (void*) lambda,   P2 (Raw::T, Raw::T, DEP_T))},
+  {"lambdat",Envf::create (2, META, S0+Z1,    (void*) lambda_t, P2 (Sym::T, Raw::T, DEP_T))},
+  {"lambdas",Envf::create (2, META, S0+B1,    (void*) lambda_s, P2 (Str::T, Raw::T, DEP_T))},
+
   {0, TermPtr()}
 };
 
