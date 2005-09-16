@@ -1,12 +1,7 @@
+#include <uni.hh>
 #include <dlimport.hh>
 
-#include <context.hh>
-#include <func.hh>
-#include <machine.hh>
-#include <proj.hh>
-#include <string.hh>
-#include <style.hh>
-
+#include <iostream>
 #include <sstream>
 #include <dlfcn.h>
 
@@ -32,14 +27,20 @@ lib_import (Machine *machine, const std::string& name)
       if (0 == dlerror()) {
 	ext_ctor_t ctor_map = (ext_ctor_t) dlsym (handle, "create_map");
 	if (0 == dlerror()) {
-	  if (ext_t *m = ctor_map())
-	    return lib_register (machine, m);
+	  if (ext_t *m = ctor_map()) {
+	    if (lib_register (machine, m)) {
+	      machine->context()->set_mod (name, NIL);
+	      return true;
+	    }
+	  }
 	}
       }
     }
 
     return false;
   }
+  else
+    std::clog << "[log:normal] library already imported: [" << name << "]" << std::endl;
 
   return true;
 }

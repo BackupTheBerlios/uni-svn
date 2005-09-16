@@ -1,11 +1,4 @@
-#include <context.hh>
-#include <exception.hh>
-#include <machine.hh>
-#include <raw.hh>
-#include <scanner.hh>
-#include <string.hh>
-#include <handle.hh>
-#include <proj.hh>
+#include <uni.hh>
 
 #include <dlfcn.h>
 #include <fstream>
@@ -15,16 +8,16 @@
 #include <iostream>
 
 using namespace NAMESPACE;
-using namespace std;
 
-static TermPtr import (Machine *machine, TermPtr);
-
-typedef std::list<std::string> pathlist_t;
+typedef std::list <std::string> pathlist_t;
+typedef std::map <std::string, std::string> fileext_t;
 
 static pathlist_t path;
-static std::map<string,string> _ext;
+static fileext_t _ext;
 static std::map<string,Scanner*> _scanners;
 static std::string _default_ext;
+
+static TermPtr import (Machine *machine, TermPtr);
 
 static ext_t _exts[] = {
   {"import", Envf::create (1, CTXT, Envf::N, (void*) import, P1 (Str::T, VOID_T))},
@@ -88,13 +81,13 @@ extern "C"
   {
     if (! machine->context()->get_mod (name)) {
       for (pathlist_t::iterator pi = path.begin(); pi != path.end(); ++pi) {
-	for (map<string,string>::iterator i = _ext.begin(); i != _ext.end(); ++i) {
-	  string filename (*pi + "/" + name + "." + i->first);
-	  ifstream file (filename.c_str());
+	for (fileext_t::iterator i = _ext.begin(); i != _ext.end(); ++i) {
+	  std::string filename (*pi + "/" + name + "." + i->first);
+	  std::ifstream file (filename.c_str());
 	  if (file.good()) {
 	    Scanner *scanner = uni_load_scanner(i->second);
-	    machine->context()->set_mod (name, NIL);
 	    uni_run (machine, scanner, file, ALL);
+	    machine->context()->set_mod (name, NIL);
 	    return true;
 	  }
 	}
@@ -102,8 +95,10 @@ extern "C"
 
       return false;
     }
-    else
+    else {
+      std::clog << "[log:normal] library already imported: [" << name << "]" << std::endl;
       return true;
+    }
   }
 
   ext_t*

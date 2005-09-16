@@ -12,6 +12,7 @@
 #include <int.hh>
 #include <proj.hh>
 #include <context.hh>
+#include <scanner.hh>
 #include <seq.hh>
 #include <string.hh>
 #include <style.hh>
