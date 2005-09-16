@@ -96,26 +96,9 @@ shell (Machine* machine,
 	assert (result);
 	assert (type);
 
-	if (result != VOID) {
- 	  bool dump = machine->step_break();
- 	  machine->step_break (false);
-
-	  TermPtr str = Tok::create ("str_ansi");
-	  TermPtr app_result = App::create (str,result);
-	  TermPtr app_type   = App::create (str,type);
-
-	  result = machine->reduce_in_shield (app_result);
-	  type   = machine->reduce_in_shield (app_type);
-
-	  assert (result);
-	  assert (type);
-
-	  StrPtr str_result = CAST<Str> (result);
-	  StrPtr str_type   = CAST<Str> (type);
-
-	  cout << str_result->str() << " :: " << str_type->str() << endl;
- 	  machine->step_break (dump);
-	}
+	if (result != VOID)
+	  cout << str_ansi(machine, result)->str() << " :: "
+	       << str_ansi(machine, type)->str() << endl;
       }
       catch (TermPtr e) {
 	cout << RED << "exception: " << COL_NORMAL;
@@ -140,10 +123,6 @@ int
 main (int argc, char** argv)
 {
   try {
-    const char* lib_path = getenv ("UNI_LIBRARY_PATH");
-    if (0 == lib_path)
-      throw "error: environment variable UNI_LIBRARY_PATH is not set.";
-
     ShellDebugger   debugger;
 
     Builtin         builtin;
