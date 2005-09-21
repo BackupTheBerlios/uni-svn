@@ -1,3 +1,19 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+
 #include <machine.hh>
 #include <cval.hh>
 #include <exception.hh>
@@ -8,6 +24,7 @@
 #include <type.hh>
 
 #include <dlfcn.h>
+#include <stdarg.h>
 
 #define MAX_C_ARGS 8
 
@@ -15,7 +32,7 @@ namespace NAMESPACE
 {
   //////////////////////////////////////////////////////////////////////////////
   Intf::Intf (TermPtr body, TermPtr type)
-    : Func (type, "*"), _body(body)
+    : Func (type), _body(body)
   {
     assert (body);
     _proj = CAST<Proj>(type) ? true : false;
@@ -37,7 +54,7 @@ namespace NAMESPACE
 			  unsigned int  style,
 			  void*         entry,
 			  TermPtr       type)
-    : Func (type, "@"),
+    : Func (type),
       _arity (arity),
       _style (style | BIND),      // BIND is always required
       _entry ((_entry_type)entry)
@@ -80,16 +97,23 @@ namespace NAMESPACE
   //////////////////////////////////////////////////////////////////////////////
   Envf::Envf (unsigned int  arity,
 	      unsigned int  style,
-	      unsigned int  strictness,
 	      void*         entry,
-	      TermPtr       type)
-    : Func (type, "*"),
+	      TermPtr       type,
+	      unsigned int  flags,
+	      ...)
+    : Func (type),
       _arity (arity),
       _style (style | BIND),      // BIND is always required
-      _strict (strictness),
-      _entry ((_entry_type)entry)
+      _entry ((_entry_type)entry),
+      _arg_styles (arity)
   {
     assert (_arity <= MAX_C_ARGS);
+
+    va_list ap;
+    va_start (ap, flags);
+
+    for (int i = 0; i < arity; ++i)
+      _arg_styles[i] = va_arg (ap, int);
   }
 
   TermPtr
@@ -101,24 +125,20 @@ namespace NAMESPACE
       return TermPtr();             // then it cannot be reduced neither
 
     TermPtr a[MAX_C_ARGS], curr = type(), next;
-    int fs [] = {CONS, BIND, ALL_META, ALL_PURE, ALL_CTXT,
-		 ALL_NICE, ALL};
 
     for (unsigned int i = 0; i < _arity; ++i, curr = next) {
-      unsigned int s = (_strict >> (i * BITS)) & MASK;
-      assert (curr);
-
       if (ProjPtr p = CAST<Proj> (curr)) {
 	curr = p->from();
 	next = p->to();
       }
 
-      if (Z == s)
-	a[i] = m->arg(i);
+      if (int style = _arg_styles[i])
+	a[i] = m->arg_reduce (i, style & flags, curr);
       else
-	a[i] = m->arg_reduce (i, fs[s] & flags, curr);
+	a[i] = m->arg(i);
 
       assert (a[i]);
+      assert (next);
     }
 
     // extend to multi-arg case.
@@ -159,7 +179,7 @@ namespace NAMESPACE
 	      P(Lib)        lib,
 	      TermPtr       type,
 	      int           ret)
-    : Func (type, name),
+    : Func (type),
       _arity (arity),
       _retstyle (ret)
   {

@@ -56,7 +56,7 @@ import (Machine* machine, TermPtr t_name)
 }
 
 static ext_t _exts[] = {
-  {"import", Envf::create (1, CTXT, Envf::N, (void*) import, P1 (Str::T, VOID_T))},
+  {"import", Envf::create (1, CTXT, (void*) import, P1 (Str::T, VOID_T), 0, ALL_NICE)},
   {0, TermPtr()}
 };
 

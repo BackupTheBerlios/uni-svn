@@ -30,7 +30,7 @@ namespace NAMESPACE
   public:
 
     Func () { assert (false); }
-    Func (TermPtr type, const string& name) : Term (type), _name (name) { }
+    Func (TermPtr type) : Term (type), _name ("*") { }
   };
 
   class SimpleFunc : public Func
@@ -64,32 +64,28 @@ namespace NAMESPACE
     DEF_DYNAMIC  (Envf);
     VAL_PROPERTY (unsigned int, arity);
     VAL_PROPERTY (unsigned int, style);
-    VAL_PROPERTY (unsigned int, strict);
-
-  public:
-
-    enum {B = 1, M = 2, P = 3, C = 4, N = 5, S = 6, Z = 7};
-    enum {BITS = 3, MASK = 7};
 
   public:
 
     virtual TermPtr reduce (Machine* machine, int flags, TermPtr expected);
 
+    Envf (unsigned int  arity,
+	  unsigned int  style,
+	  void*         entry,
+	  TermPtr       type,
+	  unsigned int  flags,
+	  ...);
+
   protected:
 
     Envf () { assert (false); }
-
-    Envf (unsigned int  arity,
-	  unsigned int  style,
-	  unsigned int  strictness,
-	  void*         entry,
-	  TermPtr       type);
 
   private:
 
     typedef TermPtr (*_entry_type)(Machine*,TermPtr,TermPtr,TermPtr,TermPtr,TermPtr,TermPtr,TermPtr,TermPtr);
 
-    _entry_type  _entry;
+    _entry_type _entry;
+    vector<int> _arg_styles;
   };
 
   class Lib : public Term

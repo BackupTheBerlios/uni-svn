@@ -2,31 +2,6 @@
 
 using namespace NAMESPACE;
 
-#define EFLAG(F,I) (Envf::F << (I * Envf::BITS))
-
-#define Z0 EFLAG(Z,0)
-#define Z1 EFLAG(Z,1)
-#define Z2 EFLAG(Z,2)
-#define Z3 EFLAG(Z,3)
-
-#define S0 EFLAG(S,0)
-#define S1 EFLAG(S,1)
-#define S2 EFLAG(S,2)
-#define S3 EFLAG(S,3)
-#define S4 EFLAG(S,4)
-
-#define M0 EFLAG(M,0)
-#define M1 EFLAG(M,1)
-#define M2 EFLAG(M,2)
-#define M3 EFLAG(M,3)
-
-#define B0 EFLAG(B,0)
-#define B1 EFLAG(B,1)
-#define B2 EFLAG(B,2)
-#define B3 EFLAG(B,3)
-
-#define SX (S0|S1|S2|S3|S4)
-
 static TermPtr
 defstyle (Machine *m, TermPtr n, TermPtr f, TermPtr p)
 {
@@ -131,11 +106,170 @@ typex (TermPtr body, TermPtr param)
 }
 
 static TermPtr
+tok_str (TermPtr t_name)
+{
+  return Tok::create (TCAST<Str>(t_name)->str());
+}
+
+static TermPtr
+tok_sym (TermPtr t_name)
+{
+  return Tok::create (TCAST<Sym>(t_name)->str());
+}
+
+static TermPtr
 is_sub (TermPtr sub, TermPtr super)
 {
   return sub->compat (super) ? Bool::TRUE : Bool::FALSE;
 }
 
+//// Namespace functions ///////////////////////////////////////////////////////
+static TermPtr
+new_ns (Machine* machine)
+{
+  return Space::create();
+}
+
+static TermPtr
+get_ns (Machine* machine, TermPtr t_ns, TermPtr t_name)
+{
+  SpacePtr nspace = TCAST<Space> (t_ns);
+  StrPtr   name   = TCAST<Str> (t_name);
+
+  if (TermPtr result = machine->context()->get_symbol (name->str(), nspace))
+    return result;
+  else
+    return NIL;
+}
+
+static TermPtr
+set_ns (Machine* machine, TermPtr t_ns)
+{
+  if (NIL == t_ns)
+    machine->context()->current_nspace (SpacePtr());
+  else {
+    SpacePtr nspace = TCAST<Space> (t_ns);
+    machine->context()->current_nspace (nspace);
+  }
+
+  return VOID;
+}
+
+//// Scope functions ///////////////////////////////////////////////////////
+static TermPtr
+scope_push (Machine *m)
+{
+  m->context()->push();
+  return VOID;
+}
+
+static TermPtr
+scope_pushx (Machine *m, TermPtr t_scope)
+{
+  ScopePtr scope = TCAST <Scope> (t_scope);
+  m->context()->push (scope);
+  return VOID;
+}
+
+static TermPtr
+scope_pop (Machine *m)
+{
+  m->context()->pop();
+  return VOID;
+}
+
+static TermPtr
+scope_popx (Machine *m)
+{
+  ScopePtr result = m->context()->top();
+  m->context()->pop();
+  return result;
+}
+
+static TermPtr
+scope_set (Machine *m, TermPtr t_flags)
+{
+  int flags = TCAST<Int>(t_flags)->val();
+  m->context()->current_flags (flags);
+  return VOID;
+}
+
+static TermPtr
+get_special (Machine *m, TermPtr n)
+{
+  const char* name = TCAST<Str>(n)->str();
+  return MStr::create (m->context()->get_special(name).c_str());
+}
+
+static TermPtr
+set_special (Machine *m, TermPtr n, TermPtr v)
+{
+  const char* name  = TCAST<Str>(n)->str();
+  const char* value = TCAST<Str>(v)->str();
+  m->context()->set_special (name, value);
+  return VOID;
+}
+
+//// evaluation functions //////////////////////////////////////////////////
+static TermPtr
+bind (Machine *m, TermPtr term)
+{
+  return m->reduce (term, BIND);
+}
+
+static TermPtr
+redsh (Machine *m, TermPtr term)
+{
+  TermPtr r = m->reduce_in_shield (term);
+  return r;
+}
+
+static TermPtr
+redshx (Machine *m, TermPtr term, TermPtr exit)
+{
+  TermPtr r = m->reduce_in_shield (term, ALL, exit);
+  return r;
+}
+
+//// return value functions ////////////////////////////////////////////////
+// static TermPtr
+// retval (TermPtr term)
+// {
+//   return Ret::create (term);
+// }
+
+static TermPtr
+retpop (Machine *m, TermPtr term)
+{
+  m->context()->pop();
+  return Ret::create (term);
+}
+
+// static TermPtr
+// raise (TermPtr t_id, TermPtr t1, TermPtr t2, TermPtr t3)
+// {
+//   int id = TCAST<Int>(t_id)->val();
+//   throw E (id, t1, t2, t3);
+// }
+
+// static TermPtr
+// subs (TermPtr from, TermPtr to, TermPtr term)
+// {
+//   return term->sub (from, to);
+// }
+
+// static TermPtr
+// as (TermPtr type, TermPtr term)
+// {
+//   return AsType::create (type, term);
+// }
+
+// static TermPtr
+// sa (TermPtr term)
+// {
+//   shared_ptr<AsType> as = TCAST<AsType> (term);
+//   return as->body();
+// }
 
 //// C functions ///////////////////////////////////////////////////////////
 extern "C"
@@ -172,30 +306,64 @@ extern "C"
   }
 };
 
+#define _F(arity, style, entry, type, ...) \
+TermPtr (new Envf (arity, style, (void*) entry, type, 0, ##__VA_ARGS__))
+
 //// export functions //////////////////////////////////////////////////////
 static ext_t _exts[] = {
-  {"defsty", Envf::create (3, CTXT, S0+S1+S2, (void*) defstyle, P3 (Str::T, Int::T, Int::T, VOID_T))},
-  {"defgrp", Envf::create (2, CTXT, S0+S1,    (void*) defgroup, P2 (Str::T, Str::T, VOID_T))},
-  {"defmap", Envf::create (2, CTXT, S0+S1,    (void*) defmap,   P2 (Str::T, Term::T, VOID_T))},
-  {"defvar", Envf::create (2, CTXT, S0+M1,    (void*) defmap,   P2 (Str::T, Term::T, VOID_T))},
-  {"define", Envf::create (3, CTXT, S0+S1+M2, (void*) define,   P3 (Str::T, Term::T, Raw::T, VOID_T))},
-  {"undef",  Envf::create (1, CTXT, S0,       (void*) undef,    P1 (Str::T, VOID_T))},
-  {"undef",  Envf::create (2, CTXT, S0+S1,    (void*) undefx,   P2 (Space::T, Str::T, VOID_T))},
-  {"redef",  Envf::create (2, CTXT, S0+M1,    (void*) redef,    P2 (Str::T, Raw::T, VOID_T))},
+  {"defsty", _F (3, CTXT, defstyle, P3 (Str::T, Int::T, Int::T, VOID_T), ALL, ALL, ALL)},
+  {"defgrp", _F (2, CTXT, defgroup, P2 (Str::T, Str::T, VOID_T), ALL, ALL)},
+  {"defmap", _F (2, CTXT, defmap,   P2 (Str::T, Term::T, VOID_T), ALL, ALL)},
+  {"defvar", _F (2, CTXT, defmap,   P2 (Str::T, Term::T, VOID_T), ALL, ALL_META)},
+  {"define", _F (3, CTXT, define,   P3 (Str::T, Term::T, Raw::T, VOID_T), ALL, ALL, ALL_META)},
+  {"undef",  _F (1, CTXT, undef,    P1 (Str::T, VOID_T), ALL)},
+  {"undef",  _F (2, CTXT, undefx,   P2 (Space::T, Str::T, VOID_T), ALL, ALL_META)},
+  {"redef",  _F (2, CTXT, redef,    P2 (Str::T, Raw::T, VOID_T), ALL, ALL_META)},
 
-  {"typeof", Envf::create (1, PURE, 0,        (void*) type_of,  P1 (Term::T, Type::T))},
+  {"typeof", _F (1, PURE, type_of,  P1 (Term::T, Type::T))},
+  {"proj",   _F (2, META, proj,     P2 (Term::T, Term::T, Type::T), ALL_META, ALL_META)},
 
-  {"proj",   Envf::create (2, META, M0+M1,    (void*) proj,     P2 (Term::T, Term::T, Type::T))},
+  {"type",   SimpleFunc::create (1, PURE, type,    P1 (Str::T, Type::T))},
+  {"type",   SimpleFunc::create (2, PURE, typex,   P2 (Term::T, Term::T, Type::T))},
+  {"is_sub", SimpleFunc::create (2, META, is_sub,  P2 (Type::T, Type::T, Bool::T))},
 
-  {"type",   SimpleFunc::create (1, PURE, (void*) type,     P1 (Str::T, Type::T))},
-  {"type",   SimpleFunc::create (2, PURE, (void*) typex,    P2 (Term::T, Term::T, Type::T))},
-  {"is_sub", SimpleFunc::create (2, META, (void*) is_sub,    P2 (Type::T, Type::T, Bool::T))},
+  {"tok",    SimpleFunc::create (1, BIND, tok_str, P1 (Str::T, Raw::T))},
+  {"tok",    SimpleFunc::create (1, BIND, tok_sym, P1 (Sym::T, Raw::T))},
 
-  {"solve",  Envf::create (3, PURE, S0+M1+M2, (void*) solve,    P3 (Term::T, Raw::T, Raw::T, DEP_T))},
+//   {"subs",   SimpleFunc::create (3, PURE, subs,    P3 (Term::T, Term::T, Term::T, Term::T), ALL, ALL, ALL_META)},
+//   {"as",     SimpleFunc::create (2, PURE, as,      P2 (Type::T, Term::T, DEP_T), ALL, ALL_META)},
+//   {"sa",     SimpleFunc::create (1, PURE, sa,      P1 (Term::T, DEP_T), ALL)},
+//   {"throw",  SimpleFunc::create (4, CTXT, raise,   P4 (Int::T, Term::T, Term::T, Term::T, VOID_T), ALL, ALL, ALL, ALL)},
 
-  {"lambda", Envf::create (2, META, Z0+Z1,    (void*) lambda,   P2 (Raw::T, Raw::T, DEP_T))},
-  {"lambdat",Envf::create (2, META, S0+Z1,    (void*) lambda_t, P2 (Sym::T, Raw::T, DEP_T))},
-  {"lambdas",Envf::create (2, META, S0+B1,    (void*) lambda_s, P2 (Str::T, Raw::T, DEP_T))},
+//   {"return", SimpleFunc::create (1, CTXT, retval, P1 (Term::T, VOID_T), ALL)},
+  {"retpop", _F (1, CTXT, retpop, P1 (Term::T, VOID_T), ALL)},
+
+  {"solve",  _F (3, PURE, solve,    P3 (Term::T, Raw::T, Raw::T, DEP_T), ALL, ALL_META, ALL_META)},
+
+  {"lambda", _F (2, META, lambda,   P2 (Raw::T, Raw::T, DEP_T))},
+  {"lambdat",_F (2, META, lambda_t, P2 (Sym::T, Raw::T, DEP_T), ALL)},
+  {"lambdas",_F (2, META, lambda_s, P2 (Str::T, Raw::T, DEP_T), ALL, BIND)},
+
+  //// namespace manipulation functions ////
+  {"new_ns", _F (0, PURE, new_ns, Space::T)},
+  {"set_ns", _F (1, CTXT, set_ns, P1 (Term::T, VOID_T), ALL)},
+  {"get_ns", _F (2, CTXT, get_ns, P2 (Space::T, Str::T, Term::T), ALL, ALL)},
+
+  //// special name functions ////
+  {"name_get", _F (1, CTXT, get_special, P1 (Str::T, Str::T), ALL)},
+  {"name_set", _F (2, CTXT, set_special, P2 (Str::T, Str::T, VOID_T), ALL, ALL)},
+
+  //// evaluation functions ////
+  {"bind",   _F (1, BIND, bind,   P1 (Raw::T, DEP_T))},
+  {"redsh",  _F (1, SIDE, redsh,  P1 (Raw::T, UPR_T))},
+  {"redshx", _F (2, SIDE, redshx, P2 (Raw::T, Raw::T, UPR_T))},
+
+  //// scope manipulation functions ////
+  {"scope_pop",   _F (0, CTXT, scope_pop,   VOID_T)},
+  {"scope_popx",  _F (0, CTXT, scope_popx,  Scope::T)},
+  {"scope_push",  _F (0, CTXT, scope_push,  VOID_T)},
+  {"scope_pushx", _F (1, CTXT, scope_pushx, P1 (Scope::T, VOID_T), ALL)},
+  {"scope_set",   _F (1, CTXT, scope_set,   P1 (Int::T, VOID_T), ALL)},
 
   {0, TermPtr()}
 };
