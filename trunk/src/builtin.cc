@@ -21,46 +21,6 @@
 
 #include <string>
 
-// #define _F(name, func, num, style, strict, type, ...) \
-// name, Envf::create (num, style, (void*)func, type, __VA_ARGS__)
-
-// #define _T(name, func, num, style, strict, type, var) \
-// name, Temp::create (name, var, type, Envf::create (name, num, style, strict, (void*)func, type))
-
-// #define _TT(BODY, PARAM) (TypeTemplate::create (BODY, PARAM))
-
-// #define P1(T1, T2) (Proj::create (T1, T2))
-// #define P2(T, ...) (Proj::create (T, P1(__VA_ARGS__)))
-// #define P3(T, ...) (Proj::create (T, P2(__VA_ARGS__)))
-// #define P4(T, ...) (Proj::create (T, P3(__VA_ARGS__)))
-// #define P5(T, ...) (Proj::create (T, P4(__VA_ARGS__)))
-// #define P6(T, ...) (Proj::create (T, P5(__VA_ARGS__)))
-
-// #define EFLAG(F,I) (Envf::F << (I * Envf::BITS))
-
-// #define Z0 EFLAG(Z,0)
-// #define Z1 EFLAG(Z,1)
-// #define Z2 EFLAG(Z,2)
-// #define Z3 EFLAG(Z,3)
-
-// #define S0 EFLAG(S,0)
-// #define S1 EFLAG(S,1)
-// #define S2 EFLAG(S,2)
-// #define S3 EFLAG(S,3)
-// #define S4 EFLAG(S,4)
-
-// #define M0 EFLAG(M,0)
-// #define M1 EFLAG(M,1)
-// #define M2 EFLAG(M,2)
-// #define M3 EFLAG(M,3)
-
-// #define B0 EFLAG(B,0)
-// #define B1 EFLAG(B,1)
-// #define B2 EFLAG(B,2)
-// #define B3 EFLAG(B,3)
-
-// #define SX (S0|S1|S2|S3|S4)
-
 namespace NAMESPACE
 {
   struct _builtin_t
@@ -72,13 +32,6 @@ namespace NAMESPACE
   void
   Builtin::init (Machine* machine)
   {
-//     TermPtr x = Sym::create ("x");
-//     TermPtr y = Sym::create ("y");
-
-//     TermVec xy;
-//     xy.push_back (x);
-//     xy.push_back (y);
-
     _builtin_t _builtins[] = {
       //// built-in types ////
       {"AMB",     AMB_T},

@@ -1,10 +1,4 @@
-#include <bool.hh>
-#include <exception.hh>
-#include <func.hh>
-#include <handle.hh>
-#include <proj.hh>
-#include <string.hh>
-#include <style.hh>
+#include <uni.hh>
 
 #include <list>
 #include <map>
@@ -12,6 +6,7 @@
 #include <utility>
 
 using namespace NAMESPACE;
+
 using std::list;
 using std::map;
 using std::string;
@@ -162,22 +157,22 @@ list_iter_dec (TermPtr obj_term)
 
 //// library entry points //////////////////////////////////////////
 static ext_t _exts[] = {
-  {"map_new", SimpleFunc::create (1, PURE, (void*)map_new, P1 (Term::T, Term::T))},
-  {"map_get", SimpleFunc::create (2, PURE, (void*)map_get, P2 (Term::T, Str::T, Term::T))},
-  {"map_has", SimpleFunc::create (2, PURE, (void*)map_has, P2 (Term::T, Str::T, Bool::T))},
-  {"map_set", SimpleFunc::create (3, PURE, (void*)map_set, P3 (Term::T, Str::T, Term::T, VOID_T))},
+  {"map_new", _A (1, PURE, map_new, P1 (Term::T, Term::T))},
+  {"map_get", _A (2, PURE, map_get, P2 (Term::T, Str::T, Term::T))},
+  {"map_has", _A (2, PURE, map_has, P2 (Term::T, Str::T, Bool::T))},
+  {"map_set", _A (3, PURE, map_set, P3 (Term::T, Str::T, Term::T, VOID_T))},
 
-  {"list_new",    SimpleFunc::create (1, PURE, (void*)list_new, P1 (Term::T, Term::T))},
-  {"list_append", SimpleFunc::create (2, PURE, (void*)list_append, P2 (Term::T, Term::T, VOID_T))},
-  {"list_front",  SimpleFunc::create (1, PURE, (void*)list_front, P1 (Term::T, Term::T))},
-  {"list_back",   SimpleFunc::create (1, PURE, (void*)list_back, P1 (Term::T, Term::T))},
+  {"list_new",    _A (1, PURE, list_new, P1 (Term::T, Term::T))},
+  {"list_append", _A (2, PURE, list_append, P2 (Term::T, Term::T, VOID_T))},
+  {"list_front",  _A (1, PURE, list_front, P1 (Term::T, Term::T))},
+  {"list_back",   _A (1, PURE, list_back, P1 (Term::T, Term::T))},
 
-  {"list_begin",  SimpleFunc::create (1, PURE, (void*)list_begin, P1 (Term::T, Term::T))},
-  {"list_end",    SimpleFunc::create (1, PURE, (void*)list_end, P1 (Term::T, Term::T))},
+  {"list_begin",  _A (1, PURE, list_begin, P1 (Term::T, Term::T))},
+  {"list_end",    _A (1, PURE, list_end, P1 (Term::T, Term::T))},
 
-  {"list_iter_deref", SimpleFunc::create (1, PURE, (void*)list_iter_deref, P1 (Term::T, Term::T))},
-  {"list_iter_inc",   SimpleFunc::create (1, PURE, (void*)list_iter_inc,   P1 (Term::T, VOID_T))},
-  {"list_iter_dec",   SimpleFunc::create (1, PURE, (void*)list_iter_dec,   P1 (Term::T, VOID_T))},
+  {"list_iter_deref", _A (1, PURE, list_iter_deref, P1 (Term::T, Term::T))},
+  {"list_iter_inc",   _A (1, PURE, list_iter_inc,   P1 (Term::T, VOID_T))},
+  {"list_iter_dec",   _A (1, PURE, list_iter_dec,   P1 (Term::T, VOID_T))},
   {0, TermPtr()}
 };
 

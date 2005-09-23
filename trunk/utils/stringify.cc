@@ -1,17 +1,4 @@
-#include <abs.hh>
-#include <app.hh>
-#include <family.hh>
-#include <func.hh>
-#include <handle.hh>
-#include <proj.hh>
-#include <string.hh>
-#include <tok.hh>
-#include <sym.hh>
-#include <int.hh>
-#include <seq.hh>
-#include <func.hh>
-#include <bool.hh>
-#include <temp.hh>
+#include <uni.hh>
 
 #include <vector>
 #include <map>
@@ -274,8 +261,8 @@ str_ansi (TermPtr term)
 }
 
 static ext_t _exts[] = {
-  {"str",      SimpleFunc::create (1, PURE, (void*)str, Proj::create (Term::T, Str::T))},
-  {"str_ansi", SimpleFunc::create (1, PURE, (void*)str_ansi, Proj::create (Term::T, Str::T))},
+  {"str",      _A (1, PURE, str, Proj::create (Term::T, Str::T))},
+  {"str_ansi", _A (1, PURE, str_ansi, Proj::create (Term::T, Str::T))},
   {0, TermPtr()}
 };
 

@@ -1,15 +1,5 @@
-#include <app.hh>
 #include <builtin.hh>
-#include <context.hh>
-#include <machine.hh>
-#include <exception.hh>
-#include <func.hh>
-#include <int.hh>
-#include <proj.hh>
-#include <raw.hh>
-#include <style.hh>
-#include <sym.hh>
-#include <tok.hh>
+#include <uni.hh>
 
 #include <dlimport.hh>
 #include <import.hh>
@@ -31,8 +21,8 @@ using namespace std;
 static TermPtr _num_ctor (TermPtr arg);
 static TermPtr _str_ctor (TermPtr arg);
 
-TermPtr num_ctor_f = SimpleFunc::create (1, CONS, (void*)_num_ctor, Proj::create(Str::T,Int::T));
-TermPtr str_ctor_f = SimpleFunc::create (1, CONS, (void*)_str_ctor, Proj::create(Str::T,Str::T));
+TermPtr num_ctor_f = _A (1, CONS, _num_ctor, Proj::create(Str::T,Int::T));
+TermPtr str_ctor_f = _A (1, CONS, _str_ctor, Proj::create(Str::T,Str::T));
 
 TermPtr
 _num_ctor (TermPtr arg)

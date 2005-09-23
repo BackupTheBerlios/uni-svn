@@ -20,7 +20,7 @@ static std::string _default_ext;
 static TermPtr import (Machine *machine, TermPtr);
 
 static ext_t _exts[] = {
-  {"import", Envf::create (1, CTXT, (void*) import, P1 (Str::T, VOID_T), 0, ALL_NICE)},
+  {"import", _F (1, CTXT, import, P1 (Str::T, VOID_T), ALL_NICE)},
   {0, TermPtr()}
 };
 

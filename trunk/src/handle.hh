@@ -16,14 +16,6 @@ namespace NAMESPACE
     Handle () { assert (false); }
     Handle (TermPtr type, void* handle) : Term (type), _handle (handle) { }
   };
-
-  struct ext_t
-  {
-    char*   name;
-    TermPtr term;
-  };
-
-  typedef ext_t* (*ext_ctor_t)();
 };
 
 #endif

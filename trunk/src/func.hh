@@ -33,32 +33,6 @@ namespace NAMESPACE
     Func (TermPtr type) : Term (type), _name ("*") { }
   };
 
-  class SimpleFunc : public Func
-  {
-    DEF_DYNAMIC  (SimpleFunc);
-    VAL_PROPERTY (unsigned int, arity);
-    VAL_PROPERTY (unsigned int, style);
-
-  public:
-
-    virtual TermPtr reduce (Machine* machine, int flags, TermPtr expected);
-
-  protected:
-
-    SimpleFunc () { }
-
-    SimpleFunc (unsigned int  arity,
-	        unsigned int  style,
-		void*         entry,
-		TermPtr       type);
-
-  private:
-
-    typedef TermPtr (*_entry_type)(TermPtr,TermPtr,TermPtr,TermPtr,TermPtr,TermPtr,TermPtr,TermPtr);
-
-    _entry_type  _entry;
-  };
-
   class Envf : public Func
   {
     DEF_DYNAMIC  (Envf);
@@ -66,6 +40,8 @@ namespace NAMESPACE
     VAL_PROPERTY (unsigned int, style);
 
   public:
+
+    enum { MACH_PTR = 1 };
 
     virtual TermPtr reduce (Machine* machine, int flags, TermPtr expected);
 
@@ -82,21 +58,12 @@ namespace NAMESPACE
 
   private:
 
-    typedef TermPtr (*_entry_type)(Machine*,TermPtr,TermPtr,TermPtr,TermPtr,TermPtr,TermPtr,TermPtr,TermPtr);
+    typedef TermPtr (*_envf_t)(Machine*,TermPtr,TermPtr,TermPtr,TermPtr,TermPtr,TermPtr,TermPtr,TermPtr);
+    typedef TermPtr (*_simf_t)(TermPtr,TermPtr,TermPtr,TermPtr,TermPtr,TermPtr,TermPtr,TermPtr);
 
-    _entry_type _entry;
-    vector<int> _arg_styles;
-  };
-
-  class Lib : public Term
-  {
-    DEF_TERM        (Lib);
-    REF_PROPERTY    (string, name);
-    VAL_PROPERTY_RO (void*,  handle);
-
-  protected:
-
-    Lib (const string& name);
+    void*        _entry;
+    unsigned int _flags;
+    vector<int>  _arg_styles;
   };
 
   /**
@@ -120,6 +87,17 @@ namespace NAMESPACE
   private:
 
     bool _proj;
+  };
+
+  class Lib : public Term
+  {
+    DEF_TERM        (Lib);
+    REF_PROPERTY    (string, name);
+    VAL_PROPERTY_RO (void*,  handle);
+
+  protected:
+
+    Lib (const string& name);
   };
 
   class Extf : public Func

@@ -19,3 +19,6 @@
 
 * (2005-09-11) use smart pointer for Scanners in
   [libuni-import], since they are now not freed.
+
+* (2005-09-21) rename [style] (as in reduction)
+  to [restriction].
